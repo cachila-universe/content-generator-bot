@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}Posts{% endblock %}
+{% block page_title %}Published Posts{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">All Posts ({{ posts|length }})</h3>
+    <input
+      type="text"
+      id="postSearch"
+      class="search-input"
+      placeholder="🔍 Search posts..."
+      oninput="filterPosts(this.value)"
+    >
+  </div>
+  <div class="table-wrapper">
+    <table class="data-table" id="postsTable">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Niche</th>
+          <th>Title</th>
+          <th>Published</th>
+          <th>Words</th>
+          <th>Affiliate Links</th>
+          <th>Est. Clicks</th>
+          <th>Est. Income</th>
+          <th>View</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for post in posts %}
+        <tr class="post-row" data-title="{{ post.title|lower }}" data-niche="{{ post.niche_name|lower }}">
+          <td class="text-muted">{{ loop.index }}</td>
+          <td><span class="niche-badge">{{ post.niche_name }}</span></td>
+          <td class="post-title">{{ post.title }}</td>
+          <td class="text-muted">{{ post.published_at[:10] if post.published_at else '—' }}</td>
+          <td>{{ post.word_count }}</td>
+          <td>{{ post.affiliate_links_count }}</td>
+          <td>{{ post.estimated_clicks }}</td>
+          <td class="income-cell">${{ "%.2f"|format(post.estimated_income) }}</td>
+          <td>
+            {% if post.url %}
+            <a href="{{ post.url }}" target="_blank" class="btn btn-sm">View →</a>
+            {% else %}
+            <span class="text-muted">—</span>
+            {% endif %}
+            {% if post.youtube_url %}
+            <a href="{{ post.youtube_url }}" target="_blank" class="btn btn-sm btn-yt">▶ YT</a>
+            {% endif %}
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="9" class="text-muted text-center">No posts published yet. Run the bot to generate content.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+function filterPosts(query) {
+  const rows = document.querySelectorAll('.post-row');
+  const q = query.toLowerCase();
+  rows.forEach(row => {
+    const title = row.dataset.title || '';
+    const niche = row.dataset.niche || '';
+    row.style.display = (title.includes(q) || niche.includes(q)) ? '' : 'none';
+  });
+}
+</script>
+{% endblock %}

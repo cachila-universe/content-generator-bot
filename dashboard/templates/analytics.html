@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}Analytics{% endblock %}
+{% block page_title %}Analytics{% endblock %}
+
+{% block content %}
+<!-- Charts row -->
+<div class="charts-row three-col">
+  <div class="chart-card">
+    <h3 class="chart-title">Posts per Niche</h3>
+    <canvas id="postsPerNicheChart" height="260"></canvas>
+  </div>
+  <div class="chart-card">
+    <h3 class="chart-title">Est. Income per Niche</h3>
+    <canvas id="incomePerNicheChart" height="260"></canvas>
+  </div>
+  <div class="chart-card">
+    <h3 class="chart-title">Clicks per Niche</h3>
+    <canvas id="clicksPerNicheChart" height="260"></canvas>
+  </div>
+</div>
+
+<!-- Stats table -->
+<div class="card">
+  <h3 class="card-title">Niche Summary</h3>
+  <div class="table-wrapper">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Niche</th>
+          <th>Posts</th>
+          <th>Videos</th>
+          <th>Clicks</th>
+          <th>Est. Income</th>
+          <th>Income/Post</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for stat in niche_stats %}
+        <tr>
+          <td><span class="niche-badge">{{ stat.niche_name }}</span></td>
+          <td>{{ stat.total_posts }}</td>
+          <td>{{ stat.total_videos }}</td>
+          <td>{{ stat.total_clicks }}</td>
+          <td class="income-cell">${{ "%.2f"|format(stat.estimated_income) }}</td>
+          <td class="income-cell">
+            ${{ "%.2f"|format(stat.estimated_income / stat.total_posts if stat.total_posts > 0 else 0) }}
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6" class="text-muted text-center">No data yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+// Pass niche stats to dashboard.js
+window.nicheStats = {{ niche_stats | tojson }};
+</script>
+{% endblock %}

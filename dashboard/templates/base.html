@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Dashboard{% endblock %} — AI Income Bot</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+</head>
+<body>
+  <div class="layout">
+    <!-- Sidebar -->
+    <nav class="sidebar" id="sidebar">
+      <div class="sidebar-brand">
+        <span class="brand-icon">🤖</span>
+        <span class="brand-name">AI Income Bot</span>
+      </div>
+      <ul class="nav-list">
+        <li class="nav-item">
+          <a href="/" class="nav-link {% if request.path == '/' %}active{% endif %}">
+            <span class="nav-icon">📊</span><span class="nav-text">Overview</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="/posts" class="nav-link {% if request.path == '/posts' %}active{% endif %}">
+            <span class="nav-icon">📝</span><span class="nav-text">Posts</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="/analytics" class="nav-link {% if request.path == '/analytics' %}active{% endif %}">
+            <span class="nav-icon">📈</span><span class="nav-text">Analytics</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="/niches" class="nav-link {% if request.path == '/niches' %}active{% endif %}">
+            <span class="nav-icon">🎯</span><span class="nav-text">Niches</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="/logs" class="nav-link {% if request.path == '/logs' %}active{% endif %}">
+            <span class="nav-icon">🗒️</span><span class="nav-text">Logs</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="/settings" class="nav-link {% if request.path == '/settings' %}active{% endif %}">
+            <span class="nav-icon">⚙️</span><span class="nav-text">Settings</span>
+          </a>
+        </li>
+      </ul>
+      <div class="sidebar-footer">
+        <div class="bot-status-indicator" id="botStatusSidebar">
+          <span class="status-dot" id="statusDot"></span>
+          <span class="status-text" id="statusText">Loading...</span>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main area -->
+    <div class="main-area">
+      <header class="top-bar">
+        <div class="top-bar-left">
+          <button class="mobile-menu-btn" onclick="toggleSidebar()">☰</button>
+          <h1 class="page-title">{% block page_title %}Dashboard{% endblock %}</h1>
+        </div>
+        <div class="top-bar-right">
+          <span class="last-updated">Updated: <span id="updateTime">—</span></span>
+          <div class="bot-controls">
+            <button class="btn btn-start" id="btnStart" onclick="botStart()" title="Start bot">▶ Start</button>
+            <button class="btn btn-stop" id="btnStop" onclick="botStop()" title="Stop bot">⏹ Stop</button>
+          </div>
+        </div>
+      </header>
+
+      <main class="content">
+        {% block content %}{% endblock %}
+      </main>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+  <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+</body>
+</html>

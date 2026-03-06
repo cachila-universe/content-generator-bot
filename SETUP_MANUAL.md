@@ -1,0 +1,698 @@
+# 🚀 Complete Setup Manual — AI Content Generator Bot
+
+> **Estimated setup time:** 20–30 minutes (first-time), 5 minutes (returning)
+
+---
+
+## Table of Contents
+
+1.  [Prerequisites](#1-prerequisites)
+2.  [Install System Dependencies](#2-install-system-dependencies)
+3.  [Clone & Install the Project](#3-clone--install-the-project)
+4.  [Install & Configure Ollama (Local AI)](#4-install--configure-ollama-local-ai)
+5.  [Environment Variables (.env)](#5-environment-variables-env)
+6.  [Configure Your Niches & Settings](#6-configure-your-niches--settings)
+7.  [Run the Dashboard Locally](#7-run-the-dashboard-locally)
+8.  [Run the Bot](#8-run-the-bot)
+9.  [YouTube API Setup (Shorts)](#9-youtube-api-setup-shorts)
+10.  [Pinterest API Setup](#10-pinterest-api-setup)
+11.  [Domain & Hosting Setup](#11-domain--hosting-setup)
+12.  [Google AdSense Application](#12-google-adsense-application)
+13.  [Going Live Checklist](#13-going-live-checklist)
+14.  [Troubleshooting](#14-troubleshooting)
+
+---
+
+## 1. Prerequisites
+
+Requirement
+
+Minimum
+
+Recommended
+
+macOS / Linux / Windows WSL
+
+Any
+
+macOS Ventura+
+
+Python
+
+3.10
+
+3.12
+
+RAM
+
+8 GB
+
+16 GB (for Ollama AI models)
+
+Disk Space
+
+10 GB
+
+20 GB (AI models ~4 GB each)
+
+Internet
+
+Required
+
+Required
+
+---
+
+## 2. Install System Dependencies
+
+### Step 2: Install System Dependencies
+
+**macOS (Homebrew):**
+
+```bash
+# Install Homebrew if not installed/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"# Install Python 3.12brew install python@3.12# Install ffmpeg (needed for video generation)brew install ffmpeg# Verify installationpython3 --version   # Should show 3.10+ffmpeg -version     # Should show ffmpeg info
+```
+
+**Ubuntu / Debian:**
+
+```bash
+sudo apt update && sudo apt upgrade -ysudo apt install python3.12 python3.12-venv python3-pip ffmpeg -y
+```
+
+**Windows (via WSL):**
+
+```powershell
+# Install WSL first (run in PowerShell as Admin)wsl --install -d Ubuntu# Then follow Ubuntu instructions inside WSL
+```
+
+---
+
+## 3. Clone & Install the Project
+
+```bash
+# Navigate to where you want the projectcd ~/Documents/Github/Projects# Clone the repository (or if you already have it, skip this)# git clone https://github.com/YOUR_USERNAME/content-generator-bot.git# Enter the projectcd content-generator-bot# Create a Python virtual environmentpython3 -m venv venv# Activate itsource venv/bin/activate   # macOS/Linux# venvScriptsactivate     # Windows# Install all Python dependenciespip install --upgrade pippip install -r requirements.txt# Verify installationpython -c "import flask; import ollama; print('✅ All dependencies installed')"
+```
+
+---
+
+## 4. Install & Configure Ollama (Local AI)
+
+Ollama runs AI models locally on your machine. **No API keys needed. No cloud costs. 100% private.**
+
+### Install Ollama
+
+```bash
+# macOS / Linux — one commandcurl -fsSL https://ollama.com/install.sh | sh# Or on macOS via Homebrew:brew install ollama
+```
+
+For Windows: Download from [https://ollama.com/download](https://ollama.com/download)
+
+### Start Ollama & Download the Mistral Model
+
+```bash
+# Start Ollama (runs in background)ollama serve &# Download the Mistral 7B model (used for content generation)# This downloads ~4 GB on first runollama pull mistral# Verify it worksollama run mistral "Say hello in one sentence"
+```
+
+**Alternative models** (if you want better quality and have more RAM):
+
+```bash
+ollama pull llama3.1          # 8B params, great quality
+```
+
+If you switch models, update `core/llm_writer.py` → change the model name in the `ollama.chat()` call.
+
+### Verify Ollama is Running
+
+```bash
+curl http://localhost:11434/api/tags# Should return JSON with your installed models
+```
+
+---
+
+## 5. Environment Variables (.env)
+
+Create a `.env` file in the project root:
+
+```bash
+cp .env.example .env
+```
+
+Edit `.env` with your credentials:
+
+```ini
+# ── Required ──────────────────────────────────────────# DashboardDASHBOARD_SECRET_KEY=your-random-secret-key-here-change-me# ── YouTube (Optional — only if using YouTube Shorts) ──YOUTUBE_CLIENT_SECRETS_FILE=client_secrets.jsonYOUTUBE_API_SCOPES=https://www.googleapis.com/auth/youtube.upload# ── Pinterest (Optional — only if using Pinterest) ────PINTEREST_ACCESS_TOKEN=your_pinterest_tokenPINTEREST_BOARD_ID=your_board_id# ── Site ──────────────────────────────────────────────SITE_URL=https://tech-life-insights.com
+```
+
+Generate a secret key:
+
+```bash
+python3 -c "import secrets; print(secrets.token_hex(32))"
+```
+
+---
+
+## 6. Configure Your Niches & Settings
+
+### `config/settings.yaml`
+
+Key settings to review:
+
+```yaml
+site:  title: "TechLife Insights"                 # Your site name  tagline: "Smart Guides for Modern Living"video:  format: "shorts"                           # "shorts" for YouTube Shorts (recommended)platforms:  blog: true                                 # Generate blog articles  youtube_shorts: true                       # Generate YouTube Shorts  pinterest: true                            # Generate Pinterest pinsscheduler:  timezone: "America/New_York"               # Change to YOUR timezone  max_posts_per_day: 3                       # Anti-spam: max posts per day  cooldown_hours: 20                         # Hours between posts per niche  randomize_minutes: 15                      # ±15 min jitter on schedule
+```
+
+### `config/niches.yaml`
+
+Each niche has:
+
+-   **seed_keywords** — what Google Trends searches for
+-   **affiliate_programs** — your affiliate links (replace `YOUR_ID` with your actual IDs)
+-   **schedule times** — when each niche publishes
+
+**To add a new niche**, copy an existing block and modify it:
+
+```yaml
+niches:  my_new_niche:    name: "My New Niche"    enabled: true    seed_keywords:      - "keyword 1"      - "keyword 2"    affiliate_programs:      - name: "Program Name"        url: "https://example.com?aff=YOUR_ID"        keywords: ["keyword", "another keyword"]    post_schedule_hour: 10    post_schedule_minute: 0    video_schedule_hour: 12    video_schedule_minute: 0    pinterest_schedule_hour: 14    pinterest_schedule_minute: 0
+```
+
+---
+
+## 7. Run the Dashboard Locally
+
+```bash
+# Make sure your venv is activatedsource venv/bin/activate# Start the dashboardpython scripts/start_dashboard.py# Or manually:python -m dashboard.app
+```
+
+Open your browser: **[http://localhost:5000](http://localhost:5000)**
+
+You'll see:
+
+-   📊 **Overview** — stats, bot status, manual trigger
+-   📝 **Posts** — all published articles
+-   📈 **Analytics** — charts per niche
+-   🎯 **Niches** — toggle niches on/off
+-   🗒️ **Logs** — real-time bot activity
+-   ⚙️ **Settings** — platform toggles, schedule controls
+
+### Dashboard Controls
+
+Action
+
+How
+
+Start Bot
+
+Click **▶ Start** in top bar
+
+Stop Bot
+
+Click **⏹ Stop** in top bar
+
+Toggle a niche
+
+Niches page → flip the toggle switch
+
+Toggle a platform
+
+Settings page → flip platform switches
+
+Manual trigger
+
+Overview → Arm Trigger → Select niche → Fire
+
+---
+
+## 8. Run the Bot
+
+```bash
+# Option 1: Via the dashboard (recommended)# Start the dashboard, then click "Start" in the top bar# Option 2: Command linepython scripts/start_bot.py# Option 3: One-time test runpython scripts/test_run.py
+```
+
+The bot will:
+
+1.  Check Google Trends for each niche
+2.  Pick a unique topic (dedup check)
+3.  Generate an article via Ollama AI
+4.  Optimize SEO meta tags
+5.  Inject affiliate links
+6.  Publish to your site
+7.  Generate a YouTube Short (if enabled)
+8.  Upload to YouTube (if configured)
+9.  Create a Pinterest pin (if configured)
+10.  Log everything to the database
+
+---
+
+## 9. YouTube API Setup (Shorts)
+
+### Step 1: Create a Google Cloud Project
+
+1.  Go to [Google Cloud Console](https://console.cloud.google.com/)
+2.  Click **Select a project** → **New Project**
+3.  Name it `content-bot-youtube`, click **Create**
+
+### Step 2: Enable the YouTube Data API v3
+
+1.  Go to **APIs & Services** → **Enable APIs and Services**
+2.  Search for **YouTube Data API v3**
+3.  Click **Enable**
+
+### Step 3: Create OAuth 2.0 Credentials
+
+1.  Go to **APIs & Services** → **Credentials**
+2.  Click **+ Create Credentials** → **OAuth client ID**
+3.  If prompted, configure the **OAuth consent screen**:
+    -   User type: **External**
+    -   App name: `Content Bot`
+    -   Support email: your email
+    -   Scopes: add `youtube.upload`
+4.  Application type: **Desktop app**
+5.  Click **Create**, then **Download JSON**
+6.  Save as `client_secrets.json` in your project root
+
+### Step 3b: Add Yourself as a Test User ⚠️ Required
+
+Google blocks OAuth apps that haven't completed their verification process. Since this is your **personal bot**, you never need to verify — you just need to add your own email as an approved tester.
+
+**Finding the Test Users section:**
+
+1.  Go to [console.cloud.google.com](https://console.cloud.google.com)
+2.  Make sure your **project is selected** in the top-left dropdown (should say `content-bot-youtube` or whatever you named it)
+3.  In the left sidebar: **APIs & Services** → **OAuth consent screen**
+4.  On that page, look for the **"Audience"** tab (Google recently renamed the section)
+5.  Scroll down — you'll see **"Test users"** with a **+ Add Users** button
+
+**If you don't see "Test users":**
+
+Your app may be set to **Internal** instead of **External**. Check the top of the OAuth consent screen page — it should say **User type: External**. If it says Internal, click **Make External**.
+
+**Quick URL shortcut:**
+
+Paste this into your browser, replacing `YOUR_PROJECT_ID` with your actual project ID:
+
+```
+https://console.cloud.google.com/apis/credentials/consent?project=YOUR_PROJECT_ID
+```
+
+Your project ID is visible in Google Cloud Console's top bar (looks like `content-bot-youtube-123456`).
+
+**Add your email:**
+
+1.  Click **+ Add Users**
+2.  Enter your Google account email (e.g. `cachila.universe@gmail.com`)
+3.  Click **Save**
+
+> You only need to do this once. The bot will use the saved `data/youtube_token.json` on all future runs.
+
+### Step 4: First Authentication
+
+```bash
+source contentgenerator/bin/activatepython -c "from core.youtube_uploader import authenticate; authenticate()"
+```
+
+This opens your browser for OAuth. Sign in with the **same email you added as a test user** and click **Allow**. A token is saved to `data/youtube_token.json` automatically.
+
+> **If you see "Access blocked" / Error 403:** You haven't added your email as a test user yet. Complete Step 3b above first.
+
+> ⚠️ **YouTube quota**: New projects get 10,000 units/day. Each upload costs ~1,600 units. That's ~6 uploads/day. The bot's `max_posts_per_day: 3` stays safely within this limit.
+
+---
+
+## 10. Pinterest API Setup
+
+### Step 1: Create a Pinterest Developer App
+
+1.  Go to [Pinterest Developers](https://developers.pinterest.com/)
+2.  Click **My Apps** → **Create app**
+3.  Fill in your app details
+4.  Under **Redirect URIs**, add `https://localhost:3000/callback`
+
+### Step 2: Get Access Token
+
+1.  In your Pinterest app, go to **Generate token**
+2.  Select scopes: `boards:read`, `pins:write`
+3.  Copy the access token
+
+### Step 3: Get Your Board ID
+
+1.  Go to your Pinterest board URL (e.g., `https://pinterest.com/yourusername/your-board/`)
+2.  Use the API to get the board ID:
+
+```bash
+curl -X GET "https://api.pinterest.com/v5/boards"   -H "Authorization: Bearer YOUR_TOKEN"
+```
+
+3.  Copy the board `id` from the response
+
+### Step 4: Update `.env`
+
+```ini
+PINTEREST_ACCESS_TOKEN=your_token_herePINTEREST_BOARD_ID=your_board_id_here
+```
+
+---
+
+## 11. Domain & Hosting Setup
+
+### Recommended Domain Name
+
+**`tech-life-insights.com`**
+
+Why this name works:
+
+-   ✅ Professional and brandable
+-   ✅ Matches your site title in `settings.yaml`
+-   ✅ Covers all your niches (tech, life, insights)
+-   ✅ SEO-friendly (dashes are fine — used by major brands like "tech-insider.com")
+-   ✅ Easy to remember and spell
+-   ✅ Available as `.com` (verified!)
+
+**Alternative options** if `tech-life-insights.com` becomes unavailable:
+
+-   `tech-life-insights.io`
+-   `smart-tech-insights.com`
+-   `tech-life-guides.com`
+-   `insightful-tech.com`
+
+### Step 1: Buy the Domain from Cloudflare
+
+#### 1a. Create a Cloudflare Account
+
+1.  Go to [cloudflare.com](https://www.cloudflare.com)
+2.  Click **Sign up** (top right)
+3.  Enter your email and create a password
+4.  Verify your email
+5.  You're now in the Cloudflare dashboard
+
+#### 1b. Purchase Your Domain
+
+1.  In the Cloudflare dashboard, click **Registrar** in the left sidebar (or search for it)
+2.  Click **Register domain** or **Transfer domain** (if you have one elsewhere)
+3.  In the search box, type `tech-life-insights.com`
+4.  Click **Search**
+5.  If available, you'll see a price (typically $8.95/year for `.com`)
+6.  Click **Add to cart**
+7.  Review your cart → **Proceed to checkout**
+8.  Enter your payment info and complete purchase
+9.  You now own the domain! ✅
+
+> **Cloudflare Registrar is $1.80 cheaper than Namecheap on renewals because they don't mark up.** You'll see the real ICANN registration price.
+
+#### 1c. Verify Domain Settings
+
+1.  Back in the Cloudflare dashboard, go to **Registrar** → **Domains**
+2.  Click on `tech-life-insights.com`
+3.  Verify:
+    -   **Domain Status**: Active ✅
+    -   **Nameservers**: Should show Cloudflare nameservers (ns1.cloudflare.com, ns2.cloudflare.com, etc.)
+    -   **Auto-renewal**: Toggle ON (recommended) so you don't lose the domain
+
+> The nameservers are **automatically set to Cloudflare** — you don't need to change anything at a different registrar because **you bought directly from Cloudflare**.
+
+---
+
+### Step 2: Set Up Free Hosting with Cloudflare Pages
+
+Since the bot generates static HTML files, you can host for **free** on Cloudflare Pages.
+
+#### 2a. Prepare Your GitHub Repository
+
+First, make sure your bot code is on GitHub:
+
+```bash
+cd ~/Documents/Github/Projects/content-generator-bot
+
+# Initialize git repository (if not already done)
+git init
+
+# Add remote origin with your GitHub username
+git remote set-url origin https://github.com/YOUR_USERNAME/content-generator-bot.git
+# (replace YOUR_USERNAME with your actual GitHub username)
+
+# Stage and commit all files
+git add .
+git commit -m "Initial bot setup"
+
+# Push to GitHub
+git push -u origin main
+```
+
+#### 2b. Create Cloudflare Pages Project
+
+1.  In the Cloudflare dashboard, go to **Workers & Pages** (left sidebar)
+2.  Click the **Pages** tab
+3.  Click **Create application** → **Connect to Git**
+4.  **Authorize GitHub** (click the button, log in to GitHub)
+5.  **Select your repository**: `content-generator-bot`
+6.  Click **Begin setup**
+
+#### 2c. Configure Build Settings
+
+1.  **Project name**: `content-generator-bot` (or leave as suggested)
+2.  **Production branch**: `main`
+3.  **Framework preset**: `None` (since it's a static site)
+4.  **Build command**: *(leave empty — your bot generates static HTML)*
+5.  **Build output directory**: `site/output`
+6.  **Environment variables**: *(leave empty for now)*
+7.  Click **Save and deploy**
+
+> Cloudflare will now build and deploy your site. Check the **Deployments** tab to see the build log.
+
+#### 2d. Connect Your Domain
+
+1.  After deployment completes, go to **Workers & Pages** → your project → **Settings**
+2.  Scroll to **Domains** section
+3.  Click **Add custom domain**
+4.  Type `tech-life-insights.com`
+5.  Click **Add domain**
+6.  Cloudflare will verify ownership automatically (nameservers already point to Cloudflare)
+7.  Once verified, your site is live at `https://tech-life-insights.com` ✅
+
+> You can also add `www.tech-life-insights.com` as an alias in the same section.
+
+---
+
+### Step 3: Enable SSL/TLS
+
+1.  In Cloudflare dashboard, go to **SSL/TLS** (left sidebar)
+2.  Click the **Overview** tab
+3.  Under **SSL/TLS encryption mode**, select **Full (strict)**
+4.  This ensures all traffic is encrypted
+
+---
+
+### Step 4: Set Up Auto-Deployment
+
+Every time the bot publishes new content to `site/output/`, you want it automatically deployed. Here's how:
+
+#### Option A: GitHub Actions (Recommended — Fully Automated)
+
+Create `.github/workflows/deploy.yml`:
+
+```yaml
+name: Deploy to Cloudflare Pageson:  push:    branches:      - main    paths:      - 'site/output/**'  workflow_dispatch:jobs:  deploy:    runs-on: ubuntu-latest    steps:      - uses: actions/checkout@v3      - name: Deploy to Cloudflare Pages        uses: cloudflare/pages-action@v1        with:          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}          projectName: content-generator-bot          directory: site/output          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+```
+
+**To set up GitHub secrets:**
+
+1.  Go to your GitHub repo → **Settings** → **Secrets and variables** → **Actions**
+2.  Click **New repository secret**
+3.  Add `CLOUDFLARE_API_TOKEN`:
+    -   Go to Cloudflare → **My Profile** (bottom left) → **API Tokens**
+    -   Click **Create Token** → Use template **Edit Cloudflare Workers**
+    -   Grant permissions: Workers Deployments, Pages (all zones)
+    -   Copy the token → Paste into GitHub secret
+4.  Add `CLOUDFLARE_ACCOUNT_ID`:
+    -   In Cloudflare dashboard, bottom left: **Account ID** (looks like hex string)
+    -   Copy → Paste into GitHub secret
+
+Once set up, **every push updates your live site automatically**. ✅
+
+#### Option B: Manual Deploy (Simple but requires manual pushes)
+
+```bash
+# After the bot publishes content:
+cd ~/Documents/Github/Projects/content-generator-bot
+
+# Stage only the new content files
+git add site/output/
+
+# Commit with a timestamp
+git commit -m "Bot published new content: $(date '+%Y-%m-%d %H:%M')"
+
+# Push to GitHub (Cloudflare automatically deploys from main branch)
+git push origin main
+```
+
+---
+
+### Step 5: Configure DNS Records (Optional but Recommended)
+
+Most DNS is auto-configured, but you can customize:
+
+1.  In Cloudflare dashboard → **DNS**
+2.  You'll see auto-generated records for your domain
+3.  Leave them as-is for now (Cloudflare handles everything)
+
+> If you want email forwarding for `admin@tech-life-insights.com`, you can add custom MX records here later.
+
+---
+
+### Step 6: Verify Your Site is Live
+
+1.  Open your browser
+2.  Go to `https://tech-life-insights.com`
+3.  You should see your site (initially showing `site/templates/index.html`)
+
+✅ **Your site is now live on Cloudflare Pages with a custom domain!**
+
+---
+
+## 12. Google AdSense Application
+
+### When to Apply
+
+**Apply for AdSense AFTER you have:**
+
+Requirement
+
+Target
+
+Published articles
+
+**15–20 minimum**
+
+Unique content
+
+All AI-generated + affiliate disclosures
+
+Active site age
+
+**2–4 weeks** after first content
+
+Custom domain
+
+Must be on your own domain (not github.io)
+
+Essential pages
+
+Privacy Policy, About, Contact, Disclaimer
+
+SSL certificate
+
+HTTPS enabled (free via Cloudflare)
+
+### Step 1: Create Essential Pages
+
+Before applying, create these pages on your site:
+
+1.  **Privacy Policy** — Use [privacypolicygenerator.info](https://www.privacypolicygenerator.info/)
+2.  **About** — Who you are, what the site is about
+3.  **Contact** — Simple contact form or email address
+4.  **Disclaimer/Disclosure** — Already built into your post template (FTC disclosure)
+
+### Step 2: Apply for AdSense
+
+1.  Go to [Google AdSense](https://www.google.com/adsense/)
+2.  Click **Get Started**
+3.  Enter your site URL: `https://tech-life-insights.com`
+4.  Fill in your personal/business information
+5.  Google will give you a **verification code** (HTML snippet)
+6.  Add it to your `site/templates/index.html` `<head>` section
+7.  Wait 1–14 days for review
+
+### Step 3: Replace Ad Placeholders
+
+Once approved, replace the `<!-- Google AdSense -->` comment blocks in your templates with actual ad unit code:
+
+In `site/templates/post.html`, replace:
+
+```html
+<div class="ad-slot">  <span>Advertisement</span></div>
+```
+
+With your actual AdSense code:
+
+```html
+<div class="ad-slot">  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-YOUR_ID" crossorigin="anonymous"></script>  <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-YOUR_ID" data-ad-slot="YOUR_SLOT_ID" data-ad-format="auto"></ins>  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script></div>
+```
+
+### Common Rejection Reasons & Fixes
+
+Reason
+
+Fix
+
+"Insufficient content"
+
+Publish more articles (aim for 20+)
+
+"Valuable inventory"
+
+Make content longer, more detailed
+
+"Navigational issues"
+
+Add proper nav links, sitemap
+
+"Under construction"
+
+Remove placeholder text, fill all pages
+
+---
+
+## 13. Going Live Checklist
+
+```
+□ Python 3.10+ installed□ Virtual environment created and activated□ pip install -r requirements.txt successful□ Ollama installed and mistral model downloaded□ .env file created with your secrets□ config/niches.yaml — affiliate IDs replaced□ config/settings.yaml — timezone set correctly□ Dashboard runs at localhost:5000□ Bot can generate a test article (python scripts/test_run.py)□ Domain purchased (tech-life-insights.com)□ Hosting set up (Cloudflare Pages / GitHub Pages)□ DNS configured, HTTPS working□ YouTube API credentials (if using Shorts)□ Pinterest API credentials (if using pins)□ Privacy Policy / About / Contact pages created□ 15+ articles published□ AdSense applied (after 2-4 weeks of content)□ Ad unit codes inserted into templates
+```
+
+---
+
+## 14. Troubleshooting
+
+### "Ollama connection refused"
+
+```bash
+# Start Ollama if not runningollama serve# Check it's runningcurl http://localhost:11434/api/tags
+```
+
+### "ModuleNotFoundError"
+
+```bash
+# Make sure venv is activatedsource venv/bin/activatepip install -r requirements.txt
+```
+
+### "ffmpeg not found" (video generation)
+
+```bash
+brew install ffmpeg   # macOSsudo apt install ffmpeg  # Ubuntu
+```
+
+### "YouTube upload fails"
+
+-   Delete `token.json` and re-authenticate
+-   Check your API quota at [Google Cloud Console](https://console.cloud.google.com/apis/dashboard)
+
+### "Dashboard won't start"
+
+```bash
+# Check if port 5000 is in uselsof -i :5000# Kill the process or use a different portDASHBOARD_PORT=5001 python scripts/start_dashboard.py
+```
+
+### "Bot not generating content"
+
+1.  Check Logs page in the dashboard
+2.  Verify Ollama is running: `curl http://localhost:11434/api/tags`
+3.  Run a manual test: `python scripts/test_run.py`
+4.  Check `data/logs/` for error files
+
+---
+
+## Quick Start (TL;DR)
+
+```bash
+# 1. Install Ollamacurl -fsSL https://ollama.com/install.sh | shollama pull mistral# 2. Set up the projectcd content-generator-botpython3 -m venv contentgenerator && source contentgenerator/bin/activatepip install -r requirements.txtcp .env.example .env  # then edit with your secrets# 3. Run itpython scripts/start_dashboard.py# Open http://localhost:5000 → Click "Start"
+```
+
+That's it. The bot handles the rest. 🤖

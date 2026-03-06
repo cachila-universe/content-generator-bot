@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% block title %}Overview{% endblock %}
+{% block page_title %}Overview{% endblock %}
+
+{% block content %}
+<!-- Bot Status Banner -->
+<div class="status-banner {% if bot_state.bot_running %}status-running{% else %}status-stopped{% endif %}" id="statusBanner">
+  <div class="status-banner-left">
+    <span class="status-dot-lg {% if bot_state.bot_running %}dot-green{% else %}dot-red{% endif %}" id="bannerDot"></span>
+    <span class="status-banner-text" id="bannerText">
+      Bot is {{ "RUNNING" if bot_state.bot_running else "STOPPED" }}
+    </span>
+    <span class="status-detail" id="bannerDetail">
+      {{ bot_state.posts_today or 0 }} posts today · Max {{ bot_state.schedule.max_posts_per_day }}/day
+    </span>
+  </div>
+  <div class="status-banner-right">
+    <span class="platform-pill {% if bot_state.platforms.blog %}pill-active{% else %}pill-inactive{% endif %}">📝 Blog</span>
+    <span class="platform-pill {% if bot_state.platforms.youtube_shorts %}pill-active{% else %}pill-inactive{% endif %}">🎬 Shorts</span>
+    <span class="platform-pill {% if bot_state.platforms.pinterest %}pill-active{% else %}pill-inactive{% endif %}">📌 Pinterest</span>
+  </div>
+</div>
+
+<!-- Metric cards -->
+<div class="metrics-grid">
+  <div class="metric-card">
+    <div class="metric-icon">📝</div>
+    <div class="metric-value" id="totalPosts">{{ stats.total_posts }}</div>
+    <div class="metric-label">Total Posts</div>
+  </div>
+  <div class="metric-card">
+    <div class="metric-icon">🎬</div>
+    <div class="metric-value" id="totalVideos">{{ stats.total_videos }}</div>
+    <div class="metric-label">Total Videos</div>
+  </div>
+  <div class="metric-card accent">
+    <div class="metric-icon">💰</div>
+    <div class="metric-value" id="estIncome">${{ "%.2f"|format(stats.estimated_income) }}</div>
+    <div class="metric-label">Est. Monthly Income</div>
+  </div>
+  <div class="metric-card">
+    <div class="metric-icon">🖱️</div>
+    <div class="metric-value" id="totalClicks">{{ stats.total_clicks }}</div>
+    <div class="metric-label">Total Clicks</div>
+  </div>
+</div>
+
+<!-- Charts row -->
+<div class="charts-row">
+  <div class="chart-card">
+    <h3 class="chart-title">Posts by Niche</h3>
+    <canvas id="postsChart" height="220"></canvas>
+  </div>
+  <div class="chart-card">
+    <h3 class="chart-title">Estimated Income</h3>
+    <canvas id="incomeChart" height="220"></canvas>
+  </div>
+</div>
+
+<!-- Manual Trigger Card -->
+<div class="card trigger-card">
+  <h3 class="card-title">⚡ Manual Content Trigger</h3>
+  <p class="card-desc">Manually trigger content generation for a specific niche. This bypasses the schedule but still respects anti-duplicate rules.</p>
+  <div class="trigger-form">
+    <select id="triggerNiche" class="form-select">
+      <option value="">Select niche...</option>
+      {% for niche_id, niche in niches.items() %}
+      <option value="{{ niche_id }}">{{ niche.name }}</option>
+      {% endfor %}
+    </select>
+    <div class="trigger-platforms">
+      <label class="checkbox-label"><input type="checkbox" id="trigBlog" checked> 📝 Blog</label>
+      <label class="checkbox-label"><input type="checkbox" id="trigShorts"> 🎬 YouTube Short</label>
+      <label class="checkbox-label"><input type="checkbox" id="trigPinterest"> 📌 Pinterest</label>
+    </div>
+    <div class="trigger-safety">
+      <button class="btn btn-trigger-arm" id="btnTriggerArm" onclick="armTrigger()">🔓 Arm Trigger</button>
+      <button class="btn btn-trigger-fire" id="btnTriggerFire" onclick="fireTrigger()" disabled>🚀 Generate Content</button>
+    </div>
+    <div class="trigger-status" id="triggerStatus"></div>
+  </div>
+</div>
+
+<!-- Recent Activity -->
+<div class="card">
+  <h3 class="card-title">Recent Activity</h3>
+  <div class="table-wrapper">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Level</th>
+          <th>Time</th>
+          <th>Niche</th>
+          <th>Action</th>
+          <th>Message</th>
+        </tr>
+      </thead>
+      <tbody id="recentLogs">
+        {% for log in stats.recent_logs %}
+        <tr>
+          <td><span class="badge badge-{{ log.level|lower }}">{{ log.level }}</span></td>
+          <td class="text-muted">{{ log.timestamp }}</td>
+          <td>{{ log.niche_id or '—' }}</td>
+          <td><code>{{ log.action }}</code></td>
+          <td>{{ log.message }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="5" class="text-muted text-center">No activity yet. Start the bot to begin.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

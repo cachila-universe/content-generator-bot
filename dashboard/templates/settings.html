@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+{% block title %}Settings{% endblock %}
+{% block page_title %}Settings{% endblock %}
+
+{% block content %}
+<div class="settings-grid">
+  <!-- Platform Toggles -->
+  <div class="card">
+    <h3 class="card-title">🔌 Platform Controls</h3>
+    <p class="card-desc">Enable or disable content distribution platforms.</p>
+    <div class="settings-list">
+      <div class="setting-row">
+        <div class="setting-info">
+          <span class="setting-name">📝 Blog Posts</span>
+          <span class="setting-desc">Generate and publish SEO articles</span>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox"
+                 {% if bot_state.platforms.blog %}checked{% endif %}
+                 onchange="togglePlatform('blog', this.checked)">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+      <div class="setting-row">
+        <div class="setting-info">
+          <span class="setting-name">🎬 YouTube Shorts</span>
+          <span class="setting-desc">Create vertical short-form videos (9:16, ≤60s)</span>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox"
+                 {% if bot_state.platforms.youtube_shorts %}checked{% endif %}
+                 onchange="togglePlatform('youtube_shorts', this.checked)">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+      <div class="setting-row">
+        <div class="setting-info">
+          <span class="setting-name">📌 Pinterest Pins</span>
+          <span class="setting-desc">Auto-create pins linking back to articles</span>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox"
+                 {% if bot_state.platforms.pinterest %}checked{% endif %}
+                 onchange="togglePlatform('pinterest', this.checked)">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <!-- Schedule Settings -->
+  <div class="card">
+    <h3 class="card-title">⏰ Schedule & Rate Limits</h3>
+    <p class="card-desc">Anti-spam controls to keep content creation natural.</p>
+    <div class="settings-list">
+      <div class="setting-row">
+        <div class="setting-info">
+          <span class="setting-name">Max posts per day</span>
+          <span class="setting-desc">Hard cap across all niches (anti-spam)</span>
+        </div>
+        <input type="number" class="form-input-sm" id="maxPostsPerDay"
+               value="{{ bot_state.schedule.max_posts_per_day }}" min="1" max="10"
+               onchange="updateSchedule()">
+      </div>
+      <div class="setting-row">
+        <div class="setting-info">
+          <span class="setting-name">Cooldown between posts (hours)</span>
+          <span class="setting-desc">Minimum wait time before same niche can post again</span>
+        </div>
+        <input type="number" class="form-input-sm" id="cooldownHours"
+               value="{{ bot_state.schedule.cooldown_hours }}" min="1" max="72"
+               onchange="updateSchedule()">
+      </div>
+      <div class="setting-row">
+        <div class="setting-info">
+          <span class="setting-name">Schedule jitter (±minutes)</span>
+          <span class="setting-desc">Random delay added to scheduled times (anti-bot)</span>
+        </div>
+        <input type="number" class="form-input-sm" id="randomizeMinutes"
+               value="{{ bot_state.schedule.randomize_minutes }}" min="0" max="60"
+               onchange="updateSchedule()">
+      </div>
+    </div>
+    <button class="btn btn-save" onclick="updateSchedule()">💾 Save Schedule Settings</button>
+  </div>
+
+  <!-- Anti-Spam Info -->
+  <div class="card">
+    <h3 class="card-title">🛡️ Anti-Spam & Anti-Duplicate</h3>
+    <p class="card-desc">Built-in protections that run automatically.</p>
+    <div class="info-list">
+      <div class="info-row">
+        <span class="info-icon">✅</span>
+        <span><strong>Content fingerprinting</strong> — SHA256 hashes prevent identical content</span>
+      </div>
+      <div class="info-row">
+        <span class="info-icon">✅</span>
+        <span><strong>Fuzzy topic matching</strong> — Jaccard similarity blocks near-duplicate topics</span>
+      </div>
+      <div class="info-row">
+        <span class="info-icon">✅</span>
+        <span><strong>Human-like delays</strong> — 30-180 second random delays before each action</span>
+      </div>
+      <div class="info-row">
+        <span class="info-icon">✅</span>
+        <span><strong>Rate limiting</strong> — Cooldown periods between posts per niche</span>
+      </div>
+      <div class="info-row">
+        <span class="info-icon">✅</span>
+        <span><strong>Daily caps</strong> — Maximum posts per day across all niches</span>
+      </div>
+      <div class="info-row">
+        <span class="info-icon">✅</span>
+        <span><strong>Staggered API calls</strong> — Random delays between external API requests</span>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

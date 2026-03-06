@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ site_title }} — {{ tagline }}</title>
+  <meta name="description" content="{{ tagline }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0a0b;
+      --surface: #141416;
+      --surface-2: #1c1c1f;
+      --text: #f0f0f2;
+      --text-muted: #8a8a95;
+      --accent: #6366f1;
+      --accent-glow: rgba(99, 102, 241, 0.3);
+      --green: #34d399;
+      --green-glow: rgba(52, 211, 153, 0.15);
+      --border: #27272a;
+      --radius: 12px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'Inter', -apple-system, sans-serif; font-size: 15px; line-height: 1.7; -webkit-font-smoothing: antialiased; }
+    a { color: var(--accent); text-decoration: none; transition: color 0.15s; }
+    a:hover { color: #818cf8; }
+
+    /* ── Header ──────────────────────────────────── */
+    .header {
+      position: sticky; top: 0; z-index: 50;
+      backdrop-filter: blur(16px);
+      background: rgba(10, 10, 11, 0.85);
+      border-bottom: 1px solid var(--border);
+    }
+    .header-inner {
+      max-width: 1200px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 24px;
+    }
+    .logo {
+      display: flex; align-items: center; gap: 10px;
+      text-decoration: none; color: var(--text);
+      font-weight: 800; font-size: 20px;
+    }
+    .logo-mark {
+      width: 32px; height: 32px; border-radius: 8px;
+      background: linear-gradient(135deg, var(--accent), #a78bfa);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; color: #fff;
+    }
+    .header-right { display: flex; align-items: center; gap: 8px; }
+    .header-link {
+      padding: 8px 16px; border-radius: 8px;
+      font-size: 14px; font-weight: 500;
+      color: var(--text-muted);
+      transition: all 0.15s;
+    }
+    .header-link:hover { color: var(--text); background: var(--surface); }
+
+    /* ── Hero ────────────────────────────────────── */
+    .hero {
+      text-align: center; padding: 80px 24px 60px;
+      max-width: 720px; margin: 0 auto;
+      position: relative;
+    }
+    .hero::before {
+      content: ''; position: absolute;
+      top: -40px; left: 50%; transform: translateX(-50%);
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+      pointer-events: none; opacity: 0.5;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--green-glow); border: 1px solid rgba(52, 211, 153, 0.25);
+      border-radius: 24px; padding: 6px 16px; margin-bottom: 24px;
+      font-size: 13px; font-weight: 600; color: var(--green);
+    }
+    .hero-title {
+      font-size: 3.2em; font-weight: 800; letter-spacing: -0.03em;
+      line-height: 1.15; margin-bottom: 18px; position: relative;
+      background: linear-gradient(180deg, #ffffff 0%, #a1a1aa 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-sub {
+      font-size: 1.15em; color: var(--text-muted); max-width: 540px;
+      margin: 0 auto; line-height: 1.7;
+    }
+
+    /* ── Ad slot ─────────────────────────────────── */
+    .ad-slot {
+      max-width: 900px; margin: 0 auto 40px;
+      background: var(--surface); border: 1px dashed var(--border);
+      border-radius: var(--radius); padding: 20px; text-align: center;
+      color: var(--text-muted); font-size: 12px; min-height: 90px;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* ── Filters ─────────────────────────────────── */
+    .filters {
+      max-width: 1200px; margin: 0 auto;
+      padding: 0 24px 32px;
+      display: flex; flex-wrap: wrap; justify-content: center; gap: 8px;
+    }
+    .filter-chip {
+      padding: 8px 18px; border-radius: 24px;
+      border: 1px solid var(--border);
+      background: transparent; color: var(--text-muted);
+      font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .filter-chip:hover { border-color: var(--accent); color: var(--text); }
+    .filter-chip.active {
+      background: var(--accent); border-color: var(--accent);
+      color: #fff; box-shadow: 0 0 20px var(--accent-glow);
+    }
+
+    /* ── Posts ────────────────────────────────────── */
+    .posts-section { max-width: 1200px; margin: 0 auto; padding: 0 24px 80px; }
+    .posts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 20px;
+    }
+    .card-link { text-decoration: none; color: inherit; display: block; }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px 26px;
+      transition: all 0.25s ease;
+      position: relative; overflow: hidden;
+    }
+    .card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0;
+      height: 3px; background: linear-gradient(90deg, var(--accent), var(--green));
+      opacity: 0; transition: opacity 0.25s;
+    }
+    .card:hover {
+      border-color: var(--accent);
+      transform: translateY(-4px);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4), 0 0 30px var(--accent-glow);
+    }
+    .card:hover::before { opacity: 1; }
+
+    .card-niche {
+      font-size: 11px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.1em;
+      color: var(--accent); margin-bottom: 10px;
+    }
+    .card-title {
+      font-size: 17px; font-weight: 700;
+      color: var(--text); line-height: 1.4;
+      margin-bottom: 14px;
+      display: -webkit-box; -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .card-footer {
+      display: flex; justify-content: space-between; align-items: center;
+      padding-top: 14px; border-top: 1px solid var(--border);
+      font-size: 12px; color: var(--text-muted);
+    }
+    .card-income { color: var(--green); font-weight: 700; }
+
+    .empty-state {
+      text-align: center; padding: 100px 24px; color: var(--text-muted);
+    }
+    .empty-state h2 { font-size: 24px; margin-bottom: 12px; color: var(--text); }
+
+    /* ── Footer ──────────────────────────────────── */
+    .footer {
+      border-top: 1px solid var(--border);
+      padding: 40px 24px; text-align: center;
+    }
+    .footer-inner {
+      max-width: 640px; margin: 0 auto;
+      font-size: 13px; color: var(--text-muted); line-height: 1.7;
+    }
+    .footer-links {
+      display: flex; justify-content: center; gap: 24px;
+      margin-bottom: 16px;
+    }
+    .footer-links a { color: var(--text-muted); font-weight: 500; }
+    .footer-links a:hover { color: var(--text); }
+    .footer-disclosure {
+      background: var(--surface); border-radius: 8px;
+      padding: 12px 20px; margin-top: 16px;
+      font-size: 12px; display: inline-block;
+    }
+
+    @media (max-width: 640px) {
+      .hero-title { font-size: 2em; }
+      .posts-grid { grid-template-columns: 1fr; }
+      .hero { padding: 50px 20px 40px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-inner">
+      <a href="/" class="logo">
+        <span class="logo-mark">⚡</span>
+        <span>{{ site_title }}</span>
+      </a>
+      <div class="header-right">
+        <a href="/" class="header-link">Home</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-badge">✨ AI-Curated Content, Updated Daily</div>
+    <h1 class="hero-title">{{ site_title }}</h1>
+    <p class="hero-sub">{{ tagline }}</p>
+  </section>
+
+  <!-- Ad slot (top) -->
+  <div class="ad-slot">
+    <!-- Google AdSense: Replace with your ad unit code -->
+    <span>Advertisement</span>
+  </div>
+
+  <!-- Niche filters -->
+  {% if posts %}
+  {% set niches_seen = [] %}
+  <div class="filters">
+    <button class="filter-chip active" onclick="filterByNiche('ALL', this)">All Topics</button>
+    {% for post in posts %}
+      {% if post.niche_id not in niches_seen %}
+        {% set _ = niches_seen.append(post.niche_id) %}
+        <button class="filter-chip" onclick="filterByNiche('{{ post.niche_id }}', this)">{{ post.niche_name }}</button>
+      {% endif %}
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- Posts -->
+  <section class="posts-section">
+    {% if posts %}
+    <div class="posts-grid" id="postsGrid">
+      {% for post in posts %}
+      <div class="post-wrapper" data-niche="{{ post.niche_id }}">
+        <a href="{{ post.url or '#' }}" class="card-link">
+          <article class="card">
+            <div class="card-niche">{{ post.niche_name }}</div>
+            <h2 class="card-title">{{ post.title }}</h2>
+            <div class="card-footer">
+              <span>{{ post.published_at[:10] if post.published_at else '' }}</span>
+              <span class="card-income">~${{ "%.2f"|format(post.estimated_income) }}/mo</span>
+            </div>
+          </article>
+        </a>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <h2>Content is on its way</h2>
+      <p>Fresh AI-curated articles will appear here soon.</p>
+    </div>
+    {% endif %}
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-links">
+        <a href="/">Home</a>
+      </div>
+      <p>&copy; 2025 {{ site_title }}. All rights reserved.</p>
+      <div class="footer-disclosure">
+        <strong>Affiliate Disclosure:</strong> Some links may earn us a commission at no extra cost to you.
+      </div>
+    </div>
+  </footer>
+
+  <script>
+  function filterByNiche(niche, btn) {
+    document.querySelectorAll('.filter-chip').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.post-wrapper').forEach(card => {
+      card.style.display = (niche === 'ALL' || card.dataset.niche === niche) ? '' : 'none';
+    });
+  }
+  </script>
+
+</body>
+</html>

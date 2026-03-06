@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Logs{% endblock %}
+{% block page_title %}Bot Logs{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">Activity Log</h3>
+    <div class="filter-btns" id="logFilters">
+      <button class="filter-btn active" onclick="filterLogs('ALL', this)">All</button>
+      <button class="filter-btn info" onclick="filterLogs('INFO', this)">INFO</button>
+      <button class="filter-btn success" onclick="filterLogs('SUCCESS', this)">SUCCESS</button>
+      <button class="filter-btn error" onclick="filterLogs('ERROR', this)">ERROR</button>
+      <button class="filter-btn warning" onclick="filterLogs('WARNING', this)">WARNING</button>
+    </div>
+  </div>
+  <div class="log-container" id="logContainer">
+    {% for log in logs %}
+    <div class="log-entry log-{{ log.level|lower }}" data-level="{{ log.level }}">
+      <span class="log-level badge badge-{{ log.level|lower }}">{{ log.level }}</span>
+      <span class="log-timestamp">{{ log.timestamp }}</span>
+      {% if log.niche_id %}<span class="log-niche">[{{ log.niche_id }}]</span>{% endif %}
+      <span class="log-action">{{ log.action }}</span>
+      <span class="log-sep">—</span>
+      <span class="log-message">{{ log.message }}</span>
+      {% if log.error %}
+      <div class="log-error">⚠ {{ log.error }}</div>
+      {% endif %}
+    </div>
+    {% else %}
+    <div class="log-empty text-muted">No logs yet. Start the bot to see activity here.</div>
+    {% endfor %}
+  </div>
+  <div class="log-footer">
+    <span class="text-muted" id="logCount">{{ logs|length }} entries</span>
+    <span class="text-muted" id="pollStatus">🔄 Auto-refreshing every 5s</span>
+  </div>
+</div>
+
+<script>
+var currentFilter = 'ALL';
+
+function filterLogs(level, btn) {
+  currentFilter = level;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.log-entry').forEach(entry => {
+    if (level === 'ALL' || entry.dataset.level === level) {
+      entry.style.display = '';
+    } else {
+      entry.style.display = 'none';
+    }
+  });
+}
+</script>
+{% endblock %}

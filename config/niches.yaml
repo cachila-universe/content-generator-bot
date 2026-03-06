@@ -1,0 +1,132 @@
+niches:
+  ai_tools:
+    name: "AI Tools & SaaS"
+    enabled: true
+    seed_keywords:
+      - "best AI tools 2026"
+      - "AI productivity software"
+      - "ChatGPT alternatives"
+      - "AI writing tools"
+      - "AI automation tools"
+    affiliate_programs:
+      - name: "Jasper AI"
+        url: "https://jasper.ai?aff=YOUR_ID"
+        keywords: ["Jasper", "AI writer", "content generator"]
+      - name: "Notion AI"
+        url: "https://notion.so?aff=YOUR_ID"
+        keywords: ["Notion", "Notion AI"]
+      - name: "Surfer SEO"
+        url: "https://surferseo.com?aff=YOUR_ID"
+        keywords: ["Surfer SEO", "SEO tool"]
+    post_schedule_hour: 9
+    post_schedule_minute: 0
+    video_schedule_hour: 11
+    video_schedule_minute: 0
+    pinterest_schedule_hour: 12
+    pinterest_schedule_minute: 0
+
+  personal_finance:
+    name: "Personal Finance & Investing"
+    enabled: true
+    seed_keywords:
+      - "how to invest money 2026"
+      - "best budgeting apps"
+      - "passive income ideas"
+      - "stock market for beginners"
+      - "best high yield savings account"
+    affiliate_programs:
+      - name: "Empower"
+        url: "https://empowerfinance.com?aff=YOUR_ID"
+        keywords: ["Personal Capital", "Empower", "net worth tracker"]
+      - name: "Acorns"
+        url: "https://acorns.com?aff=YOUR_ID"
+        keywords: ["Acorns", "micro investing"]
+      - name: "Rocket Money"
+        url: "https://rocketmoney.com?aff=YOUR_ID"
+        keywords: ["Rocket Money", "budget app", "bill negotiation"]
+    post_schedule_hour: 9
+    post_schedule_minute: 15
+    video_schedule_hour: 11
+    video_schedule_minute: 15
+    pinterest_schedule_hour: 12
+    pinterest_schedule_minute: 15
+
+  health_biohacking:
+    name: "Health & Biohacking"
+    enabled: true
+    seed_keywords:
+      - "biohacking tips 2026"
+      - "best supplements for energy"
+      - "intermittent fasting guide"
+      - "sleep optimization hacks"
+      - "cold plunge benefits"
+    affiliate_programs:
+      - name: "Amazon Health"
+        url: "https://amazon.com?tag=YOUR_TAG"
+        keywords: ["supplement", "vitamins", "protein powder", "collagen", "creatine"]
+      - name: "Thrive Market"
+        url: "https://thrivemarket.com?aff=YOUR_ID"
+        keywords: ["Thrive Market", "organic", "natural supplements"]
+    post_schedule_hour: 9
+    post_schedule_minute: 30
+    video_schedule_hour: 11
+    video_schedule_minute: 30
+    pinterest_schedule_hour: 12
+    pinterest_schedule_minute: 30
+
+  home_tech:
+    name: "Home Tech & Smart Devices"
+    enabled: true
+    seed_keywords:
+      - "best smart home devices 2026"
+      - "home automation guide"
+      - "best robot vacuum"
+      - "smart security cameras review"
+      - "best smart thermostat"
+    affiliate_programs:
+      - name: "Amazon Smart Home"
+        url: "https://amazon.com?tag=YOUR_TAG"
+        keywords: ["smart home", "Alexa", "Echo", "Ring", "robot vacuum", "Roomba", "Nest", "smart thermostat"]
+      - name: "Best Buy"
+        url: "https://bestbuy.com?aff=YOUR_ID"
+        keywords: ["Best Buy", "smart TV", "home theater"]
+    post_schedule_hour: 9
+    post_schedule_minute: 45
+    video_schedule_hour: 11
+    video_schedule_minute: 45
+    pinterest_schedule_hour: 12
+    pinterest_schedule_minute: 45
+
+  travel:
+    name: "Travel"
+    enabled: true
+    seed_keywords:
+      - "best travel destinations 2026"
+      - "budget travel tips"
+      - "solo travel guide"
+      - "best travel credit cards"
+      - "travel hacks for cheap flights"
+      - "digital nomad destinations"
+      - "best travel insurance"
+    affiliate_programs:
+      - name: "Booking.com"
+        url: "https://booking.com?aid=YOUR_AFF_ID"
+        keywords: ["hotel", "hotels", "accommodation", "booking", "resort"]
+      - name: "TripAdvisor"
+        url: "https://tripadvisor.com?aff=YOUR_ID"
+        keywords: ["TripAdvisor", "reviews", "attractions", "tours"]
+      - name: "SafetyWing Travel Insurance"
+        url: "https://safetywing.com?referenceID=YOUR_ID"
+        keywords: ["travel insurance", "nomad insurance", "SafetyWing"]
+      - name: "Amazon Travel Gear"
+        url: "https://amazon.com?tag=YOUR_TAG"
+        keywords: ["luggage", "travel backpack", "packing cubes", "travel pillow", "passport holder"]
+      - name: "CJ Affiliate Travel"
+        url: "https://www.cj.com/YOUR_CJ_LINK"
+        keywords: ["flight deals", "cheap flights", "airline"]
+    post_schedule_hour: 9
+    post_schedule_minute: 50
+    video_schedule_hour: 11
+    video_schedule_minute: 50
+    pinterest_schedule_hour: 12
+    pinterest_schedule_minute: 50

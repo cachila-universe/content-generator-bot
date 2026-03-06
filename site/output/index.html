@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TechLife Insights — Smart Guides</title>
+  <meta name="description" content="Smart Guides">
+  <style>
+    :root {
+      --bg: #0d1117;
+      --card-bg: #161b22;
+      --text: #e6edf3;
+      --text-muted: #8b949e;
+      --accent-green: #00ff88;
+      --accent-blue: #58a6ff;
+      --border: #30363d;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; line-height: 1.6; }
+    a { color: var(--accent-blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* Header */
+    .site-header { border-bottom: 1px solid var(--border); padding: 20px 24px; display: flex; align-items: center; justify-content: space-between; }
+    .site-logo { color: var(--accent-green); font-size: 22px; font-weight: 700; text-decoration: none; }
+    .site-tagline { color: var(--text-muted); font-size: 14px; }
+
+    /* Hero */
+    .hero { text-align: center; padding: 60px 24px 48px; max-width: 700px; margin: 0 auto; }
+    .hero-title { font-size: 2.6em; font-weight: 800; background: linear-gradient(135deg, #e6edf3 0%, var(--accent-green) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 14px; }
+    .hero-sub { font-size: 1.1em; color: var(--text-muted); }
+
+    /* AdSense */
+    .adsense-slot { background: var(--card-bg); border: 1px dashed var(--border); border-radius: 6px; padding: 24px; text-align: center; color: var(--text-muted); font-size: 12px; margin: 28px auto; max-width: 900px; min-height: 90px; display: flex; align-items: center; justify-content: center; }
+
+    /* Niche tabs */
+    .niche-tabs { display: flex; flex-wrap: wrap; gap: 8px; padding: 0 24px 24px; justify-content: center; }
+    .niche-tab { padding: 6px 16px; border-radius: 20px; border: 1px solid var(--border); background: transparent; color: var(--text-muted); cursor: pointer; font-size: 13px; font-weight: 500; transition: all 0.15s; }
+    .niche-tab:hover, .niche-tab.active { border-color: var(--accent-green); color: var(--accent-green); background: rgba(0,255,136,0.08); }
+
+    /* Posts grid */
+    .posts-section { max-width: 1100px; margin: 0 auto; padding: 0 24px 60px; }
+    .posts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+    .post-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 20px 22px; transition: border-color 0.2s, transform 0.2s; }
+    .post-card:hover { border-color: var(--accent-blue); transform: translateY(-3px); }
+    .post-card-niche { font-size: 11px; font-weight: 700; color: var(--accent-blue); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
+    .post-card-title { font-size: 16px; font-weight: 600; color: var(--text); margin-bottom: 10px; line-height: 1.4; }
+    .post-card-meta { display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: var(--text-muted); margin-top: 14px; }
+    .post-card-income { color: var(--accent-green); font-weight: 600; }
+    .post-card-link { display: block; text-decoration: none; }
+    .post-card-link:hover .post-card-title { color: var(--accent-blue); }
+
+    .no-posts { text-align: center; padding: 80px 24px; color: var(--text-muted); }
+    .no-posts h2 { font-size: 24px; margin-bottom: 12px; color: var(--text); }
+
+    /* Footer */
+    .site-footer { border-top: 1px solid var(--border); padding: 28px 24px; text-align: center; color: var(--text-muted); font-size: 13px; }
+
+    @media (max-width: 640px) {
+      .hero-title { font-size: 1.8em; }
+      .posts-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="site-header">
+    <a href="/" class="site-logo">🤖 TechLife Insights</a>
+    <span class="site-tagline">Smart Guides</span>
+  </header>
+
+  <!-- Hero -->
+  <div class="hero">
+    <h1 class="hero-title">TechLife Insights</h1>
+    <p class="hero-sub">Smart Guides</p>
+  </div>
+
+  <!-- AdSense slot (top) -->
+  <div class="adsense-slot">
+    <!-- Google AdSense: Replace with your ad unit -->
+    <span>Advertisement</span>
+  </div>
+
+  <!-- Niche tabs -->
+  
+  
+  <div class="niche-tabs">
+    <button class="niche-tab active" onclick="filterByNiche('ALL', this)">All</button>
+    
+      
+        
+        <button class="niche-tab" onclick="filterByNiche('ai_tools', this)">AI Tools &amp; SaaS</button>
+      
+    
+  </div>
+  
+
+  <!-- Posts grid -->
+  <section class="posts-section">
+    
+    <div class="posts-grid" id="postsGrid">
+      
+      <div class="post-card-wrapper" data-niche="ai_tools">
+        <a href="http://localhost:8080/ai_tools/best-ai-tools-productivity-2025.html" class="post-card-link">
+          <div class="post-card">
+            <div class="post-card-niche">AI Tools &amp; SaaS</div>
+            <div class="post-card-title">Best AI Tools for Productivity in 2025</div>
+            <div class="post-card-meta">
+              <span>2026-03-06</span>
+              <span class="post-card-income">~$1.00/mo</span>
+            </div>
+          </div>
+        </a>
+      </div>
+      
+    </div>
+    
+  </section>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <p>&copy; 2025 TechLife Insights. Powered by AI Content Generator Bot.</p>
+    <p style="margin-top:8px;font-size:12px;">
+      <strong>Disclosure:</strong> Some links on this site are affiliate links. We may earn a commission if you make a purchase.
+    </p>
+  </footer>
+
+  <script>
+  function filterByNiche(niche, btn) {
+    document.querySelectorAll('.niche-tab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.post-card-wrapper').forEach(card => {
+      card.style.display = (niche === 'ALL' || card.dataset.niche === niche) ? '' : 'none';
+    });
+  }
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Niches{% endblock %}
+{% block page_title %}Niche Management{% endblock %}
+
+{% block content %}
+<p class="page-desc">Toggle niches on/off to control which topics the bot creates content for. Changes take effect immediately.</p>
+
+<div class="niches-grid">
+  {% for niche_id, niche in niches.items() %}
+  {% set stats = niche_stats.get(niche_id, {}) %}
+  {% set niche_enabled = bot_state.niches.get(niche_id, {}).get('enabled', niche.enabled) %}
+  <div class="niche-card {% if not niche_enabled %}niche-disabled{% endif %}" id="niche-{{ niche_id }}">
+    <div class="niche-card-header">
+      <h3 class="niche-card-title">{{ niche.name }}</h3>
+      <label class="toggle-switch">
+        <input type="checkbox"
+               {% if niche_enabled %}checked{% endif %}
+               onchange="toggleNiche('{{ niche_id }}', this.checked)">
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+
+    <div class="niche-stats-row">
+      <div class="niche-stat">
+        <span class="niche-stat-value">{{ stats.get('total_posts', 0) }}</span>
+        <span class="niche-stat-label">Posts</span>
+      </div>
+      <div class="niche-stat">
+        <span class="niche-stat-value">{{ stats.get('total_videos', 0) }}</span>
+        <span class="niche-stat-label">Videos</span>
+      </div>
+      <div class="niche-stat accent">
+        <span class="niche-stat-value">${{ "%.2f"|format(stats.get('estimated_income', 0)) }}</span>
+        <span class="niche-stat-label">Income</span>
+      </div>
+    </div>
+
+    <div class="niche-section">
+      <h4 class="niche-section-title">Affiliate Programs</h4>
+      <ul class="affiliate-list">
+        {% for prog in niche.affiliate_programs %}
+        <li class="affiliate-item">
+          <span class="affiliate-name">{{ prog.name }}</span>
+          <span class="affiliate-keywords text-muted">{{ prog.keywords[:2]|join(', ') }}…</span>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <div class="niche-section">
+      <h4 class="niche-section-title">Schedule</h4>
+      <div class="schedule-info text-muted">
+        📝 Posts: {{ "%02d:%02d"|format(niche.post_schedule_hour, niche.post_schedule_minute) }} daily<br>
+        🎬 Shorts: {{ "%02d:%02d"|format(niche.video_schedule_hour, niche.video_schedule_minute) }} daily<br>
+        📌 Pinterest: {{ "%02d:%02d"|format(niche.pinterest_schedule_hour, niche.pinterest_schedule_minute) }} daily
+      </div>
+    </div>
+
+    <div class="niche-keywords">
+      {% for kw in niche.seed_keywords[:3] %}
+      <span class="keyword-tag">{{ kw }}</span>
+      {% endfor %}
+      {% if niche.seed_keywords|length > 3 %}
+      <span class="keyword-tag muted">+{{ niche.seed_keywords|length - 3 }} more</span>
+      {% endif %}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}
