@@ -458,17 +458,80 @@ git push -u origin main
 
 > Cloudflare will now build and deploy your site. Check the **Deployments** tab to see the build log.
 
-#### 2d. Connect Your Domain
+#### 2d. Connect Your Domain (Detailed Steps)
 
-1.  After deployment completes, go to **Workers & Pages** → your project → **Settings**
-2.  Scroll to **Domains** section
-3.  Click **Add custom domain**
-4.  Type `tech-life-insights.com`
-5.  Click **Add domain**
-6.  Cloudflare will verify ownership automatically (nameservers already point to Cloudflare)
-7.  Once verified, your site is live at `https://tech-life-insights.com` ✅
+**Prerequisites:**
+- ✅ Cloudflare Pages deployment completed
+- ✅ Your domain registered with Cloudflare Registrar
+- ✅ Domain nameservers pointing to Cloudflare (automatic if you bought through Cloudflare)
 
-> You can also add `www.tech-life-insights.com` as an alias in the same section.
+**Step 1: Access Cloudflare Pages Settings**
+
+1. Log in to [Cloudflare Dashboard](https://dash.cloudflare.com/)
+2. In the left sidebar, click **Workers & Pages**
+3. Click the **Pages** tab
+4. Find your `content-generator-bot` project
+5. Click on your project to open it
+6. Click the **Settings** tab (near the top)
+
+**Step 2: Add Your Primary Domain**
+
+1. Scroll down to the **Domains** section
+2. Click **Add domain**
+3. In the dialog, type your domain: `tech-life-insights.com`
+   - Do NOT include `https://` or `www.` at this stage
+   - Just the domain: `tech-life-insights.com`
+4. Click **Continue**
+
+**Step 3: Verify Domain Ownership**
+
+Cloudflare will automatically verify your domain because:
+- You registered it through Cloudflare Registrar
+- Nameservers are already pointing to Cloudflare
+- No additional DNS records needed
+
+Status should show: **Active** ✅
+
+Your site is now live at:
+- `https://tech-life-insights.com` ✅
+- `https://www.tech-life-insights.com` (auto-redirects)
+
+**Step 4: Add WWW Subdomain (Optional)**
+
+To explicitly add `www` as an alias:
+
+1. Still in **Domains** section
+2. Click **Add domain** again
+3. Type: `www.tech-life-insights.com`
+4. Click **Continue**
+5. Verify and confirm
+
+**Troubleshooting:**
+
+| Issue | Solution |
+|-------|----------|
+| Domain not verifying | Check that nameservers point to Cloudflare (usually automatic). See [Nameserver Guide](https://developers.cloudflare.com/dns/zone-setup/ns-records/) |
+| "Domain already exists" | You already added it. Check the **Domains** list or try a subdomain |
+| Getting Cloudflare error page | Wait 5-10 minutes for DNS to propagate, then refresh |
+| Site shows "Not Found" | Ensure `site/output/index.html` exists locally and was pushed to GitHub |
+
+**Verification Checklist:**
+
+```bash
+# Test your domain
+curl -I https://tech-life-insights.com
+
+# Expected output should include:
+# HTTP/2 200
+# cf-cache-status: HIT
+# server: cloudflare
+```
+
+**Advanced: Point a Subdomain (e.g., blog.tech-life-insights.com)**
+
+1. Follow the same steps but use `blog.tech-life-insights.com`
+2. Create a separate Pages project (if desired) or use the same one
+3. Configure DNS record (if needed) at Cloudflare → DNS
 
 ---
 
@@ -487,26 +550,104 @@ Every time the bot publishes new content to `site/output/`, you want it automati
 
 #### Option A: GitHub Actions (Recommended — Fully Automated)
 
-Create `.github/workflows/deploy.yml`:
+**What This Does:**
+Every time the bot creates new content and pushes it to GitHub, your live site updates automatically within minutes. ✅
+
+**Step 1: Create the GitHub Actions Workflow File**
+
+Create a new file: `.github/workflows/deploy.yml`
 
 ```yaml
-name: Deploy to Cloudflare Pageson:  push:    branches:      - main    paths:      - 'site/output/**'  workflow_dispatch:jobs:  deploy:    runs-on: ubuntu-latest    steps:      - uses: actions/checkout@v3      - name: Deploy to Cloudflare Pages        uses: cloudflare/pages-action@v1        with:          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}          projectName: content-generator-bot          directory: site/output          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+name: Deploy to Cloudflare Pages
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'site/output/**'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: content-generator-bot
+          directory: site/output
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
 ```
 
-**To set up GitHub secrets:**
+**Step 2: Get Your Cloudflare API Token**
 
-1.  Go to your GitHub repo → **Settings** → **Secrets and variables** → **Actions**
-2.  Click **New repository secret**
-3.  Add `CLOUDFLARE_API_TOKEN`:
-    -   Go to Cloudflare → **My Profile** (bottom left) → **API Tokens**
-    -   Click **Create Token** → Use template **Edit Cloudflare Workers**
-    -   Grant permissions: Workers Deployments, Pages (all zones)
-    -   Copy the token → Paste into GitHub secret
-4.  Add `CLOUDFLARE_ACCOUNT_ID`:
-    -   In Cloudflare dashboard, bottom left: **Account ID** (looks like hex string)
-    -   Copy → Paste into GitHub secret
+1. Go to [Cloudflare Dashboard](https://dash.cloudflare.com/)
+2. Click your **Profile icon** (bottom left) → **My Profile**
+3. Click **API Tokens** (left sidebar)
+4. Click **Create Token** button
+5. Find template: **Edit Cloudflare Workers** → Click **Use template**
+6. Configure permissions:
+   - ✅ Account Resources: Include (Specific) → Select your account
+   - ✅ Permissions: 
+     - `Pages:Edit` (allows updating Pages)
+     - `Pages:Build and Deploy` (allows deployments)
+   - ✅ Zone Resources: All zones (or specific domain only)
+7. Set **TTL** to 12 months or as needed
+8. Click **Create Token**
+9. **Copy the token immediately** (you won't see it again!)
 
-Once set up, **every push updates your live site automatically**. ✅
+**Step 3: Get Your Cloudflare Account ID**
+
+1. In [Cloudflare Dashboard](https://dash.cloudflare.com/), look at the **bottom left corner**
+2. You'll see your account information
+3. The **Account ID** is a 32-character hex string (example: `a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6`)
+4. Copy it
+
+**Step 4: Add Secrets to GitHub**
+
+1. Go to your GitHub repository: `https://github.com/cachila-universe/content-generator-bot`
+2. Click **Settings** (top right)
+3. In left sidebar, click **Secrets and variables** → **Actions**
+4. Click **New repository secret** (green button)
+
+**Add Secret 1: CLOUDFLARE_API_TOKEN**
+- Name: `CLOUDFLARE_API_TOKEN`
+- Value: *(paste your API token from Step 2)*
+- Click **Add secret**
+
+**Add Secret 2: CLOUDFLARE_ACCOUNT_ID**
+- Name: `CLOUDFLARE_ACCOUNT_ID`
+- Value: *(paste your Account ID from Step 3)*
+- Click **Add secret**
+
+**Step 5: Test the Workflow**
+
+1. In GitHub, go to **Actions** tab
+2. You should see "Deploy to Cloudflare Pages" workflow
+3. Click **Run workflow** → **Run workflow** (manual trigger)
+4. Wait ~2 minutes for it to complete
+5. Check status: Green ✅ = Success, Red ❌ = Error
+
+**Troubleshooting:**
+
+| Error | Fix |
+|-------|-----|
+| `Invalid API Token` | Regenerate token with correct permissions in Cloudflare |
+| `Account ID not found` | Copy the full 32-character hex string, not your email |
+| `Project not found` | Make sure project name is exactly `content-generator-bot` |
+| Workflow doesn't run | Check that changes are in `site/output/` folder |
+
+**How to Monitor Deployments:**
+
+1. After bot publishes content, GitHub Actions automatically triggers
+2. Check deployment status in GitHub: **Actions** tab
+3. Check live site status in Cloudflare: **Workers & Pages** → **Deployments** tab
+4. Site updates within 2-5 minutes of push
 
 #### Option B: Manual Deploy (Simple but requires manual pushes)
 
