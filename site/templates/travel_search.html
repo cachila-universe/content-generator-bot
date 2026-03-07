@@ -3,301 +3,377 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Travel Search — Flights, Hotels & Car Rental | {{ site_title }}</title>
-  <meta name="description" content="Search and compare flights, hotels, and car rentals from top travel sites. Find the best deals optimized by AI.">
+  <title>Travel Search — Flights, Hotels & Cars | {{ site_title }}</title>
+  <meta name="description" content="Search and compare flights, hotels, and car rentals across multiple providers. Smart autocomplete, deep links to booking sites.">
   <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --bg: #ffffff; --surface: #f9fafb; --text: #111827; --text-secondary: #6b7280;
-      --accent: #2563eb; --accent-hover: #1d4ed8; --accent-light: #eff6ff;
-      --border: #e5e7eb; --shadow: 0 4px 12px rgba(0,0,0,0.08); --radius: 12px; --max-width: 1000px;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background: var(--bg); color: var(--text); font-family: 'Inter', -apple-system, sans-serif; font-size: 16px; line-height: 1.6; }
-    a { color: var(--accent); text-decoration: none; }
-    .container { max-width: var(--max-width); margin: 0 auto; padding: 0 24px; }
+    :root{--bg:#fff;--surface:#f8f9fb;--text:#111827;--text-secondary:#6b7280;--accent:#2563eb;--accent-hover:#1d4ed8;--accent-light:#eff6ff;--green:#059669;--red:#dc2626;--border:#e5e7eb;--shadow:0 4px 12px rgba(0,0,0,.08);--radius:10px;--max-width:1100px}
+    *{box-sizing:border-box;margin:0;padding:0}body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,sans-serif;font-size:16px;line-height:1.6}a{color:var(--accent);text-decoration:none}.container{max-width:var(--max-width);margin:0 auto;padding:0 24px}
+    .footer{background:#0f172a;color:rgba(255,255,255,.7);padding:32px 0;font-size:13px;text-align:center;margin-top:48px}.footer a{color:rgba(255,255,255,.6)}.footer a:hover{color:#fff}
+    .disclaimer{background:#fffbeb;border:1px solid #fde68a;border-radius:var(--radius);padding:14px 18px;font-size:12px;color:#92400e;line-height:1.7;margin:24px 0}
+    .header{position:sticky;top:0;z-index:50;background:#1e3a8a}
+    .header .container{max-width:1200px;margin:0 auto;padding:0 24px}
+    .header-inner{display:flex;align-items:center;justify-content:space-between;padding:12px 0}
+    .logo img{height:44px;width:auto}
+    .nav-links{display:flex;gap:2px;align-items:center;flex-wrap:wrap}
+    .nav-link{padding:6px 11px;border-radius:6px;font-size:13px;font-weight:500;color:rgba(255,255,255,.75);transition:all .15s;white-space:nowrap;text-decoration:none}
+    .nav-link:hover,.nav-link.active{color:#fff;background:rgba(255,255,255,.12)}
+    .nav-item{position:relative;display:inline-block}
+    .nav-item:hover .nav-dropdown{display:block}
+    .nav-dropdown{display:none;position:absolute;top:100%;left:0;background:#fff;border:1px solid #e5e7eb;border-radius:8px;box-shadow:0 8px 30px rgba(0,0,0,.12);min-width:210px;padding:6px 0;z-index:100}
+    .nav-dropdown a{display:block;padding:8px 16px;font-size:13px;color:#111827;font-weight:500;transition:background .1s;text-decoration:none}
+    .nav-dropdown a:hover{background:#eff6ff;color:#2563eb}
+    .mobile-toggle{display:none;background:none;border:none;color:#fff;font-size:22px;cursor:pointer;padding:6px}
+    .subscribe-float{position:fixed;bottom:24px;right:24px;z-index:1000;background:#2563eb;color:#fff!important;padding:14px 22px;border-radius:50px;font-size:14px;font-weight:700;text-decoration:none!important;box-shadow:0 4px 20px rgba(37,99,235,.45);display:flex;align-items:center;gap:8px;transition:all .2s;font-family:'Inter',sans-serif}
+    .subscribe-float:hover{background:#1d4ed8;transform:translateY(-2px);box-shadow:0 6px 24px rgba(37,99,235,.55)}
 
-    .header { position: sticky; top: 0; z-index: 50; background: #1e3a8a; border-bottom: 1px solid rgba(255,255,255,0.1); }
-    .header-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; padding: 14px 24px; }
-    .logo { text-decoration: none; }
-    .nav-links { display: flex; gap: 4px; flex-wrap: wrap; align-items: center; }
-    .nav-link { padding: 6px 12px; border-radius: 6px; font-size: 14px; font-weight: 500; color: rgba(255,255,255,0.75); transition: all 0.15s; }
-    .nav-link:hover, .nav-link.active { color: #fff; background: rgba(255,255,255,0.12); }
-    .subscribe-link { padding: 6px 14px; border-radius: 6px; font-size: 13px; font-weight: 600; color: #fff; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); display: flex; align-items: center; gap: 5px; }
+    .page-hero{background:linear-gradient(135deg,#0f172a 0%,#1e3a8a 100%);color:#fff;padding:48px 0;text-align:center}
+    .page-hero h1{font-size:32px;font-weight:900;margin-bottom:8px}.page-hero p{font-size:16px;opacity:.85;max-width:560px;margin:0 auto}
+    .tabs{display:flex;justify-content:center;gap:8px;margin:28px 0 24px;flex-wrap:wrap}
+    .tab{padding:12px 28px;border-radius:10px;border:2px solid var(--border);background:var(--bg);color:var(--text-secondary);cursor:pointer;font-size:15px;font-weight:700;font-family:inherit;transition:all .2s;display:flex;align-items:center;gap:8px}
+    .tab:hover,.tab.active{border-color:var(--accent);color:var(--accent);background:var(--accent-light)}
+    .panel{display:none;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:28px;margin-bottom:24px}
+    .panel.active{display:block}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:14px}
+    .form-group{display:flex;flex-direction:column;gap:5px;position:relative}
+    .form-group label{font-size:12px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.04em}
+    .form-group input,.form-group select{padding:12px 16px;border:1px solid var(--border);border-radius:8px;font-size:15px;font-family:inherit;background:var(--bg);color:var(--text);outline:none}
+    .form-group input:focus,.form-group select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(37,99,235,.1)}
+    .ac-dropdown{position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid var(--border);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.15);max-height:250px;overflow-y:auto;z-index:200;display:none}
+    .ac-item{padding:10px 16px;cursor:pointer;font-size:14px;border-bottom:1px solid #f3f4f6;transition:background .1s}
+    .ac-item:hover{background:var(--accent-light)}
+    .ac-item strong{color:var(--accent)}
+    .ac-item small{color:var(--text-secondary);display:block;font-size:12px}
+    .trip-toggle{display:flex;gap:8px;margin-bottom:14px}
+    .trip-btn{padding:8px 16px;border:1px solid var(--border);border-radius:6px;background:transparent;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s}
+    .trip-btn.active{border-color:var(--accent);background:var(--accent-light);color:var(--accent)}
+    .search-btn{width:100%;padding:14px;border:none;border-radius:10px;background:var(--accent);color:#fff;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;transition:background .2s;margin-top:8px}
+    .search-btn:hover{background:var(--accent-hover)}
+    .results-panel{display:none;margin:24px 0}
+    .results-header{font-size:16px;font-weight:700;margin-bottom:16px;padding:16px;background:var(--accent-light);border-radius:var(--radius);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+    .provider-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px}
+    .provider-card{border:1px solid var(--border);border-radius:var(--radius);padding:20px;text-align:center;text-decoration:none;color:var(--text);display:block;transition:all .2s}
+    .provider-card:hover{border-color:var(--accent);box-shadow:var(--shadow);transform:translateY(-2px)}
+    .provider-icon{font-size:32px;margin-bottom:8px}
+    .provider-card h3{font-size:14px;font-weight:700;margin-bottom:4px}
+    .provider-card p{font-size:12px;color:var(--text-secondary)}
+    .provider-card .go-btn{display:inline-block;margin-top:8px;background:var(--accent);color:#fff;padding:6px 14px;border-radius:6px;font-size:12px;font-weight:600}
+    .open-all{background:var(--accent);color:#fff;border:none;padding:8px 18px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit}
+    .partners{padding:28px 0;border-top:1px solid var(--border);margin-top:20px}
+    .partners h2{font-size:18px;font-weight:800;margin-bottom:16px;text-align:center}
+    .partner-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:14px}
+    .partner-card{display:flex;flex-direction:column;align-items:center;padding:20px;border:1px solid var(--border);border-radius:var(--radius);text-decoration:none;color:var(--text);transition:all .2s}
+    .partner-card:hover{border-color:var(--accent);box-shadow:var(--shadow)}
+    .partner-card .p-icon{font-size:32px;margin-bottom:8px}.partner-card h3{font-size:14px;font-weight:700;margin-bottom:4px}
+    .partner-card p{font-size:12px;color:var(--text-secondary);text-align:center}
+    .tips{padding:24px 0;border-top:1px solid var(--border);margin-top:20px}.tips h2{font-size:18px;font-weight:800;margin-bottom:12px}
+    .tip{padding:10px 0;border-bottom:1px solid var(--border);font-size:14px}.tip strong{color:var(--accent)}
+    @media(max-width:768px){.form-row{grid-template-columns:1fr}.tabs{flex-direction:column;align-items:stretch}.provider-grid{grid-template-columns:1fr 1fr}}
 
-    .page-hero { padding: 48px 0 32px; text-align: center; }
-    .page-hero h1 { font-size: 36px; font-weight: 800; margin-bottom: 8px; }
-    .page-hero p { font-size: 16px; color: var(--text-secondary); max-width: 500px; margin: 0 auto; }
-
-    /* Search Tabs */
-    .search-tabs { display: flex; justify-content: center; gap: 8px; margin-bottom: 32px; }
-    .search-tab { padding: 12px 24px; border-radius: 10px; border: 2px solid var(--border); background: var(--bg); color: var(--text-secondary); cursor: pointer; font-size: 15px; font-weight: 600; font-family: inherit; transition: all 0.2s; display: flex; align-items: center; gap: 8px; }
-    .search-tab:hover, .search-tab.active { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
-
-    /* Search Form */
-    .search-panel { display: none; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 32px; margin-bottom: 32px; }
-    .search-panel.active { display: block; }
-    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
-    .form-group { display: flex; flex-direction: column; gap: 6px; }
-    .form-group label { font-size: 13px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.04em; }
-    .form-group input, .form-group select { padding: 12px 16px; border: 1px solid var(--border); border-radius: 8px; font-size: 15px; font-family: inherit; background: var(--bg); color: var(--text); }
-    .form-group input:focus, .form-group select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
-    .search-btn { width: 100%; padding: 14px; border: none; border-radius: 10px; background: var(--accent); color: #fff; font-size: 16px; font-weight: 700; font-family: inherit; cursor: pointer; transition: background 0.2s; margin-top: 8px; }
-    .search-btn:hover { background: var(--accent-hover); }
-
-    /* Partner logos */
-    .partner-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px; margin: 32px 0; }
-    .partner-card { display: flex; flex-direction: column; align-items: center; padding: 24px; border: 1px solid var(--border); border-radius: var(--radius); transition: all 0.2s; text-decoration: none; color: var(--text); }
-    .partner-card:hover { border-color: var(--accent); box-shadow: var(--shadow); transform: translateY(-2px); }
-    .partner-icon { font-size: 36px; margin-bottom: 12px; }
-    .partner-name { font-weight: 700; font-size: 15px; margin-bottom: 4px; }
-    .partner-desc { font-size: 13px; color: var(--text-secondary); text-align: center; }
-
-    .disclaimer { background: #fffbeb; border: 1px solid #fde68a; border-radius: var(--radius); padding: 16px 20px; font-size: 13px; color: #92400e; margin: 24px 0; line-height: 1.6; }
-
-    .footer { background: var(--surface); border-top: 1px solid var(--border); padding: 24px 0; margin-top: 48px; text-align: center; font-size: 13px; color: var(--text-secondary); }
-
-    @media (max-width: 640px) {
-      .form-row { grid-template-columns: 1fr; }
-      .search-tabs { flex-direction: column; }
-      .page-hero h1 { font-size: 26px; }
-      .nav-links { display: none; }
+    @media(max-width:768px){
+      .nav-links{display:none}.nav-links.open{display:flex;flex-direction:column;position:absolute;top:100%;left:0;right:0;background:#1e3a8a;padding:12px 24px;border-top:1px solid rgba(255,255,255,.1);gap:4px;z-index:200}
+      .nav-links.open .nav-item{display:block}.nav-links.open .nav-dropdown{position:static;box-shadow:none;border:none;background:rgba(255,255,255,.05);border-radius:6px;margin:4px 0}
+      .nav-links.open .nav-dropdown a{color:rgba(255,255,255,.7)}.mobile-toggle{display:block}
     }
   </style>
 </head>
 <body>
-
   <header class="header">
-    <div class="header-inner">
-      <a href="/" class="logo">
-        <img src="/assets/logo-full-dark.svg" alt="TechLife Insights" style="height:48px;width:auto;">
-      </a>
-      <nav class="nav-links">
-        <a href="/" class="nav-link">Home</a>
-        <a href="/travel/" class="nav-link active">Travel</a>
-        {% for nid, niche in niches.items() %}
-          {% if niche.enabled and nid != 'travel' %}
-          <a href="/{{ nid }}/" class="nav-link">{{ niche.name }}</a>
-          {% endif %}
-        {% endfor %}
-        <a href="https://techlife-insights.kit.com/be266c00d5" target="_blank" rel="noopener" class="subscribe-link">📬 Subscribe</a>
-      </nav>
+    <div class="container">
+      <div class="header-inner">
+        <a href="/" class="logo"><img src="/assets/logo-full-dark.svg" alt="TechLife Insights"></a>
+        <nav class="nav-links" id="navLinks">
+          <a href="/" class="nav-link" style="font-weight:700;color:#fff;">Home</a>
+          {% for nid, niche in niches.items() %}{% if niche.enabled %}
+          <div class="nav-item">
+            <a href="/{{ nid }}/" class="nav-link">{{ niche.name }}</a>
+            {% if niche.subtopics %}<div class="nav-dropdown">{% for sub_id, sub in niche.subtopics.items() %}<a href="/{{ nid }}/{{ sub_id }}/">{{ sub.name }}</a>{% endfor %}</div>{% endif %}
+          </div>
+          {% endif %}{% endfor %}
+          <div class="nav-item">
+            <a href="/tools/" class="nav-link">🛠️ Tools</a>
+            <div class="nav-dropdown">
+              <a href="/tools/deal-finder.html">🔍 Deal Finder</a>
+              <a href="/tools/ai-tool-finder.html">🤖 AI Tool Directory</a>
+              <a href="/tools/budget-calculator.html">💰 Budget Calculator</a>
+              <a href="/tools/workout-generator.html">💪 Workout Generator</a>
+              <a href="/tools/pet-food-checker.html">🐾 Pet Food Analyzer</a>
+              <a href="/tools/smart-home.html">🏠 Smart Home Hub</a>
+              <a href="/travel/search.html">✈️ Travel Search</a>
+              <a href="/personal_finance/markets.html">📊 Market Data</a>
+            </div>
+          </div>
+        </nav>
+        <button class="mobile-toggle" onclick="document.getElementById('navLinks').classList.toggle('open')" aria-label="Menu">☰</button>
+      </div>
     </div>
   </header>
+  <div class="page-hero"><h1>✈️ Travel Search Center</h1><p>Compare flights, hotels & car rentals across top providers — results shown right here</p></div>
 
   <div class="container">
-    <div class="page-hero">
-      <h1>✈️ Travel Search</h1>
-      <p>Compare flights, hotels, and car rentals from trusted travel sites. We link directly to the booking provider — no middlemen.</p>
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('flights',this)">✈️ Flights</button>
+      <button class="tab" onclick="switchTab('hotels',this)">🏨 Hotels</button>
+      <button class="tab" onclick="switchTab('cars',this)">🚗 Car Rental</button>
     </div>
 
-    <!-- Search Type Tabs -->
-    <div class="search-tabs">
-      <button class="search-tab active" onclick="switchTab('flights', this)">✈️ Flights</button>
-      <button class="search-tab" onclick="switchTab('hotels', this)">🏨 Hotels</button>
-      <button class="search-tab" onclick="switchTab('cars', this)">🚗 Car Rental</button>
+    <!-- FLIGHTS -->
+    <div class="panel active" id="panel-flights">
+      <div class="trip-toggle"><button class="trip-btn active" onclick="setTrip('round',this)">↔ Round Trip</button><button class="trip-btn" onclick="setTrip('oneway',this)">→ One Way</button></div>
+      <div class="form-row">
+        <div class="form-group"><label>From</label><input type="text" id="f-from" placeholder="City or airport — e.g. New York" autocomplete="off" oninput="showAC(this,'f-from-ac')"><div class="ac-dropdown" id="f-from-ac"></div></div>
+        <div class="form-group"><label>To</label><input type="text" id="f-to" placeholder="City or airport — e.g. London" autocomplete="off" oninput="showAC(this,'f-to-ac')"><div class="ac-dropdown" id="f-to-ac"></div></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Departure</label><input type="date" id="f-depart"></div>
+        <div class="form-group" id="f-return-group"><label>Return</label><input type="date" id="f-return"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Passengers</label><select id="f-pax"><option value="1">1 Adult</option><option value="2" selected>2 Adults</option><option value="3">3 Adults</option><option value="4">4 Adults</option></select></div>
+        <div class="form-group"><label>Class</label><select id="f-class"><option value="economy">Economy</option><option value="business">Business</option><option value="first">First</option></select></div>
+      </div>
+      <button class="search-btn" onclick="searchFlights()">🔍 Search All Flight Providers</button>
     </div>
 
-    <!-- Flights Search -->
-    <div class="search-panel active" id="panel-flights">
+    <!-- HOTELS -->
+    <div class="panel" id="panel-hotels">
       <div class="form-row">
-        <div class="form-group">
-          <label>From</label>
-          <input type="text" id="flight-from" placeholder="City or airport (e.g., New York, JFK)">
-        </div>
-        <div class="form-group">
-          <label>To</label>
-          <input type="text" id="flight-to" placeholder="City or airport (e.g., London, LHR)">
-        </div>
+        <div class="form-group"><label>Destination</label><input type="text" id="h-dest" placeholder="City — e.g. Paris" autocomplete="off" oninput="showAC(this,'h-dest-ac')"><div class="ac-dropdown" id="h-dest-ac"></div></div>
+        <div class="form-group"><label>Guests</label><select id="h-guests"><option value="1">1 Guest</option><option value="2" selected>2 Guests</option><option value="3">3 Guests</option><option value="4">4 Guests</option></select></div>
       </div>
       <div class="form-row">
-        <div class="form-group">
-          <label>Departure</label>
-          <input type="date" id="flight-depart">
-        </div>
-        <div class="form-group">
-          <label>Return</label>
-          <input type="date" id="flight-return">
-        </div>
+        <div class="form-group"><label>Check-in</label><input type="date" id="h-checkin"></div>
+        <div class="form-group"><label>Check-out</label><input type="date" id="h-checkout"></div>
       </div>
       <div class="form-row">
-        <div class="form-group">
-          <label>Passengers</label>
-          <select id="flight-pax">
-            <option>1 Adult</option>
-            <option>2 Adults</option>
-            <option>3 Adults</option>
-            <option>4 Adults</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Class</label>
-          <select id="flight-class">
-            <option value="economy">Economy</option>
-            <option value="business">Business</option>
-            <option value="first">First</option>
-          </select>
-        </div>
+        <div class="form-group"><label>Rooms</label><select id="h-rooms"><option value="1">1 Room</option><option value="2">2 Rooms</option></select></div>
+        <div class="form-group"></div>
       </div>
-      <button class="search-btn" onclick="searchFlights()">🔍 Search Flights on Skyscanner</button>
+      <button class="search-btn" onclick="searchHotels()">🔍 Search All Hotel Providers</button>
     </div>
 
-    <!-- Hotels Search -->
-    <div class="search-panel" id="panel-hotels">
+    <!-- CARS -->
+    <div class="panel" id="panel-cars">
       <div class="form-row">
-        <div class="form-group">
-          <label>Destination</label>
-          <input type="text" id="hotel-dest" placeholder="City, hotel, or landmark">
-        </div>
-        <div class="form-group">
-          <label>Guests</label>
-          <select id="hotel-guests">
-            <option>1 Guest</option>
-            <option>2 Guests</option>
-            <option>3 Guests</option>
-            <option>4+ Guests</option>
-          </select>
-        </div>
+        <div class="form-group"><label>Pick-up Location</label><input type="text" id="c-pickup" placeholder="City or airport" autocomplete="off" oninput="showAC(this,'c-pickup-ac')"><div class="ac-dropdown" id="c-pickup-ac"></div></div>
+        <div class="form-group"><label>Drop-off Location</label><input type="text" id="c-dropoff" placeholder="Same as pick-up (optional)" autocomplete="off" oninput="showAC(this,'c-drop-ac')"><div class="ac-dropdown" id="c-drop-ac"></div></div>
       </div>
       <div class="form-row">
-        <div class="form-group">
-          <label>Check-in</label>
-          <input type="date" id="hotel-checkin">
-        </div>
-        <div class="form-group">
-          <label>Check-out</label>
-          <input type="date" id="hotel-checkout">
-        </div>
+        <div class="form-group"><label>Pick-up Date</label><input type="date" id="c-pickdate"></div>
+        <div class="form-group"><label>Drop-off Date</label><input type="date" id="c-dropdate"></div>
       </div>
-      <button class="search-btn" onclick="searchHotels()">🔍 Search Hotels on Booking.com</button>
+      <button class="search-btn" onclick="searchCars()">🔍 Search All Car Rental Providers</button>
     </div>
 
-    <!-- Car Rental Search -->
-    <div class="search-panel" id="panel-cars">
-      <div class="form-row">
-        <div class="form-group">
-          <label>Pick-up Location</label>
-          <input type="text" id="car-pickup" placeholder="City or airport">
-        </div>
-        <div class="form-group">
-          <label>Drop-off Location</label>
-          <input type="text" id="car-dropoff" placeholder="Same as pick-up">
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>Pick-up Date</label>
-          <input type="date" id="car-pickdate">
-        </div>
-        <div class="form-group">
-          <label>Drop-off Date</label>
-          <input type="date" id="car-dropdate">
-        </div>
-      </div>
-      <button class="search-btn" onclick="searchCars()">🔍 Search Cars on RentalCars.com</button>
+    <!-- RESULTS -->
+    <div class="results-panel" id="results">
+      <div class="results-header"><span id="resultsTitle">Results</span><button class="open-all" onclick="openAll()">Open All Providers ↗</button></div>
+      <div class="provider-grid" id="providerGrid"></div>
     </div>
 
-    <!-- Disclaimer -->
-    <div class="disclaimer">
-      <strong>⚠️ Transparency Notice:</strong> When you click "Search," you'll be taken directly to the booking provider's official website (Skyscanner, Booking.com, or RentalCars.com). We may earn a small referral commission at no extra cost to you. We do not collect your search data and do not link to any malicious or misleading sites. All search results come directly from the provider.
+    <div class="tips">
+      <h2>💡 Smart Booking Tips</h2>
+      <div class="tip"><strong>Compare across providers</strong> — prices can vary 20-40% for the same flight or hotel.</div>
+      <div class="tip"><strong>Book 6-8 weeks ahead</strong> for domestic flights, 2-3 months for international.</div>
+      <div class="tip"><strong>Use incognito mode</strong> — some sites raise prices based on repeated searches.</div>
+      <div class="tip"><strong>Be flexible with dates</strong> — flying midweek (Tue-Thu) is often 20-30% cheaper.</div>
+      <div class="tip"><strong>Check direct</strong> — after finding a deal, check the airline/hotel's own site for matching rates.</div>
     </div>
 
-    <!-- Trusted Partners -->
-    <h2 style="font-size:20px;font-weight:700;margin:32px 0 16px;text-align:center;">Trusted Booking Partners</h2>
-    <div class="partner-grid">
-      <a href="https://www.skyscanner.com/" target="_blank" rel="noopener" class="partner-card">
-        <div class="partner-icon">✈️</div>
-        <div class="partner-name">Skyscanner</div>
-        <div class="partner-desc">Compare flights from 1,200+ airlines and travel agents</div>
-      </a>
-      <a href="https://www.booking.com/" target="_blank" rel="noopener" class="partner-card">
-        <div class="partner-icon">🏨</div>
-        <div class="partner-name">Booking.com</div>
-        <div class="partner-desc">28+ million accommodation listings worldwide</div>
-      </a>
-      <a href="https://www.rentalcars.com/" target="_blank" rel="noopener" class="partner-card">
-        <div class="partner-icon">🚗</div>
-        <div class="partner-name">RentalCars.com</div>
-        <div class="partner-desc">Compare car rental deals from 900+ companies</div>
-      </a>
-      <a href="https://www.hostelworld.com/" target="_blank" rel="noopener" class="partner-card">
-        <div class="partner-icon">🎒</div>
-        <div class="partner-name">Hostelworld</div>
-        <div class="partner-desc">Budget-friendly hostels in 170+ countries</div>
-      </a>
-      <a href="https://www.airbnb.com/" target="_blank" rel="noopener" class="partner-card">
-        <div class="partner-icon">🏠</div>
-        <div class="partner-name">Airbnb</div>
-        <div class="partner-desc">Unique stays and experiences around the world</div>
-      </a>
-      <a href="https://www.safetywing.com/" target="_blank" rel="noopener" class="partner-card">
-        <div class="partner-icon">🛡️</div>
-        <div class="partner-name">SafetyWing</div>
-        <div class="partner-desc">Travel medical insurance for nomads & travelers</div>
-      </a>
+    <div class="partners">
+      <h2>🤝 Trusted Booking Partners</h2>
+      <div class="partner-grid">
+        <a href="https://www.skyscanner.com" target="_blank" rel="noopener" class="partner-card"><div class="p-icon">✈️</div><h3>Skyscanner</h3><p>Compare 1,200+ airlines</p></a>
+        <a href="https://www.booking.com" target="_blank" rel="noopener" class="partner-card"><div class="p-icon">🏨</div><h3>Booking.com</h3><p>28M+ accommodations</p></a>
+        <a href="https://www.kayak.com" target="_blank" rel="noopener" class="partner-card"><div class="p-icon">🛶</div><h3>Kayak</h3><p>Flights, hotels & cars</p></a>
+        <a href="https://www.hostelworld.com" target="_blank" rel="noopener" class="partner-card"><div class="p-icon">🎒</div><h3>Hostelworld</h3><p>Budget hostels worldwide</p></a>
+        <a href="https://www.rentalcars.com" target="_blank" rel="noopener" class="partner-card"><div class="p-icon">🚗</div><h3>RentalCars</h3><p>900+ car rental companies</p></a>
+        <a href="https://www.safetywing.com" target="_blank" rel="noopener" class="partner-card"><div class="p-icon">🛡️</div><h3>SafetyWing</h3><p>Travel medical insurance</p></a>
+      </div>
     </div>
+
+    <div class="disclaimer"><strong>⚠️ Transparency Notice:</strong> When you click a provider link, you'll be taken to their official website with your search pre-filled. We may earn a referral commission at no extra cost to you. All results come directly from the provider. Prices and availability change frequently — always verify before booking.</div>
   </div>
-
-  <footer class="footer">
-    <div class="container">
-      <span>&copy; 2026 {{ site_title }}. All rights reserved.</span>
-      <div style="margin-top:8px;">
-        <a href="/privacy.html" style="color:var(--text-secondary);margin:0 6px;">Privacy</a> ·
-        <a href="/about.html" style="color:var(--text-secondary);margin:0 6px;">About</a> ·
-        <a href="/contact.html" style="color:var(--text-secondary);margin:0 6px;">Contact</a>
-      </div>
-    </div>
-  </footer>
-
+  <footer class="footer"><div class="container">&copy; 2026 {{ site_title }}. · <a href="/privacy.html">Privacy</a> · <a href="/about.html">About</a> · <a href="/tools/">All Tools</a></div></footer>
+  <a href="https://techlife-insights.kit.com/be266c00d5" target="_blank" rel="noopener" class="subscribe-float">📬 Subscribe</a>
   <script>
-  // Tab switching
-  function switchTab(tab, btn) {
-    document.querySelectorAll('.search-tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.search-panel').forEach(p => p.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById('panel-' + tab).classList.add('active');
+  // Airport database
+  var AP = [
+    {c:'JFK',city:'New York',n:'John F. Kennedy Intl',co:'US'},{c:'EWR',city:'Newark',n:'Newark Liberty Intl',co:'US'},
+    {c:'LGA',city:'New York',n:'LaGuardia',co:'US'},{c:'LAX',city:'Los Angeles',n:'Los Angeles Intl',co:'US'},
+    {c:'SFO',city:'San Francisco',n:'San Francisco Intl',co:'US'},{c:'ORD',city:'Chicago',n:"O'Hare Intl",co:'US'},
+    {c:'ATL',city:'Atlanta',n:'Hartsfield-Jackson',co:'US'},{c:'DFW',city:'Dallas',n:'Dallas/Fort Worth Intl',co:'US'},
+    {c:'DEN',city:'Denver',n:'Denver Intl',co:'US'},{c:'SEA',city:'Seattle',n:'Seattle-Tacoma Intl',co:'US'},
+    {c:'MIA',city:'Miami',n:'Miami Intl',co:'US'},{c:'BOS',city:'Boston',n:'Logan Intl',co:'US'},
+    {c:'IAH',city:'Houston',n:'George Bush Intercontinental',co:'US'},{c:'PHX',city:'Phoenix',n:'Phoenix Sky Harbor',co:'US'},
+    {c:'LAS',city:'Las Vegas',n:'Harry Reid Intl',co:'US'},{c:'MCO',city:'Orlando',n:'Orlando Intl',co:'US'},
+    {c:'DTW',city:'Detroit',n:'Detroit Metropolitan',co:'US'},{c:'MSP',city:'Minneapolis',n:'Minneapolis-Saint Paul',co:'US'},
+    {c:'PHL',city:'Philadelphia',n:'Philadelphia Intl',co:'US'},{c:'IAD',city:'Washington DC',n:'Dulles Intl',co:'US'},
+    {c:'SAN',city:'San Diego',n:'San Diego Intl',co:'US'},{c:'TPA',city:'Tampa',n:'Tampa Intl',co:'US'},
+    {c:'HNL',city:'Honolulu',n:'Daniel K. Inouye Intl',co:'US'},{c:'AUS',city:'Austin',n:'Austin-Bergstrom',co:'US'},
+    {c:'LHR',city:'London',n:'Heathrow',co:'GB'},{c:'LGW',city:'London',n:'Gatwick',co:'GB'},
+    {c:'CDG',city:'Paris',n:'Charles de Gaulle',co:'FR'},{c:'AMS',city:'Amsterdam',n:'Schiphol',co:'NL'},
+    {c:'FRA',city:'Frankfurt',n:'Frankfurt am Main',co:'DE'},{c:'MAD',city:'Madrid',n:'Adolfo Suarez Madrid-Barajas',co:'ES'},
+    {c:'BCN',city:'Barcelona',n:'El Prat',co:'ES'},{c:'FCO',city:'Rome',n:'Leonardo da Vinci-Fiumicino',co:'IT'},
+    {c:'MUC',city:'Munich',n:'Franz Josef Strauss',co:'DE'},{c:'IST',city:'Istanbul',n:'Istanbul Airport',co:'TR'},
+    {c:'ZRH',city:'Zurich',n:'Zurich Airport',co:'CH'},{c:'VIE',city:'Vienna',n:'Vienna Intl',co:'AT'},
+    {c:'CPH',city:'Copenhagen',n:'Copenhagen Airport',co:'DK'},{c:'DUB',city:'Dublin',n:'Dublin Airport',co:'IE'},
+    {c:'LIS',city:'Lisbon',n:'Humberto Delgado',co:'PT'},{c:'ATH',city:'Athens',n:'Eleftherios Venizelos',co:'GR'},
+    {c:'NRT',city:'Tokyo',n:'Narita Intl',co:'JP'},{c:'HND',city:'Tokyo',n:'Haneda',co:'JP'},
+    {c:'PEK',city:'Beijing',n:'Beijing Capital Intl',co:'CN'},{c:'PVG',city:'Shanghai',n:'Pudong Intl',co:'CN'},
+    {c:'HKG',city:'Hong Kong',n:'Hong Kong Intl',co:'HK'},{c:'SIN',city:'Singapore',n:'Changi Airport',co:'SG'},
+    {c:'ICN',city:'Seoul',n:'Incheon Intl',co:'KR'},{c:'BKK',city:'Bangkok',n:'Suvarnabhumi',co:'TH'},
+    {c:'DEL',city:'New Delhi',n:'Indira Gandhi Intl',co:'IN'},{c:'BOM',city:'Mumbai',n:'Chhatrapati Shivaji Maharaj',co:'IN'},
+    {c:'DXB',city:'Dubai',n:'Dubai Intl',co:'AE'},{c:'DOH',city:'Doha',n:'Hamad Intl',co:'QA'},
+    {c:'AUH',city:'Abu Dhabi',n:'Zayed Intl',co:'AE'},
+    {c:'SYD',city:'Sydney',n:'Kingsford Smith',co:'AU'},{c:'MEL',city:'Melbourne',n:'Melbourne Airport',co:'AU'},
+    {c:'AKL',city:'Auckland',n:'Auckland Airport',co:'NZ'},
+    {c:'YYZ',city:'Toronto',n:'Pearson Intl',co:'CA'},{c:'YVR',city:'Vancouver',n:'Vancouver Intl',co:'CA'},
+    {c:'MEX',city:'Mexico City',n:'Benito Juarez Intl',co:'MX'},{c:'GRU',city:'Sao Paulo',n:'Guarulhos Intl',co:'BR'},
+    {c:'SCL',city:'Santiago',n:'Arturo Merino Benitez',co:'CL'},{c:'BOG',city:'Bogota',n:'El Dorado Intl',co:'CO'},
+    {c:'EZE',city:'Buenos Aires',n:'Ministro Pistarini',co:'AR'},{c:'CUN',city:'Cancun',n:'Cancun Intl',co:'MX'},
+    {c:'KUL',city:'Kuala Lumpur',n:'KL Intl',co:'MY'},{c:'MNL',city:'Manila',n:'Ninoy Aquino Intl',co:'PH'}
+  ];
+
+  var selectedFrom={}, selectedTo={}, tripType='round';
+
+  function showAC(input, dropId) {
+    var q = input.value.toLowerCase();
+    var drop = document.getElementById(dropId);
+    if (q.length < 2) { drop.style.display='none'; return; }
+    var matches = AP.filter(function(a){
+      return a.c.toLowerCase().indexOf(q)!==-1 || a.city.toLowerCase().indexOf(q)!==-1 || a.n.toLowerCase().indexOf(q)!==-1;
+    }).slice(0, 8);
+    if (!matches.length) { drop.style.display='none'; return; }
+    drop.innerHTML = '';
+    matches.forEach(function(a) {
+      var d = document.createElement('div');
+      d.className = 'ac-item';
+      d.innerHTML = '<strong>' + a.c + '</strong> — ' + a.city + '<small>' + a.n + ', ' + a.co + '</small>';
+      d.addEventListener('click', function() {
+        input.value = a.c + ' — ' + a.city;
+        input.dataset.code = a.c;
+        input.dataset.city = a.city;
+        drop.style.display = 'none';
+      });
+      drop.appendChild(d);
+    });
+    drop.style.display = 'block';
   }
 
-  // Set default dates (tomorrow + 1 week)
-  (function() {
-    var today = new Date();
-    var tomorrow = new Date(today); tomorrow.setDate(today.getDate() + 1);
-    var nextWeek = new Date(today); nextWeek.setDate(today.getDate() + 8);
-    var fmt = function(d) { return d.toISOString().split('T')[0]; };
-    document.getElementById('flight-depart').value = fmt(tomorrow);
-    document.getElementById('flight-return').value = fmt(nextWeek);
-    document.getElementById('hotel-checkin').value = fmt(tomorrow);
-    document.getElementById('hotel-checkout').value = fmt(nextWeek);
-    document.getElementById('car-pickdate').value = fmt(tomorrow);
-    document.getElementById('car-dropdate').value = fmt(nextWeek);
+  document.addEventListener('click', function(e) {
+    document.querySelectorAll('.ac-dropdown').forEach(function(d) {
+      if (!d.contains(e.target) && e.target !== d.previousElementSibling) d.style.display='none';
+    });
+  });
+
+  function switchTab(tab, btn) {
+    document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active')});
+    document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('active')});
+    btn.classList.add('active');
+    document.getElementById('panel-'+tab).classList.add('active');
+    document.getElementById('results').style.display='none';
+  }
+
+  function setTrip(type, btn) {
+    tripType = type;
+    document.querySelectorAll('.trip-btn').forEach(function(b){b.classList.remove('active')});
+    btn.classList.add('active');
+    document.getElementById('f-return-group').style.display = type==='oneway' ? 'none' : 'flex';
+  }
+
+  // Set default dates
+  (function(){
+    var today=new Date(), tmrw=new Date(today), nw=new Date(today);
+    tmrw.setDate(today.getDate()+1); nw.setDate(today.getDate()+8);
+    var fmt=function(d){return d.toISOString().split('T')[0]};
+    ['f-depart','h-checkin','c-pickdate'].forEach(function(id){document.getElementById(id).value=fmt(tmrw)});
+    ['f-return','h-checkout','c-dropdate'].forEach(function(id){document.getElementById(id).value=fmt(nw)});
   })();
 
+  var lastProviderUrls = [];
+  function showResults(title, providers) {
+    lastProviderUrls = providers.map(function(p){return p.url});
+    document.getElementById('resultsTitle').textContent = title;
+    var grid = document.getElementById('providerGrid');
+    grid.innerHTML = '';
+    providers.forEach(function(p) {
+      var card = document.createElement('a');
+      card.href = p.url; card.target='_blank'; card.rel='noopener'; card.className='provider-card';
+      card.innerHTML = '<div class="provider-icon">'+p.icon+'</div><h3>'+p.name+'</h3><p>'+p.desc+'</p><span class="go-btn">Search '+p.name+' →</span>';
+      grid.appendChild(card);
+    });
+    var rp = document.getElementById('results');
+    rp.style.display = 'block';
+    rp.scrollIntoView({behavior:'smooth'});
+  }
+
+  function openAll() { lastProviderUrls.forEach(function(u){window.open(u,'_blank')}); }
+
+  function getCode(id) { var el=document.getElementById(id); return (el.dataset.code||el.value.split(' ')[0]||'').toUpperCase(); }
+  function getCity(id) { var el=document.getElementById(id); return el.dataset.city||el.value.replace(/\s*—.*$/,'').trim(); }
+
   function searchFlights() {
-    var from = encodeURIComponent(document.getElementById('flight-from').value || 'New York');
-    var to = encodeURIComponent(document.getElementById('flight-to').value || 'London');
-    var depart = document.getElementById('flight-depart').value.replace(/-/g, '');
-    var ret = document.getElementById('flight-return').value.replace(/-/g, '');
-    // Redirect to Skyscanner search
-    window.open('https://www.skyscanner.com/transport/flights/' + from + '/' + to + '/' + depart + '/' + ret + '/', '_blank');
+    var from=getCode('f-from'), to=getCode('f-to');
+    var dep=document.getElementById('f-depart').value, ret=document.getElementById('f-return').value;
+    var pax=document.getElementById('f-pax').value, cls=document.getElementById('f-class').value;
+    if(!from||!to||!dep){alert('Please fill in From, To, and Departure date');return;}
+    var fromCity=getCity('f-from'), toCity=getCity('f-to');
+    var skyDep=dep.replace(/-/g,'').slice(2), skyRet=ret?ret.replace(/-/g,'').slice(2):'';
+    var providers = [
+      {name:'Google Flights',icon:'✈️',desc:'Comprehensive search across airlines',
+       url:'https://www.google.com/travel/flights?q='+encodeURIComponent('flights from '+fromCity+' '+from+' to '+toCity+' '+to+' on '+dep+(ret?' return '+ret:''))},
+      {name:'Skyscanner',icon:'🔍',desc:'Compare 1,200+ airlines & agents',
+       url:'https://www.skyscanner.com/transport/flights/'+from.toLowerCase()+'/'+to.toLowerCase()+'/'+skyDep+'/'+(tripType==='round'?skyRet+'/?':'?')+'adults='+pax+'&cabinclass='+cls},
+      {name:'Kayak',icon:'🛶',desc:'Flexible search with price alerts',
+       url:'https://www.kayak.com/flights/'+from+'-'+to+'/'+dep+'/'+(tripType==='round'?ret+'/':'')+pax+'adults/'+cls+'?sort=bestflight_a'},
+      {name:'Momondo',icon:'🌍',desc:'Find hidden deals & budget airlines',
+       url:'https://www.momondo.com/flight-search/'+from+'-'+to+'/'+dep+'/'+(tripType==='round'?ret:'')},
+      {name:'Kiwi.com',icon:'🥝',desc:'Virtual interlining for cheaper routes',
+       url:'https://www.kiwi.com/en/search/results/'+from+'/'+to+'/'+dep+'/'+(tripType==='round'?ret:'')}
+    ];
+    showResults('✈️ Flights: '+from+' → '+to+' · '+dep+(tripType==='round'?' – '+ret:' (one way)')+' · '+pax+' pax', providers);
   }
 
   function searchHotels() {
-    var dest = encodeURIComponent(document.getElementById('hotel-dest').value || 'Paris');
-    var checkin = document.getElementById('hotel-checkin').value;
-    var checkout = document.getElementById('hotel-checkout').value;
-    window.open('https://www.booking.com/searchresults.html?ss=' + dest + '&checkin=' + checkin + '&checkout=' + checkout, '_blank');
+    var dest=getCity('h-dest'), ci=document.getElementById('h-checkin').value, co=document.getElementById('h-checkout').value;
+    var guests=document.getElementById('h-guests').value, rooms=document.getElementById('h-rooms').value;
+    if(!dest||!ci||!co){alert('Please fill in destination and dates');return;}
+    var ed=encodeURIComponent(dest);
+    var providers = [
+      {name:'Booking.com',icon:'🏨',desc:'28M+ listings, free cancellation options',
+       url:'https://www.booking.com/searchresults.html?ss='+ed+'&checkin='+ci+'&checkout='+co+'&group_adults='+guests+'&no_rooms='+rooms},
+      {name:'Hotels.com',icon:'🌟',desc:'Rewards program, price match guarantee',
+       url:'https://www.hotels.com/search.do?q-destination='+ed+'&q-check-in='+ci+'&q-check-out='+co+'&q-rooms='+rooms+'&q-room-0-adults='+guests},
+      {name:'Agoda',icon:'🏢',desc:'Best for Asia-Pacific, member deals',
+       url:'https://www.agoda.com/search?q='+ed+'&checkIn='+ci+'&checkOut='+co+'&rooms='+rooms+'&adults='+guests},
+      {name:'Trivago',icon:'🔎',desc:'Meta-search across 400+ booking sites',
+       url:'https://www.trivago.com/en-US/srl?search='+ed},
+      {name:'Hostelworld',icon:'🎒',desc:'Budget hostels in 170+ countries',
+       url:'https://www.hostelworld.com/s?q='+ed+'&dateFrom='+ci+'&dateTo='+co+'&guests='+guests}
+    ];
+    showResults('🏨 Hotels in '+dest+' · '+ci+' to '+co+' · '+guests+' guests', providers);
   }
 
   function searchCars() {
-    var pickup = encodeURIComponent(document.getElementById('car-pickup').value || 'Los Angeles');
-    var pickdate = document.getElementById('car-pickdate').value;
-    var dropdate = document.getElementById('car-dropdate').value;
-    window.open('https://www.rentalcars.com/search-results?location=' + pickup + '&puDate=' + pickdate + '&doDate=' + dropdate, '_blank');
+    var loc=getCity('c-pickup'), pd=document.getElementById('c-pickdate').value, dd=document.getElementById('c-dropdate').value;
+    if(!loc||!pd||!dd){alert('Please fill in location and dates');return;}
+    var el=encodeURIComponent(loc);
+    var providers = [
+      {name:'Kayak Cars',icon:'🛶',desc:'Compare across major rental companies',
+       url:'https://www.kayak.com/cars/'+el+'/'+pd+'/'+dd+'?sort=price_a'},
+      {name:'RentalCars.com',icon:'🚗',desc:'900+ rental companies, best price guarantee',
+       url:'https://www.rentalcars.com/search-results?location='+el+'&puDate='+pd+'&doDate='+dd},
+      {name:'Discover Cars',icon:'🔍',desc:'Compare 500+ car rental companies',
+       url:'https://www.discovercars.com/search?pick='+el+'&pdate='+pd+'&ddate='+dd},
+      {name:'AutoEurope',icon:'🌍',desc:'20,000+ locations, price match',
+       url:'https://www.autoeurope.com/go/searchresults.cfm?location='+el+'&puDate='+pd+'&doDate='+dd}
+    ];
+    showResults('🚗 Car Rental in '+loc+' · '+pd+' to '+dd, providers);
   }
   </script>
-
 </body>
 </html>

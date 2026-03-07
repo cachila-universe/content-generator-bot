@@ -9,10 +9,9 @@ Bot Modes:
 Pipeline dependency order (manual mode runs all of these sequentially):
   1. Trend Intelligence  — scan Google Trends, Reddit, HackerNews
   2. Articles            — generate + publish blog posts
-  3. Stock Images        — generate AI images for articles/videos
-  4. Videos / Shorts     — create video from latest article
-  5. Social Posts        — tweet article + video to Twitter
-  6. Pinterest           — create pin for latest post
+  3. Videos / Shorts     — create video from latest article
+  4. Social Posts        — tweet article + video to Twitter
+  5. Pinterest           — create pin for latest post
 """
 
 import json
@@ -96,7 +95,7 @@ def start_scheduler(config: dict, db_path: Path) -> None:
         video_hour = niche_cfg.get("video_schedule_hour", 11)
         video_minute = niche_cfg.get("video_schedule_minute", 0)
 
-        # Blog post + stock images job
+        # Blog post job
         scheduler.add_job(
             job_generate_and_publish,
             trigger="cron",
@@ -145,18 +144,6 @@ def start_scheduler(config: dict, db_path: Path) -> None:
             name=f"📌 Pinterest: {niche_cfg.get('name', niche_id)}",
             replace_existing=True,
         )
-
-    # ── Stock image batch job (2:00 PM daily) ────────────────────────────
-    scheduler.add_job(
-        job_generate_stock_images,
-        trigger="cron",
-        hour=14,
-        minute=0,
-        args=[niches_config, settings],
-        id="stock_images",
-        name="🖼️ Stock Image Generation",
-        replace_existing=True,
-    )
 
     # ── Rebuild site every Sunday ────────────────────────────────────────
     scheduler.add_job(
@@ -642,46 +629,6 @@ def _maybe_tweet_video(niche_id, niche_cfg, settings, db_path, video_path, post)
         logger.debug("Video tweet error: %s", exc)
 
 
-def job_generate_stock_images(niches_config: dict, settings: dict) -> None:
-    """Generate AI stock images using trend intelligence for high-demand topics."""
-    if not _should_run("stock_images"):
-        return
-
-    from core import bot_state
-
-    if not bot_state.is_bot_running():
-        return
-
-    stock_cfg = settings.get("stock_images", {})
-    if not stock_cfg.get("enabled", False):
-        return
-
-    try:
-        from core import stock_generator, trend_intelligence, analytics_tracker
-        db_path = _PROJECT_ROOT / "data" / "bot.db"
-
-        count = stock_cfg.get("images_per_run", 5)
-        all_topics = []
-
-        for niche_id, niche_cfg in niches_config.items():
-            if not bot_state.is_niche_enabled(niche_id):
-                continue
-            try:
-                topics = trend_intelligence.get_image_demand_topics(niche_id, count=2)
-                all_topics.extend(topics)
-            except Exception:
-                all_topics.append({"topic": niche_cfg.get("name", niche_id), "niche_id": niche_id})
-
-        if all_topics:
-            results = stock_generator.generate_stock_images(all_topics, settings, count=count)
-            analytics_tracker.log_action(
-                db_path, "SUCCESS", "stock_images_generated",
-                f"Generated {len(results)} stock images"
-            )
-    except Exception as exc:
-        logger.error("Stock image generation job failed: %s", exc)
-
-
 def job_post_to_pinterest(
     niche_id: str,
     niche_cfg: dict,
@@ -759,10 +706,9 @@ def job_check_manual_triggers(
     Manual triggers respect dependency order:
       1. Trend intelligence refresh
       2. Article generation
-      3. Stock image generation
-      4. Video/Short generation
-      5. Twitter posting
-      6. Pinterest posting
+      3. Video/Short generation
+      4. Twitter posting
+      5. Pinterest posting
     """
     from core import bot_state
 
@@ -803,18 +749,7 @@ def job_check_manual_triggers(
             _manual_generate_and_publish(niche_id, niche_cfg, settings, db_path, site_url)
             logger.info("  ✓ Step 2: Article generated for %s", niche_id)
 
-        # Step 3: Generate stock images
-        try:
-            from core import stock_generator, trend_intelligence as ti
-            stock_cfg = settings.get("stock_images", {})
-            if stock_cfg.get("enabled", False):
-                topics = ti.get_image_demand_topics(niche_id, count=2)
-                stock_generator.generate_stock_images(topics, settings, count=2)
-                logger.info("  ✓ Step 3: Stock images generated")
-        except Exception as exc:
-            logger.debug("  ✗ Step 3: Stock images failed: %s", exc)
-
-        # Step 4: Generate Short (depends on article existing)
+        # Step 3: Generate Short (depends on article existing)
         if "youtube_shorts" in platforms:
             _manual_generate_short(niche_id, niche_cfg, settings, db_path)
             logger.info("  ✓ Step 4: Short generated for %s", niche_id)
@@ -1049,10 +984,9 @@ def run_full_pipeline(niches_config: dict, settings: dict, db_path: Path, site_u
     Dependency order:
       1. Trend intelligence
       2. Articles (per niche)
-      3. Stock images
-      4. Shorts (per niche)
-      5. Twitter posts (per niche)
-      6. Pinterest (per niche)
+      3. Shorts (per niche)
+      4. Twitter posts (per niche)
+      5. Pinterest (per niche)
 
     Returns a summary dict.
     """
@@ -1087,18 +1021,7 @@ def run_full_pipeline(niches_config: dict, settings: dict, db_path: Path, site_u
             niche_summary["article"] = f"✗ {exc}"
             summary["errors"].append(f"{niche_id} article: {exc}")
 
-        # Step 3: Stock images
-        try:
-            from core import stock_generator, trend_intelligence as ti
-            if settings.get("stock_images", {}).get("enabled", False):
-                topics = ti.get_image_demand_topics(niche_id, count=2)
-                stock_generator.generate_stock_images(topics, settings, count=2)
-                niche_summary["stock_images"] = "✓"
-                summary["steps_completed"] += 1
-        except Exception as exc:
-            niche_summary["stock_images"] = f"✗ {exc}"
-
-        # Step 4: Short
+        # Step 3: Short
         try:
             _manual_generate_short(niche_id, niche_cfg, settings, db_path)
             niche_summary["short"] = "✓"
@@ -1125,18 +1048,7 @@ def run_full_pipeline(niches_config: dict, settings: dict, db_path: Path, site_u
 
         summary["details"][niche_id] = niche_summary
 
-    # Step 7: Export stock images for platforms
-    try:
-        from core import stock_submitter
-        results = stock_submitter.export_unsubmitted()
-        summary["details"]["stock_export"] = f"✓ Exported {len(results)} images"
-        if results:
-            summary["steps_completed"] += 1
-    except Exception as exc:
-        summary["errors"].append(f"stock_export: {exc}")
-        summary["details"]["stock_export"] = f"✗ {exc}"
-
-    # Step 8: Sync stock earnings
+    # Step 7: Sync income earnings
     try:
         from core import income_tracker
         diff = income_tracker.sync_stock_earnings()

@@ -115,19 +115,6 @@ def niches():
     )
 
 
-@app.route("/stock-images")
-def stock_images():
-    from core import stock_generator, stock_submitter
-    settings = _load_settings()
-    images = stock_generator.get_all_stock_images()
-    stats = stock_generator.get_stock_stats()
-    submission_stats = stock_submitter.get_submission_stats()
-    platform_info = stock_submitter.get_platform_info()
-    return render_template("stock_images.html", images=images, stats=stats,
-                           submission_stats=submission_stats, platform_info=platform_info,
-                           settings=settings)
-
-
 @app.route("/settings")
 def settings_page():
     from core import bot_state
@@ -285,79 +272,6 @@ def api_posts_chart():
     return jsonify(analytics_tracker.get_posts_chart_data(db))
 
 
-# ── Stock image API ──────────────────────────────────────────────────────────
-
-
-@app.route("/api/stock-image/<int:image_id>/preview")
-def api_stock_image_preview(image_id):
-    """Serve a stock image file for dashboard preview."""
-    from flask import send_file
-    from core import stock_generator
-    images = stock_generator.get_all_stock_images()
-    img = next((i for i in images if i["id"] == image_id), None)
-    if not img:
-        return "Not found", 404
-    filepath = Path(img["filepath"])
-    if not filepath.exists():
-        return "File not found", 404
-    return send_file(str(filepath), mimetype="image/jpeg")
-
-
-@app.route("/api/stock-images/generate", methods=["POST"])
-def api_stock_images_generate():
-    """Trigger a batch of AI stock image generation."""
-    from core import stock_generator
-    settings = _load_settings()
-    stock_cfg = settings.get("stock_images", {})
-
-    if not stock_cfg.get("enabled", False):
-        return jsonify({"ok": False, "error": "Stock images feature is disabled in settings."}), 400
-
-    # Check at least one API key is configured
-    has_api = any([
-        stock_cfg.get("leonardo_api_key", "").strip(),
-        stock_cfg.get("stability_api_key", "").strip(),
-        stock_cfg.get("huggingface_token", "").strip(),
-    ])
-    if not has_api:
-        return jsonify({"ok": False, "error": "No image API keys configured. Add Leonardo, Stability, or HuggingFace API key in settings.yaml"}), 400
-
-    count = stock_cfg.get("images_per_run", 5)
-    niches = _load_niches()
-
-    # Build topics using trend intelligence
-    topics = []
-    try:
-        from core import trend_intelligence
-        for niche_id, niche_data in niches.items():
-            if niche_data.get("enabled", True):
-                demand = trend_intelligence.get_image_demand_topics(niche_id, count=2)
-                topics.extend(demand)
-    except Exception:
-        for niche_id, niche_data in niches.items():
-            if niche_data.get("enabled", True):
-                topics.append({
-                    "topic": niche_data.get("name", niche_id.replace("_", " ").title()),
-                    "niche_id": niche_id,
-                })
-
-    if not topics:
-        return jsonify({"ok": False, "error": "No enabled niches to generate images for."}), 400
-
-    try:
-        results = stock_generator.generate_stock_images(topics, settings, count=count)
-        return jsonify({"ok": True, "count": len(results)})
-    except Exception as exc:
-        logger.exception("Stock image generation failed")
-        return jsonify({"ok": False, "error": str(exc)}), 500
-
-
-@app.route("/api/stock-images/stats")
-def api_stock_images_stats():
-    from core import stock_generator
-    return jsonify(stock_generator.get_stock_stats())
-
-
 @app.route("/api/posts/<int:post_id>/delete", methods=["POST"])
 def api_delete_post(post_id):
     """Delete a post: remove from DB, delete HTML file, rebuild site indexes."""
@@ -440,18 +354,6 @@ def api_intelligence_topics(niche_id):
         return jsonify({"error": str(exc)}), 500
 
 
-# ── API Usage tracking ───────────────────────────────────────────────────────
-
-
-@app.route("/api/stock-images/api-usage")
-def api_stock_image_usage():
-    """Return API usage stats per provider."""
-    try:
-        from core import stock_generator
-        return jsonify(stock_generator.get_api_usage_stats())
-    except Exception as exc:
-        return jsonify({"error": str(exc)}), 500
-
 
 # ── Full pipeline run (manual mode) ─────────────────────────────────────────
 
@@ -527,69 +429,6 @@ def api_income_summary():
     from core import income_tracker
     return jsonify(income_tracker.get_income_summary())
 
-
-@app.route("/api/income/sync-stock", methods=["POST"])
-def api_income_sync_stock():
-    """Sync stock photo earnings."""
-    from core import income_tracker
-    diff = income_tracker.sync_stock_earnings()
-    return jsonify({"ok": True, "synced": diff})
-
-
-# ── Stock submission API ──────────────────────────────────────────────────────
-
-
-@app.route("/api/stock-images/export", methods=["POST"])
-def api_stock_export():
-    """Export unsubmitted images for all platforms."""
-    from core import stock_submitter
-    data = request.get_json(force=True) if request.is_json else {}
-    platform_ids = data.get("platforms", None)
-
-    try:
-        results = stock_submitter.export_unsubmitted(platform_ids)
-        return jsonify({"ok": True, "exported": len(results)})
-    except Exception as exc:
-        return jsonify({"ok": False, "error": str(exc)}), 500
-
-
-@app.route("/api/stock-images/<int:image_id>/submit", methods=["POST"])
-def api_stock_mark_submitted(image_id):
-    """Mark an image as submitted to a platform."""
-    from core import stock_submitter
-    data = request.get_json(force=True)
-    platform = data.get("platform", "")
-    if not platform:
-        return jsonify({"ok": False, "error": "platform required"}), 400
-    stock_submitter.mark_submitted(image_id, platform)
-    return jsonify({"ok": True})
-
-
-@app.route("/api/stock-images/<int:image_id>/sale", methods=["POST"])
-def api_stock_record_sale(image_id):
-    """Record a sale for an image."""
-    from core import stock_submitter
-    data = request.get_json(force=True)
-    platform = data.get("platform", "")
-    amount = float(data.get("amount", 0))
-    if not platform or amount <= 0:
-        return jsonify({"ok": False, "error": "platform and amount required"}), 400
-    stock_submitter.record_sale(image_id, platform, amount)
-    return jsonify({"ok": True})
-
-
-@app.route("/api/stock-images/submission-stats")
-def api_stock_submission_stats():
-    """Return stock submission statistics."""
-    from core import stock_submitter
-    return jsonify(stock_submitter.get_submission_stats())
-
-
-@app.route("/api/stock-images/platforms")
-def api_stock_platforms():
-    """Return platform information."""
-    from core import stock_submitter
-    return jsonify(stock_submitter.get_platform_info())
 
 if __name__ == "__main__":
     port = int(os.getenv("DASHBOARD_PORT", 5002))
