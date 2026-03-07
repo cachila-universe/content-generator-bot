@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2563eb"/>
+      <stop offset="100%" style="stop-color:#1d4ed8"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#60a5fa"/>
+      <stop offset="100%" style="stop-color:#3b82f6"/>
+    </linearGradient>
+  </defs>
+  <!-- Rounded square background -->
+  <rect x="10" y="10" width="180" height="180" rx="36" ry="36" fill="url(#bg)"/>
+  <!-- Subtle inner glow -->
+  <rect x="18" y="18" width="164" height="164" rx="30" ry="30" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="2"/>
+  <!-- "T" letter with modern weight -->
+  <text x="100" y="138" font-family="Inter, -apple-system, Helvetica, Arial, sans-serif" font-size="120" font-weight="800" fill="white" text-anchor="middle" letter-spacing="-4">T</text>
+  <!-- Small circuit/tech dot accent -->
+  <circle cx="152" cy="52" r="8" fill="url(#accent)" opacity="0.9"/>
+  <circle cx="152" cy="52" r="4" fill="white" opacity="0.7"/>
+</svg>
