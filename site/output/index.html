@@ -181,7 +181,17 @@
             <div class="niche-count">
               
               
-              0 articles
+                
+              
+                
+              
+                
+              
+                
+              
+                
+              
+              1 article
             </div>
           </a>
           
@@ -193,7 +203,17 @@
             <div class="niche-count">
               
               
-              0 articles
+                
+              
+                
+              
+                
+              
+                
+              
+                
+              
+              1 article
             </div>
           </a>
           
@@ -205,7 +225,17 @@
             <div class="niche-count">
               
               
-              0 articles
+                
+              
+                
+              
+                
+              
+                
+              
+                
+              
+              1 article
             </div>
           </a>
           
@@ -217,7 +247,17 @@
             <div class="niche-count">
               
               
-              0 articles
+                
+              
+                
+              
+                
+              
+                
+              
+                
+              
+              1 article
             </div>
           </a>
           
@@ -229,7 +269,17 @@
             <div class="niche-count">
               
               
-              0 articles
+                
+              
+                
+              
+                
+              
+                
+              
+                
+              
+              1 article
             </div>
           </a>
           
@@ -243,16 +293,121 @@
     <div class="container">
       <div class="section-header">
         <h2 class="section-title">Latest Articles</h2>
-        <span class="section-subtitle">0 articles published</span>
+        <span class="section-subtitle">5 articles published</span>
       </div>
 
       <!-- Niche filter tabs -->
       
+      <div class="niche-tabs">
+        <button class="niche-tab active" onclick="filterByNiche('ALL', this)">All</button>
+        
+        
+          
+            
+            <button class="niche-tab" onclick="filterByNiche('travel', this)">Travel</button>
+          
+        
+          
+            
+            <button class="niche-tab" onclick="filterByNiche('home_tech', this)">Home Tech &amp; Smart Devices</button>
+          
+        
+          
+            
+            <button class="niche-tab" onclick="filterByNiche('health_biohacking', this)">Health &amp; Biohacking</button>
+          
+        
+          
+            
+            <button class="niche-tab" onclick="filterByNiche('personal_finance', this)">Personal Finance &amp; Investing</button>
+          
+        
+          
+            
+            <button class="niche-tab" onclick="filterByNiche('ai_tools', this)">AI Tools &amp; SaaS</button>
+          
+        
+      </div>
+      
 
       
-      <div class="empty-state">
-        <h2>🚀 Fresh Content Coming Soon</h2>
-        <p>We're putting the finishing touches on our first articles. Subscribe or check back soon — new expert guides drop daily!</p>
+      <div class="posts-grid" id="postsGrid">
+        
+        <div class="post-card-wrapper" data-niche="travel">
+          <a href="https://tech-life-insights.com/travel/best-travel-destinations-2026-where-to-go-and-how-to-get-there.html" class="post-link">
+            <div class="post-card">
+              <div class="post-card-body">
+                <span class="post-category">Travel</span>
+                <h3 class="post-title">Best Travel Destinations 2026: Where to Go and How to Get There</h3>
+                <div class="post-meta">
+                  <span>2026-03-07</span>
+                  <span>965 words</span>
+                </div>
+              </div>
+            </div>
+          </a>
+        </div>
+        
+        <div class="post-card-wrapper" data-niche="home_tech">
+          <a href="https://tech-life-insights.com/home_tech/the-ultimate-guide-to-the-best-smart-home-devices-of-2026.html" class="post-link">
+            <div class="post-card">
+              <div class="post-card-body">
+                <span class="post-category">Home Tech &amp; Smart Devices</span>
+                <h3 class="post-title">The Ultimate Guide to the Best Smart Home Devices of 2026</h3>
+                <div class="post-meta">
+                  <span>2026-03-07</span>
+                  <span>944 words</span>
+                </div>
+              </div>
+            </div>
+          </a>
+        </div>
+        
+        <div class="post-card-wrapper" data-niche="health_biohacking">
+          <a href="https://tech-life-insights.com/health_biohacking/biohacking-2026-unlock-your-full-potential-with-expert-tips-and-strategies.html" class="post-link">
+            <div class="post-card">
+              <div class="post-card-body">
+                <span class="post-category">Health &amp; Biohacking</span>
+                <h3 class="post-title">Biohacking 2026: Unlock Your Full Potential with Expert Tips and Strategies</h3>
+                <div class="post-meta">
+                  <span>2026-03-07</span>
+                  <span>725 words</span>
+                </div>
+              </div>
+            </div>
+          </a>
+        </div>
+        
+        <div class="post-card-wrapper" data-niche="personal_finance">
+          <a href="https://tech-life-insights.com/personal_finance/mastering-your-financial-future-how-to-invest-money-in-2026.html" class="post-link">
+            <div class="post-card">
+              <div class="post-card-body">
+                <span class="post-category">Personal Finance &amp; Investing</span>
+                <h3 class="post-title">Mastering Your Financial Future: How to Invest Money in 2026</h3>
+                <div class="post-meta">
+                  <span>2026-03-07</span>
+                  <span>768 words</span>
+                </div>
+              </div>
+            </div>
+          </a>
+        </div>
+        
+        <div class="post-card-wrapper" data-niche="ai_tools">
+          <a href="https://tech-life-insights.com/ai_tools/revolutionizing-productivity-top-ai-tools-of-2026.html" class="post-link">
+            <div class="post-card">
+              <div class="post-card-body">
+                <span class="post-category">AI Tools &amp; SaaS</span>
+                <h3 class="post-title">Revolutionizing Productivity: Top AI Tools of 2026</h3>
+                <div class="post-meta">
+                  <span>2026-03-07</span>
+                  <span>900 words</span>
+                </div>
+              </div>
+            </div>
+          </a>
+        </div>
+        
       </div>
       
     </div>
