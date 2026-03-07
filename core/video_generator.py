@@ -1,7 +1,12 @@
 """
 Video generator — YouTube landscape (16:9) with image backgrounds & TTS.
 
-Upgrade over the old text-on-color approach:
+Two modes:
+  1. Single-article video  (generate_video)   — one article → ~1-2 min video
+  2. Weekly roundup video   (generate_roundup) — 3-7 articles → 5-10 min video
+     "This Week in [Niche]" format for regular YouTube uploads.
+
+Features:
   • Relevant stock images from Pexels on every slide
   • Dark gradient overlays for text readability
   • Ken Burns subtle zoom/pan for motion (not a static slideshow)
@@ -203,6 +208,339 @@ def generate_video(article: dict, output_path: Path) -> "Path | None":
         return None
     finally:
         shutil.rmtree(str(tmp_dir), ignore_errors=True)
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+#  Weekly Roundup Video (multi-article, 5-10 min)
+# ═══════════════════════════════════════════════════════════════════════════
+def generate_roundup(
+    articles: list,
+    niche_name: str,
+    niche_id: str,
+    output_path: Path,
+) -> "Path | None":
+    """
+    Generate a weekly roundup video combining multiple articles into one
+    5-10 minute 16:9 landscape video.
+
+    Format:
+      • Intro slide   — "This Week in [Niche]" with article count
+      • Per article    — Title card → 1-2 key-point slides
+      • Outro CTA     — subscribe + website
+
+    This is different from the Short (single article, 58s vertical).
+    The roundup gives a conversational overview of the whole week.
+
+    Returns output_path on success, None on failure.
+    """
+    if not articles:
+        logger.warning("Roundup: no articles provided")
+        return None
+
+    try:
+        from moviepy import VideoClip, ImageClip, AudioFileClip, concatenate_videoclips, vfx
+    except ImportError as exc:
+        logger.error("Missing moviepy: %s", exc)
+        return None
+
+    seed = f"roundup_{niche_id}_{len(articles)}"
+    voice = _pick(VOICES, seed, offset=0)
+    accent = _pick(ACCENTS, seed, offset=1)
+    pexels_key = _load_pexels_key()
+
+    logger.info(
+        "Roundup video → niche=%s  articles=%d  voice=%s  accent=%s",
+        niche_name, len(articles), voice, accent["name"],
+    )
+
+    tmp_dir = Path(tempfile.mkdtemp(prefix="roundup_"))
+    try:
+        slides = _extract_roundup_slides(articles, niche_name)
+        if not slides:
+            logger.error("Roundup: no slides extracted")
+            return None
+
+        total_slides = len(slides)
+        clips = []
+
+        for i, slide in enumerate(slides):
+            # 1. Fetch relevant image
+            from core.image_fetcher import fetch_image, extract_search_query
+
+            search_hint = slide.get("search_query", slide["heading"])
+            query = extract_search_query(search_hint, niche_name)
+            bg_img = fetch_image(
+                query, pexels_key, "landscape", WIDTH, HEIGHT, photo_index=i,
+                niche_id=niche_id,
+            )
+            if bg_img:
+                logger.info("  Roundup slide %d/%d: image for '%s'", i + 1, total_slides, query[:40])
+            else:
+                logger.info("  Roundup slide %d/%d: gradient fallback", i + 1, total_slides)
+
+            # 2. Compose frame
+            frame = _build_roundup_frame(slide, bg_img, accent, i, total_slides)
+            frame_array = np.array(frame)
+
+            # 3. TTS narration (normal speed for long-form — more conversational)
+            audio_path = tmp_dir / f"roundup_audio_{i}.mp3"
+            audio_file = _tts_generate(slide["narration"], voice, audio_path)
+
+            # 4. Ken Burns clip
+            if audio_file and audio_file.exists():
+                audio_clip = AudioFileClip(str(audio_file))
+                duration = audio_clip.duration + 0.8  # slight pause between slides
+                clip = _make_ken_burns_clip(frame_array, duration, FPS, i, amount=0.04)
+                clip = clip.with_audio(audio_clip)
+            else:
+                duration = max(5.0, len(slide["narration"]) / 12)
+                clip = _make_ken_burns_clip(frame_array, duration, FPS, i, amount=0.04)
+
+            clip = clip.with_effects([vfx.FadeIn(0.4), vfx.FadeOut(0.4)])
+            clips.append(clip)
+
+        if not clips:
+            logger.error("Roundup: no clips generated")
+            return None
+
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        final = concatenate_videoclips(clips, method="compose")
+        final.write_videofile(
+            str(output_path), fps=FPS, codec="libx264", audio_codec="aac",
+        )
+        logger.info(
+            "Roundup video generated: %s (%d articles, %.1f min)",
+            output_path, len(articles), final.duration / 60,
+        )
+        return output_path
+
+    except Exception as exc:
+        logger.error("Roundup video generation failed: %s", exc)
+        return None
+    finally:
+        shutil.rmtree(str(tmp_dir), ignore_errors=True)
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+#  Roundup slide extraction (multi-article)
+# ═══════════════════════════════════════════════════════════════════════════
+def _extract_roundup_slides(articles: list, niche_name: str) -> list:
+    """
+    Build slides for a weekly roundup from multiple articles.
+
+    Structure:
+      1  Intro          — "This Week in [Niche]" + article count
+      N  Article cards  — per article: title card + 1-2 key points
+      1  Outro CTA      — subscribe + website
+
+    Each article gets 2-3 slides so the viewer gets the gist without
+    watching each individual Short.
+    """
+    slides = []
+    count = len(articles)
+    week_label = "this week" if count <= 7 else f"these past {count} articles"
+
+    # ── Intro slide ───────────────────────────────────────────────
+    slides.append({
+        "type": "roundup_intro",
+        "heading": f"This Week in {niche_name}",
+        "body": f"{count} {'story' if count == 1 else 'stories'} you need to know",
+        "niche": niche_name,
+        "search_query": f"{niche_name} weekly highlights",
+        "narration": (
+            f"Welcome to This Week in {niche_name} on TechLife Insights! "
+            f"We've got {count} {'story' if count == 1 else 'stories'} to cover {week_label}. "
+            f"Let's dive right in."
+        ),
+    })
+
+    # ── Per-article segments ──────────────────────────────────────
+    for idx, article in enumerate(articles):
+        title = article.get("title", "Untitled")
+        html = article.get("html_content", "")
+
+        # Extract first paragraph as intro
+        intro_match = re.search(r"<p[^>]*>(.*?)</p>", html, re.DOTALL)
+        intro_text = re.sub(r"<[^>]+>", "", intro_match.group(1)).strip() if intro_match else ""
+
+        # Article title card
+        article_num = f"Story {idx + 1} of {count}"
+        slides.append({
+            "type": "roundup_article_title",
+            "heading": title,
+            "body": article_num,
+            "niche": niche_name,
+            "search_query": title,
+            "narration": (
+                f"{'First up' if idx == 0 else 'Next up' if idx < count - 1 else 'And finally'}, "
+                f"story number {idx + 1}: {title}."
+            ),
+        })
+
+        # Extract H2 key points for this article
+        h2_pattern = re.compile(r"<h2[^>]*>(.*?)</h2>(.*?)(?=<h2|$)", re.DOTALL)
+        key_points = []
+        for match in h2_pattern.finditer(html):
+            h2_text = re.sub(r"<[^>]+>", "", match.group(1)).strip()
+            body_html = match.group(2)
+            if any(skip in h2_text.lower()
+                   for skip in ["faq", "question", "frequently", "conclusion", "summary"]):
+                continue
+            body_text = re.sub(r"<[^>]+>", " ", body_html).strip()
+            body_text = re.sub(r"\s+", " ", body_text)
+            sentences = [s.strip() for s in body_text.split(".") if len(s.strip()) > 20]
+            key_points.append({
+                "heading": h2_text,
+                "summary": ". ".join(sentences[:2]) + "." if sentences else body_text[:200],
+                "narration": ". ".join(sentences[:3]) + "." if sentences else body_text[:300],
+            })
+            if len(key_points) >= 2:
+                break
+
+        # Add 1-2 key point slides per article
+        for kp in key_points:
+            slides.append({
+                "type": "roundup_key_point",
+                "heading": kp["heading"],
+                "body": kp["summary"][:280],
+                "search_query": kp["heading"],
+                "narration": f"{kp['heading']}. {kp['narration'][:400]}",
+            })
+
+        # If no H2 points found, use intro paragraph
+        if not key_points and intro_text:
+            slides.append({
+                "type": "roundup_key_point",
+                "heading": "Key Takeaway",
+                "body": intro_text[:280],
+                "search_query": title,
+                "narration": intro_text[:400],
+            })
+
+    # ── Outro CTA ─────────────────────────────────────────────────
+    slides.append({
+        "type": "roundup_outro",
+        "heading": f"That's a Wrap!",
+        "body": (
+            f"Read full articles at tech-life-insights.com"
+        ),
+        "niche": niche_name,
+        "search_query": f"{niche_name} technology insights",
+        "narration": (
+            f"That's a wrap for This Week in {niche_name}! "
+            f"For the full articles with all the details and links, "
+            f"head over to tech life insights dot com. "
+            f"If you found this helpful, hit that like button and subscribe "
+            f"so you never miss a weekly roundup. See you next week!"
+        ),
+    })
+
+    return slides
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+#  Roundup frame composition
+# ═══════════════════════════════════════════════════════════════════════════
+def _build_roundup_frame(
+    slide: dict,
+    bg_img: "Image.Image | None",
+    accent: dict,
+    slide_index: int,
+    total_slides: int,
+) -> Image.Image:
+    """Compose a roundup slide frame — slightly different layout than single-article."""
+    if bg_img:
+        frame = bg_img.copy().convert("RGB")
+    else:
+        frame = _generate_gradient_bg(WIDTH, HEIGHT, accent)
+
+    frame = _apply_dark_overlay(frame, slide["type"])
+    draw = ImageDraw.Draw(frame)
+
+    stype = slide["type"]
+    heading = slide.get("heading", "")
+    body = slide.get("body", "")
+    ac = accent["primary"]
+
+    font_title = _get_font(46, "heavy")
+    font_h2 = _get_font(36, "bold")
+    font_body = _get_font(24, "medium")
+    font_small = _get_font(18, "regular")
+    font_label = _get_font(20, "demibold")
+    font_brand = _get_font(16, "demibold")
+
+    if stype == "roundup_intro":
+        # "WEEKLY ROUNDUP" badge
+        _draw_badge(draw, "WEEKLY ROUNDUP", font_small, ac, 80, 80)
+
+        # Big title
+        _draw_text_shadow(draw, heading, font_title, (255, 255, 255), 80, 160, WIDTH - 160)
+
+        # Subtitle (article count)
+        if body:
+            _draw_text_shadow(draw, body, font_body, (200, 210, 225), 80, 380, WIDTH - 160)
+
+        # Decorative accent line
+        draw.rectangle([(80, 350), (380, 353)], fill=ac)
+
+    elif stype == "roundup_article_title":
+        # Story number badge
+        if body:
+            _draw_badge(draw, body.upper(), font_small, ac, 80, 90)
+
+        # Article title (big and bold)
+        _draw_text_shadow(draw, heading, font_title, (255, 255, 255), 80, 170, WIDTH - 160)
+
+        # Accent underline
+        draw.rectangle([(80, 420), (300, 423)], fill=ac)
+
+    elif stype == "roundup_key_point":
+        # "KEY TAKEAWAY" label
+        _draw_text_shadow(draw, "KEY TAKEAWAY", font_label, ac, 80, 70, WIDTH - 160)
+
+        # Heading
+        _draw_text_shadow(draw, heading, font_h2, (255, 255, 255), 80, 120, WIDTH - 160)
+
+        # Separator
+        draw.rectangle([(80, 265), (260, 268)], fill=ac)
+
+        # Body text
+        if body:
+            _draw_text_shadow(draw, body, font_body, (220, 225, 235), 80, 295, WIDTH - 160)
+
+    elif stype == "roundup_outro":
+        # "THAT'S A WRAP" big text
+        _draw_text_shadow(draw, heading, font_title, (255, 255, 255), 80, 180, WIDTH - 160)
+
+        draw.rectangle([(80, 330), (380, 333)], fill=ac)
+
+        if body:
+            _draw_text_shadow(draw, body, font_body, ac, 80, 360, WIDTH - 160)
+
+        _draw_text_shadow(
+            draw, "Like & Subscribe for weekly roundups!",
+            font_small, (180, 190, 200), 80, 460, WIDTH - 160,
+        )
+
+    else:
+        # Fallback — treat like content
+        _draw_text_shadow(draw, heading, font_h2, ac, 80, 120, WIDTH - 160)
+        if body:
+            _draw_text_shadow(draw, body, font_body, (225, 230, 240), 80, 280, WIDTH - 160)
+
+    # ── Progress bar ──────────────────────────────────────────────
+    progress = (slide_index + 1) / total_slides
+    bar_y = HEIGHT - 4
+    draw.rectangle([(0, bar_y), (int(WIDTH * progress), HEIGHT)], fill=ac)
+    draw.rectangle([(int(WIDTH * progress), bar_y), (WIDTH, HEIGHT)], fill=(20, 20, 20))
+
+    # ── Brand watermark ───────────────────────────────────────────
+    brand = "TechLife Insights — Weekly Roundup"
+    bbox = draw.textbbox((0, 0), brand, font=font_brand)
+    bw = bbox[2] - bbox[0]
+    _draw_text_shadow(draw, brand, font_brand, (100, 110, 125), WIDTH - 80 - bw, HEIGHT - 35, 400)
+
+    return frame
 
 
 # ═══════════════════════════════════════════════════════════════════════════

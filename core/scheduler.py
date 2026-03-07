@@ -148,6 +148,22 @@ def start_scheduler(config: dict, db_path: Path) -> None:
             replace_existing=True,
         )
 
+        # Weekly Roundup Video (Saturday — compiles week's articles into 5-10 min video)
+        roundup_day = niche_cfg.get("roundup_schedule_day", "sat")
+        roundup_hour = niche_cfg.get("roundup_schedule_hour", 14)
+        roundup_minute = niche_cfg.get("roundup_schedule_minute", 0)
+        scheduler.add_job(
+            job_generate_and_upload_roundup,
+            trigger="cron",
+            day_of_week=roundup_day,
+            hour=roundup_hour,
+            minute=roundup_minute,
+            args=[niche_id, niche_cfg, settings, db_path, site_url],
+            id=f"roundup_{niche_id}",
+            name=f"🎥 Roundup: {niche_cfg.get('name', niche_id)}",
+            replace_existing=True,
+        )
+
     # ── Rebuild site every Sunday ────────────────────────────────────────
     scheduler.add_job(
         job_rebuild_site,
@@ -542,6 +558,218 @@ def job_generate_and_upload_short(
         )
 
 
+def _manual_generate_roundup(niche_id, niche_cfg, settings, db_path, site_url):
+    """Manual trigger version of weekly roundup video generation."""
+    from core import video_generator, youtube_uploader, analytics_tracker
+
+    if not settings.get("video", {}).get("enabled", True):
+        return
+
+    niche_name = niche_cfg.get("name", niche_id.replace("_", " ").title())
+
+    conn = sqlite3.connect(str(db_path))
+    conn.row_factory = sqlite3.Row
+    rows = conn.execute(
+        "SELECT * FROM posts WHERE niche_id = ? "
+        "AND published_at >= datetime('now', '-7 days') "
+        "ORDER BY published_at ASC",
+        (niche_id,),
+    ).fetchall()
+    conn.close()
+
+    if len(rows) < 2:
+        logger.info("Manual roundup: <2 articles for %s — skipping", niche_id)
+        return
+
+    articles = []
+    for row in rows:
+        post = dict(row)
+        article = {
+            "title": post["title"], "slug": post["slug"],
+            "html_content": "", "niche_name": niche_name, "tags": [],
+        }
+        html_path = _PROJECT_ROOT / "site" / "output" / niche_id / f"{post['slug']}.html"
+        if html_path.exists():
+            from bs4 import BeautifulSoup
+            soup = BeautifulSoup(html_path.read_text(encoding="utf-8"), "lxml")
+            main = soup.find("article") or soup.find("main") or soup.find("body")
+            article["html_content"] = str(main) if main else ""
+        articles.append(article)
+
+    from datetime import date
+    week_str = date.today().strftime("%Y-W%V")
+    output_dir = _PROJECT_ROOT / "data" / "videos" / "roundups"
+    output_dir.mkdir(parents=True, exist_ok=True)
+    video_path = output_dir / f"{niche_id}_roundup_{week_str}.mp4"
+
+    result = video_generator.generate_roundup(articles, niche_name, niche_id, video_path)
+    if result:
+        channel_name = settings.get("youtube_channel_name", "TechLife Insights")
+        roundup_article = {
+            "title": f"This Week in {niche_name} — {week_str}",
+            "meta_description": f"Weekly roundup: {len(articles)} articles from {niche_name}",
+            "url": f"{site_url.rstrip('/')}/{niche_id}/",
+            "tags": [niche_name, "weekly roundup"],
+        }
+        youtube_url = youtube_uploader.upload_video(video_path, roundup_article, niche_cfg, channel_name)
+
+        conn = sqlite3.connect(str(db_path))
+        for a in articles:
+            conn.execute(
+                "UPDATE posts SET youtube_video_url = ? WHERE slug = ?",
+                (youtube_url or str(video_path), a["slug"]),
+            )
+        conn.commit()
+        conn.close()
+
+
+def job_generate_and_upload_roundup(
+    niche_id: str,
+    niche_cfg: dict,
+    settings: dict,
+    db_path: Path,
+    site_url: str,
+) -> None:
+    """
+    Weekly roundup job: compile this week's articles into a 5-10 minute
+    landscape YouTube video. Completely different content from the
+    per-article Shorts — this is a conversational overview.
+
+    Runs on Saturdays (configurable). Skips if <2 articles this week.
+    """
+    if not _should_run(f"roundup_{niche_id}"):
+        return
+
+    from core import video_generator, youtube_uploader, analytics_tracker, bot_state
+
+    if not bot_state.is_bot_running():
+        return
+    if not bot_state.is_niche_enabled(niche_id):
+        return
+    if not settings.get("video", {}).get("enabled", True):
+        return
+
+    _human_delay()
+
+    niche_name = niche_cfg.get("name", niche_id.replace("_", " ").title())
+    channel_name = settings.get("youtube_channel_name", "TechLife Insights")
+    min_articles = settings.get("video", {}).get("roundup_min_articles", 2)
+
+    try:
+        # Fetch articles from the past 7 days for this niche
+        conn = sqlite3.connect(str(db_path))
+        conn.row_factory = sqlite3.Row
+        rows = conn.execute(
+            "SELECT * FROM posts WHERE niche_id = ? "
+            "AND published_at >= datetime('now', '-7 days') "
+            "AND (youtube_video_url IS NULL OR youtube_video_url = '') "
+            "ORDER BY published_at ASC",
+            (niche_id,),
+        ).fetchall()
+        conn.close()
+
+        if len(rows) < min_articles:
+            logger.info(
+                "Roundup %s: only %d articles this week (need %d) — skipping",
+                niche_id, len(rows), min_articles,
+            )
+            return
+
+        # Load HTML content for each article
+        articles = []
+        for row in rows:
+            post = dict(row)
+            article = {
+                "title": post["title"],
+                "slug": post["slug"],
+                "html_content": "",
+                "meta_description": "",
+                "niche_id": niche_id,
+                "niche_name": niche_name,
+                "url": post.get("url", ""),
+                "tags": [],
+            }
+
+            html_path = _PROJECT_ROOT / "site" / "output" / niche_id / f"{post['slug']}.html"
+            if html_path.exists():
+                from bs4 import BeautifulSoup
+                full_html = html_path.read_text(encoding="utf-8")
+                soup = BeautifulSoup(full_html, "lxml")
+                main = soup.find("article") or soup.find("main") or soup.find("body")
+                article["html_content"] = str(main) if main else full_html
+                meta = soup.find("meta", attrs={"name": "description"})
+                article["meta_description"] = meta["content"] if meta and meta.get("content") else ""
+
+            articles.append(article)
+
+        analytics_tracker.log_action(
+            db_path, "INFO", "roundup_start",
+            f"Generating weekly roundup for {niche_name} ({len(articles)} articles)",
+            niche_id,
+        )
+
+        # Generate the roundup video
+        from datetime import date
+        week_str = date.today().strftime("%Y-W%V")
+        output_dir = _PROJECT_ROOT / "data" / "videos" / "roundups"
+        output_dir.mkdir(parents=True, exist_ok=True)
+        video_path = output_dir / f"{niche_id}_roundup_{week_str}.mp4"
+
+        result = video_generator.generate_roundup(articles, niche_name, niche_id, video_path)
+        if not result:
+            analytics_tracker.log_action(
+                db_path, "ERROR", "roundup_failed",
+                f"Roundup video generation failed for {niche_name}", niche_id,
+            )
+            return
+
+        # Build a combined description for YouTube upload
+        roundup_article = {
+            "title": f"This Week in {niche_name} — {week_str}",
+            "meta_description": (
+                f"Weekly roundup of {len(articles)} articles from {niche_name}. "
+                f"Covering: {', '.join(a['title'][:60] for a in articles[:4])}"
+            ),
+            "url": f"{site_url.rstrip('/')}/{niche_id}/",
+            "tags": [niche_name, "weekly roundup", "tech insights"],
+        }
+
+        youtube_url = youtube_uploader.upload_video(
+            video_path, roundup_article, niche_cfg, channel_name,
+        )
+
+        # Mark all included articles with the roundup video URL
+        slugs = [a["slug"] for a in articles]
+        conn = sqlite3.connect(str(db_path))
+        for slug in slugs:
+            conn.execute(
+                "UPDATE posts SET youtube_video_url = ? WHERE slug = ?",
+                (youtube_url or str(video_path), slug),
+            )
+        conn.commit()
+        conn.close()
+
+        if youtube_url:
+            analytics_tracker.log_action(
+                db_path, "SUCCESS", "roundup_uploaded",
+                f"Weekly roundup uploaded: {youtube_url} ({len(articles)} articles)",
+                niche_id,
+            )
+        else:
+            analytics_tracker.log_action(
+                db_path, "INFO", "roundup_generated",
+                f"Roundup generated locally: {video_path} ({len(articles)} articles)",
+                niche_id,
+            )
+
+    except Exception as exc:
+        logger.error("Roundup job error for %s: %s", niche_id, exc)
+        analytics_tracker.log_action(
+            db_path, "ERROR", "roundup_error", f"Roundup error: {exc}",
+            niche_id, error=str(exc),
+        )
+
+
 def job_post_to_twitter(
     niche_id: str,
     niche_cfg: dict,
@@ -764,6 +992,11 @@ def job_check_manual_triggers(
         if "youtube_shorts" in platforms:
             _manual_generate_short(niche_id, niche_cfg, settings, db_path)
             logger.info("  ✓ Step 4: Short generated for %s", niche_id)
+
+        # Step 3b: Generate Roundup Video (if requested)
+        if "youtube_video" in platforms:
+            _manual_generate_roundup(niche_id, niche_cfg, settings, db_path, site_url)
+            logger.info("  ✓ Step 4b: Roundup video generated for %s", niche_id)
 
         # Step 5: Tweet article + video
         if "twitter" in platforms or "blog" in platforms:
@@ -1040,6 +1273,15 @@ def run_full_pipeline(niches_config: dict, settings: dict, db_path: Path, site_u
         except Exception as exc:
             niche_summary["short"] = f"✗ {exc}"
             summary["errors"].append(f"{niche_id} short: {exc}")
+
+        # Step 3b: Roundup Video
+        try:
+            _manual_generate_roundup(niche_id, niche_cfg, settings, db_path, site_url)
+            niche_summary["roundup"] = "✓"
+            summary["steps_completed"] += 1
+        except Exception as exc:
+            niche_summary["roundup"] = f"✗ {exc}"
+            summary["errors"].append(f"{niche_id} roundup: {exc}")
 
         # Step 5: Tweet
         try:

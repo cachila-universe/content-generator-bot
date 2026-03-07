@@ -24,6 +24,7 @@ def init_db(db_path: Path) -> None:
             slug TEXT UNIQUE NOT NULL,
             url TEXT,
             youtube_url TEXT,
+            youtube_video_url TEXT DEFAULT '',
             subtopic_id TEXT DEFAULT '',
             image_url TEXT DEFAULT '',
             published_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -108,16 +109,17 @@ def save_post(db_path: Path, post_data: dict) -> None:
     try:
         conn = sqlite3.connect(str(db_path))
         # Migrate: add missing columns for existing DBs
-        for col, default in [("subtopic_id", "''"), ("image_url", "''")]:
+        for col, default in [("subtopic_id", "''"), ("image_url", "''"), ("youtube_video_url", "''")]:
             try:
                 conn.execute(f"ALTER TABLE posts ADD COLUMN {col} TEXT DEFAULT {default}")
             except sqlite3.OperationalError:
                 pass  # column already exists
         conn.execute(
             """INSERT OR REPLACE INTO posts
-               (niche_id, niche_name, title, slug, url, youtube_url, subtopic_id, image_url,
+               (niche_id, niche_name, title, slug, url, youtube_url, youtube_video_url,
+                subtopic_id, image_url,
                 word_count, affiliate_links_count, estimated_clicks, estimated_income, status)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
             (
                 post_data.get("niche_id", ""),
                 post_data.get("niche_name", ""),
@@ -125,6 +127,7 @@ def save_post(db_path: Path, post_data: dict) -> None:
                 post_data.get("slug", ""),
                 post_data.get("url", ""),
                 post_data.get("youtube_url", ""),
+                post_data.get("youtube_video_url", ""),
                 post_data.get("subtopic_id", ""),
                 post_data.get("image_url", ""),
                 post_data.get("word_count", 0),
