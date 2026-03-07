@@ -52,16 +52,34 @@
     .trip-btn.active{border-color:var(--accent);background:var(--accent-light);color:var(--accent)}
     .search-btn{width:100%;padding:14px;border:none;border-radius:10px;background:var(--accent);color:#fff;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;transition:background .2s;margin-top:8px}
     .search-btn:hover{background:var(--accent-hover)}
-    .results-panel{display:none;margin:24px 0}
-    .results-header{font-size:16px;font-weight:700;margin-bottom:16px;padding:16px;background:var(--accent-light);border-radius:var(--radius);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
-    .provider-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px}
-    .provider-card{border:1px solid var(--border);border-radius:var(--radius);padding:20px;text-align:center;text-decoration:none;color:var(--text);display:block;transition:all .2s}
+    .results-panel{display:none;margin:24px 0;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:24px}
+    .results-loading{text-align:center;padding:32px;display:flex;flex-direction:column;align-items:center;gap:14px}
+    .spinner{width:44px;height:44px;border:4px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .results-loading p{font-size:14px;color:var(--text-secondary);font-weight:500}
+    .results-content{display:none}
+    .route-card{background:linear-gradient(135deg,#0f172a 0%,#1e3a8a 100%);color:#fff;border-radius:var(--radius);padding:22px 26px;margin-bottom:16px}
+    .route-airports{display:flex;align-items:center;gap:18px;font-size:24px;font-weight:900;flex-wrap:wrap}
+    .route-airports .airport-block{display:flex;flex-direction:column}
+    .route-airports .airport-block small{font-size:12px;font-weight:500;opacity:.75;margin-top:2px}
+    .route-plane{font-size:20px;opacity:.8}
+    .route-meta{font-size:13px;opacity:.8;margin-top:10px;line-height:1.7}
+    .insights-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(165px,1fr));gap:12px;margin-bottom:20px}
+    .insight-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 12px;text-align:center}
+    .insight-card .ic-icon{font-size:20px;margin-bottom:5px}
+    .insight-card .ic-label{font-size:10px;color:var(--text-secondary);text-transform:uppercase;font-weight:700;letter-spacing:.07em;margin-bottom:3px}
+    .insight-card .ic-value{font-size:15px;font-weight:800;color:var(--accent);margin:2px 0}
+    .insight-card .ic-note{font-size:11px;color:var(--text-secondary);line-height:1.4}
+    .providers-section-title{font-size:11px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.07em;margin:16px 0 10px}
+    .provider-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}
+    .provider-card{border:1px solid var(--border);border-radius:var(--radius);padding:16px;text-align:center;text-decoration:none;color:var(--text);display:block;transition:all .2s}
     .provider-card:hover{border-color:var(--accent);box-shadow:var(--shadow);transform:translateY(-2px)}
-    .provider-icon{font-size:32px;margin-bottom:8px}
-    .provider-card h3{font-size:14px;font-weight:700;margin-bottom:4px}
-    .provider-card p{font-size:12px;color:var(--text-secondary)}
-    .provider-card .go-btn{display:inline-block;margin-top:8px;background:var(--accent);color:#fff;padding:6px 14px;border-radius:6px;font-size:12px;font-weight:600}
-    .open-all{background:var(--accent);color:#fff;border:none;padding:8px 18px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit}
+    .provider-icon{font-size:28px;margin-bottom:6px}
+    .provider-card h3{font-size:13px;font-weight:700;margin-bottom:3px}
+    .provider-card p{font-size:11px;color:var(--text-secondary)}
+    .provider-card .go-btn{display:inline-block;margin-top:7px;background:var(--accent);color:#fff;padding:5px 12px;border-radius:6px;font-size:11px;font-weight:600}
+    .open-all-btn{display:block;width:100%;background:var(--accent);color:#fff;border:none;padding:12px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:14px;transition:background .2s}
+    .open-all-btn:hover{background:var(--accent-hover)}
     .partners{padding:28px 0;border-top:1px solid var(--border);margin-top:20px}
     .partners h2{font-size:18px;font-weight:800;margin-bottom:16px;text-align:center}
     .partner-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:14px}
@@ -170,8 +188,17 @@
 
     <!-- RESULTS -->
     <div class="results-panel" id="results">
-      <div class="results-header"><span id="resultsTitle">Results</span><button class="open-all" onclick="openAll()">Open All Providers ↗</button></div>
-      <div class="provider-grid" id="providerGrid"></div>
+      <div class="results-loading" id="resultsLoading">
+        <div class="spinner"></div>
+        <p id="loadingText">Searching across providers…</p>
+      </div>
+      <div class="results-content" id="resultsContent">
+        <div class="route-card" id="routeCard"></div>
+        <div class="insights-row" id="insightsRow"></div>
+        <p class="providers-section-title">🔍 Search for live prices on:</p>
+        <div class="provider-grid" id="providerGrid"></div>
+        <button class="open-all-btn" onclick="openAll()">Open All Providers at Once ↗</button>
+      </div>
     </div>
 
     <div class="tips">
@@ -200,63 +227,263 @@
   <footer class="footer"><div class="container">&copy; 2026 {{ site_title }}. · <a href="/privacy.html">Privacy</a> · <a href="/about.html">About</a> · <a href="/tools/">All Tools</a></div></footer>
   <a href="https://techlife-insights.kit.com/be266c00d5" target="_blank" rel="noopener" class="subscribe-float">📬 Subscribe</a>
   <script>
-  // Airport database
+  // ── Airport database: 175+ airports with lat/lon for distance calculation ────
   var AP = [
-    {c:'JFK',city:'New York',n:'John F. Kennedy Intl',co:'US'},{c:'EWR',city:'Newark',n:'Newark Liberty Intl',co:'US'},
-    {c:'LGA',city:'New York',n:'LaGuardia',co:'US'},{c:'LAX',city:'Los Angeles',n:'Los Angeles Intl',co:'US'},
-    {c:'SFO',city:'San Francisco',n:'San Francisco Intl',co:'US'},{c:'ORD',city:'Chicago',n:"O'Hare Intl",co:'US'},
-    {c:'ATL',city:'Atlanta',n:'Hartsfield-Jackson',co:'US'},{c:'DFW',city:'Dallas',n:'Dallas/Fort Worth Intl',co:'US'},
-    {c:'DEN',city:'Denver',n:'Denver Intl',co:'US'},{c:'SEA',city:'Seattle',n:'Seattle-Tacoma Intl',co:'US'},
-    {c:'MIA',city:'Miami',n:'Miami Intl',co:'US'},{c:'BOS',city:'Boston',n:'Logan Intl',co:'US'},
-    {c:'IAH',city:'Houston',n:'George Bush Intercontinental',co:'US'},{c:'PHX',city:'Phoenix',n:'Phoenix Sky Harbor',co:'US'},
-    {c:'LAS',city:'Las Vegas',n:'Harry Reid Intl',co:'US'},{c:'MCO',city:'Orlando',n:'Orlando Intl',co:'US'},
-    {c:'DTW',city:'Detroit',n:'Detroit Metropolitan',co:'US'},{c:'MSP',city:'Minneapolis',n:'Minneapolis-Saint Paul',co:'US'},
-    {c:'PHL',city:'Philadelphia',n:'Philadelphia Intl',co:'US'},{c:'IAD',city:'Washington DC',n:'Dulles Intl',co:'US'},
-    {c:'SAN',city:'San Diego',n:'San Diego Intl',co:'US'},{c:'TPA',city:'Tampa',n:'Tampa Intl',co:'US'},
-    {c:'HNL',city:'Honolulu',n:'Daniel K. Inouye Intl',co:'US'},{c:'AUS',city:'Austin',n:'Austin-Bergstrom',co:'US'},
-    {c:'LHR',city:'London',n:'Heathrow',co:'GB'},{c:'LGW',city:'London',n:'Gatwick',co:'GB'},
-    {c:'CDG',city:'Paris',n:'Charles de Gaulle',co:'FR'},{c:'AMS',city:'Amsterdam',n:'Schiphol',co:'NL'},
-    {c:'FRA',city:'Frankfurt',n:'Frankfurt am Main',co:'DE'},{c:'MAD',city:'Madrid',n:'Adolfo Suarez Madrid-Barajas',co:'ES'},
-    {c:'BCN',city:'Barcelona',n:'El Prat',co:'ES'},{c:'FCO',city:'Rome',n:'Leonardo da Vinci-Fiumicino',co:'IT'},
-    {c:'MUC',city:'Munich',n:'Franz Josef Strauss',co:'DE'},{c:'IST',city:'Istanbul',n:'Istanbul Airport',co:'TR'},
-    {c:'ZRH',city:'Zurich',n:'Zurich Airport',co:'CH'},{c:'VIE',city:'Vienna',n:'Vienna Intl',co:'AT'},
-    {c:'CPH',city:'Copenhagen',n:'Copenhagen Airport',co:'DK'},{c:'DUB',city:'Dublin',n:'Dublin Airport',co:'IE'},
-    {c:'LIS',city:'Lisbon',n:'Humberto Delgado',co:'PT'},{c:'ATH',city:'Athens',n:'Eleftherios Venizelos',co:'GR'},
-    {c:'NRT',city:'Tokyo',n:'Narita Intl',co:'JP'},{c:'HND',city:'Tokyo',n:'Haneda',co:'JP'},
-    {c:'PEK',city:'Beijing',n:'Beijing Capital Intl',co:'CN'},{c:'PVG',city:'Shanghai',n:'Pudong Intl',co:'CN'},
-    {c:'HKG',city:'Hong Kong',n:'Hong Kong Intl',co:'HK'},{c:'SIN',city:'Singapore',n:'Changi Airport',co:'SG'},
-    {c:'ICN',city:'Seoul',n:'Incheon Intl',co:'KR'},{c:'BKK',city:'Bangkok',n:'Suvarnabhumi',co:'TH'},
-    {c:'DEL',city:'New Delhi',n:'Indira Gandhi Intl',co:'IN'},{c:'BOM',city:'Mumbai',n:'Chhatrapati Shivaji Maharaj',co:'IN'},
-    {c:'DXB',city:'Dubai',n:'Dubai Intl',co:'AE'},{c:'DOH',city:'Doha',n:'Hamad Intl',co:'QA'},
-    {c:'AUH',city:'Abu Dhabi',n:'Zayed Intl',co:'AE'},
-    {c:'SYD',city:'Sydney',n:'Kingsford Smith',co:'AU'},{c:'MEL',city:'Melbourne',n:'Melbourne Airport',co:'AU'},
-    {c:'AKL',city:'Auckland',n:'Auckland Airport',co:'NZ'},
-    {c:'YYZ',city:'Toronto',n:'Pearson Intl',co:'CA'},{c:'YVR',city:'Vancouver',n:'Vancouver Intl',co:'CA'},
-    {c:'MEX',city:'Mexico City',n:'Benito Juarez Intl',co:'MX'},{c:'GRU',city:'Sao Paulo',n:'Guarulhos Intl',co:'BR'},
-    {c:'SCL',city:'Santiago',n:'Arturo Merino Benitez',co:'CL'},{c:'BOG',city:'Bogota',n:'El Dorado Intl',co:'CO'},
-    {c:'EZE',city:'Buenos Aires',n:'Ministro Pistarini',co:'AR'},{c:'CUN',city:'Cancun',n:'Cancun Intl',co:'MX'},
-    {c:'KUL',city:'Kuala Lumpur',n:'KL Intl',co:'MY'},{c:'MNL',city:'Manila',n:'Ninoy Aquino Intl',co:'PH'}
+    // United States
+    {c:'JFK',city:'New York',n:'John F. Kennedy Intl',co:'US',lat:40.641,lon:-73.778},
+    {c:'EWR',city:'Newark',n:'Newark Liberty Intl',co:'US',lat:40.690,lon:-74.174},
+    {c:'LGA',city:'New York',n:'LaGuardia',co:'US',lat:40.777,lon:-73.873},
+    {c:'LAX',city:'Los Angeles',n:'Los Angeles Intl',co:'US',lat:33.943,lon:-118.408},
+    {c:'SFO',city:'San Francisco',n:'San Francisco Intl',co:'US',lat:37.619,lon:-122.375},
+    {c:'ORD',city:'Chicago',n:"O'Hare Intl",co:'US',lat:41.978,lon:-87.905},
+    {c:'MDW',city:'Chicago',n:'Midway Intl',co:'US',lat:41.786,lon:-87.742},
+    {c:'ATL',city:'Atlanta',n:'Hartsfield-Jackson',co:'US',lat:33.641,lon:-84.427},
+    {c:'DFW',city:'Dallas',n:'Dallas/Fort Worth Intl',co:'US',lat:32.897,lon:-97.038},
+    {c:'DAL',city:'Dallas',n:'Love Field',co:'US',lat:32.847,lon:-96.852},
+    {c:'DEN',city:'Denver',n:'Denver Intl',co:'US',lat:39.856,lon:-104.674},
+    {c:'SEA',city:'Seattle',n:'Seattle-Tacoma Intl',co:'US',lat:47.450,lon:-122.309},
+    {c:'MIA',city:'Miami',n:'Miami Intl',co:'US',lat:25.796,lon:-80.287},
+    {c:'FLL',city:'Fort Lauderdale',n:'Fort Lauderdale-Hollywood',co:'US',lat:26.073,lon:-80.150},
+    {c:'BOS',city:'Boston',n:'Logan Intl',co:'US',lat:42.365,lon:-71.010},
+    {c:'IAH',city:'Houston',n:'George Bush Intercontinental',co:'US',lat:29.987,lon:-95.341},
+    {c:'HOU',city:'Houston',n:'William P. Hobby',co:'US',lat:29.645,lon:-95.279},
+    {c:'PHX',city:'Phoenix',n:'Phoenix Sky Harbor',co:'US',lat:33.437,lon:-112.008},
+    {c:'LAS',city:'Las Vegas',n:'Harry Reid Intl',co:'US',lat:36.083,lon:-115.152},
+    {c:'MCO',city:'Orlando',n:'Orlando Intl',co:'US',lat:28.429,lon:-81.309},
+    {c:'DTW',city:'Detroit',n:'Detroit Metropolitan',co:'US',lat:42.213,lon:-83.353},
+    {c:'MSP',city:'Minneapolis',n:'Minneapolis-Saint Paul',co:'US',lat:44.882,lon:-93.222},
+    {c:'PHL',city:'Philadelphia',n:'Philadelphia Intl',co:'US',lat:39.872,lon:-75.241},
+    {c:'IAD',city:'Washington DC',n:'Dulles Intl',co:'US',lat:38.944,lon:-77.456},
+    {c:'DCA',city:'Washington DC',n:'Ronald Reagan National',co:'US',lat:38.852,lon:-77.037},
+    {c:'BWI',city:'Baltimore',n:'Baltimore/Washington Intl',co:'US',lat:39.177,lon:-76.670},
+    {c:'SAN',city:'San Diego',n:'San Diego Intl',co:'US',lat:32.734,lon:-117.190},
+    {c:'TPA',city:'Tampa',n:'Tampa Intl',co:'US',lat:27.975,lon:-82.533},
+    {c:'HNL',city:'Honolulu',n:'Daniel K. Inouye Intl',co:'US',lat:21.319,lon:-157.919},
+    {c:'AUS',city:'Austin',n:'Austin-Bergstrom',co:'US',lat:30.197,lon:-97.666},
+    {c:'SLC',city:'Salt Lake City',n:'Salt Lake City Intl',co:'US',lat:40.789,lon:-111.978},
+    {c:'PDX',city:'Portland',n:'Portland Intl',co:'US',lat:45.589,lon:-122.597},
+    {c:'MSY',city:'New Orleans',n:'Louis Armstrong Intl',co:'US',lat:29.990,lon:-90.258},
+    {c:'RDU',city:'Raleigh',n:'Raleigh-Durham Intl',co:'US',lat:35.878,lon:-78.787},
+    {c:'BNA',city:'Nashville',n:'Nashville Intl',co:'US',lat:36.125,lon:-86.678},
+    {c:'CLE',city:'Cleveland',n:'Cleveland Hopkins Intl',co:'US',lat:41.412,lon:-81.851},
+    {c:'CMH',city:'Columbus',n:'John Glenn Columbus Intl',co:'US',lat:39.998,lon:-82.892},
+    {c:'MCI',city:'Kansas City',n:'Kansas City Intl',co:'US',lat:39.297,lon:-94.714},
+    {c:'SAT',city:'San Antonio',n:'San Antonio Intl',co:'US',lat:29.534,lon:-98.470},
+    {c:'SJC',city:'San Jose',n:'Norman Y. Mineta San Jose Intl',co:'US',lat:37.362,lon:-121.929},
+    {c:'OAK',city:'Oakland',n:'Oakland Intl',co:'US',lat:37.721,lon:-122.221},
+    {c:'BUF',city:'Buffalo',n:'Buffalo Niagara Intl',co:'US',lat:42.940,lon:-78.732},
+    {c:'PIT',city:'Pittsburgh',n:'Pittsburgh Intl',co:'US',lat:40.492,lon:-80.233},
+    {c:'IND',city:'Indianapolis',n:'Indianapolis Intl',co:'US',lat:39.717,lon:-86.294},
+    {c:'MKE',city:'Milwaukee',n:'General Mitchell Intl',co:'US',lat:42.948,lon:-87.897},
+    {c:'ABQ',city:'Albuquerque',n:'Albuquerque Intl Sunport',co:'US',lat:35.040,lon:-106.609},
+    {c:'OGG',city:'Maui',n:'Kahului Airport',co:'US',lat:20.899,lon:-156.430},
+    {c:'BDL',city:'Hartford',n:'Bradley Intl',co:'US',lat:41.939,lon:-72.683},
+    {c:'OMA',city:'Omaha',n:'Eppley Airfield',co:'US',lat:41.303,lon:-95.894},
+    // Canada
+    {c:'YYZ',city:'Toronto',n:'Pearson Intl',co:'CA',lat:43.677,lon:-79.631},
+    {c:'YTZ',city:'Toronto',n:'Billy Bishop City Airport',co:'CA',lat:43.628,lon:-79.396},
+    {c:'YVR',city:'Vancouver',n:'Vancouver Intl',co:'CA',lat:49.195,lon:-123.184},
+    {c:'YEG',city:'Edmonton',n:'Edmonton Intl',co:'CA',lat:53.310,lon:-113.580},
+    {c:'YYC',city:'Calgary',n:'Calgary Intl',co:'CA',lat:51.131,lon:-114.013},
+    {c:'YUL',city:'Montreal',n:'Montréal-Trudeau Intl',co:'CA',lat:45.470,lon:-73.741},
+    {c:'YOW',city:'Ottawa',n:'Ottawa Macdonald-Cartier Intl',co:'CA',lat:45.323,lon:-75.669},
+    {c:'YWG',city:'Winnipeg',n:'Winnipeg Richardson Intl',co:'CA',lat:49.910,lon:-97.240},
+    {c:'YQB',city:'Quebec City',n:'Québec City Jean Lesage Intl',co:'CA',lat:46.791,lon:-71.393},
+    {c:'YHZ',city:'Halifax',n:'Halifax Stanfield Intl',co:'CA',lat:44.881,lon:-63.509},
+    {c:'YYJ',city:'Victoria',n:'Victoria Intl',co:'CA',lat:48.647,lon:-123.426},
+    {c:'YLW',city:'Kelowna',n:'Kelowna Intl',co:'CA',lat:49.957,lon:-119.378},
+    {c:'YXE',city:'Saskatoon',n:'Saskatoon John G. Diefenbaker Intl',co:'CA',lat:52.171,lon:-106.700},
+    {c:'YQR',city:'Regina',n:'Regina Intl',co:'CA',lat:50.432,lon:-104.666},
+    {c:'YYT',city:"St. John's",n:"St. John's Intl",co:'CA',lat:47.619,lon:-52.752},
+    {c:'YZF',city:'Yellowknife',n:'Yellowknife Airport',co:'CA',lat:62.463,lon:-114.440},
+    {c:'YXX',city:'Abbotsford',n:'Abbotsford Intl',co:'CA',lat:49.025,lon:-122.361},
+    // United Kingdom
+    {c:'LHR',city:'London',n:'Heathrow',co:'GB',lat:51.477,lon:-0.461},
+    {c:'LGW',city:'London',n:'Gatwick',co:'GB',lat:51.148,lon:-0.190},
+    {c:'STN',city:'London',n:'Stansted',co:'GB',lat:51.885,lon:0.235},
+    {c:'LTN',city:'London',n:'Luton',co:'GB',lat:51.875,lon:-0.368},
+    {c:'MAN',city:'Manchester',n:'Manchester Airport',co:'GB',lat:53.354,lon:-2.275},
+    {c:'EDI',city:'Edinburgh',n:'Edinburgh Airport',co:'GB',lat:55.950,lon:-3.373},
+    {c:'BHX',city:'Birmingham',n:'Birmingham Airport',co:'GB',lat:52.454,lon:-1.748},
+    {c:'GLA',city:'Glasgow',n:'Glasgow Airport',co:'GB',lat:55.872,lon:-4.434},
+    // Europe
+    {c:'CDG',city:'Paris',n:'Charles de Gaulle',co:'FR',lat:49.010,lon:2.550},
+    {c:'ORY',city:'Paris',n:'Paris Orly',co:'FR',lat:48.726,lon:2.360},
+    {c:'NCE',city:'Nice',n:"Nice Côte d'Azur",co:'FR',lat:43.665,lon:7.215},
+    {c:'LYS',city:'Lyon',n:'Lyon-Saint Exupéry',co:'FR',lat:45.726,lon:5.090},
+    {c:'AMS',city:'Amsterdam',n:'Schiphol',co:'NL',lat:52.309,lon:4.764},
+    {c:'FRA',city:'Frankfurt',n:'Frankfurt am Main',co:'DE',lat:50.037,lon:8.562},
+    {c:'MUC',city:'Munich',n:'Franz Josef Strauss',co:'DE',lat:48.354,lon:11.786},
+    {c:'BER',city:'Berlin',n:'Berlin Brandenburg',co:'DE',lat:52.367,lon:13.503},
+    {c:'HAM',city:'Hamburg',n:'Hamburg Airport',co:'DE',lat:53.631,lon:9.988},
+    {c:'DUS',city:'Düsseldorf',n:'Düsseldorf Airport',co:'DE',lat:51.289,lon:6.767},
+    {c:'MAD',city:'Madrid',n:'Adolfo Suárez Madrid-Barajas',co:'ES',lat:40.472,lon:-3.561},
+    {c:'BCN',city:'Barcelona',n:'El Prat',co:'ES',lat:41.298,lon:2.078},
+    {c:'PMI',city:'Palma',n:'Palma de Mallorca Airport',co:'ES',lat:39.551,lon:2.739},
+    {c:'FCO',city:'Rome',n:'Leonardo da Vinci-Fiumicino',co:'IT',lat:41.804,lon:12.252},
+    {c:'MXP',city:'Milan',n:'Malpensa Intl',co:'IT',lat:45.630,lon:8.723},
+    {c:'NAP',city:'Naples',n:'Naples Intl',co:'IT',lat:40.886,lon:14.291},
+    {c:'IST',city:'Istanbul',n:'Istanbul Airport',co:'TR',lat:41.275,lon:28.752},
+    {c:'SAW',city:'Istanbul',n:'Sabiha Gökçen Intl',co:'TR',lat:40.899,lon:29.309},
+    {c:'ZRH',city:'Zurich',n:'Zurich Airport',co:'CH',lat:47.464,lon:8.549},
+    {c:'GVA',city:'Geneva',n:'Geneva Airport',co:'CH',lat:46.238,lon:6.109},
+    {c:'VIE',city:'Vienna',n:'Vienna Intl',co:'AT',lat:48.110,lon:16.570},
+    {c:'CPH',city:'Copenhagen',n:'Copenhagen Airport',co:'DK',lat:55.618,lon:12.656},
+    {c:'ARN',city:'Stockholm',n:'Stockholm Arlanda',co:'SE',lat:59.651,lon:17.919},
+    {c:'HEL',city:'Helsinki',n:'Helsinki-Vantaa',co:'FI',lat:60.318,lon:24.963},
+    {c:'OSL',city:'Oslo',n:'Oslo Gardermoen',co:'NO',lat:60.194,lon:11.100},
+    {c:'DUB',city:'Dublin',n:'Dublin Airport',co:'IE',lat:53.421,lon:-6.270},
+    {c:'LIS',city:'Lisbon',n:'Humberto Delgado',co:'PT',lat:38.774,lon:-9.134},
+    {c:'OPO',city:'Porto',n:'Francisco Sá Carneiro',co:'PT',lat:41.248,lon:-8.682},
+    {c:'ATH',city:'Athens',n:'Eleftherios Venizelos',co:'GR',lat:37.936,lon:23.945},
+    {c:'BRU',city:'Brussels',n:'Brussels Airport',co:'BE',lat:50.901,lon:4.484},
+    {c:'WAW',city:'Warsaw',n:'Chopin Airport',co:'PL',lat:52.166,lon:20.967},
+    {c:'BUD',city:'Budapest',n:'Budapest Ferenc Liszt Intl',co:'HU',lat:47.439,lon:19.261},
+    {c:'PRG',city:'Prague',n:'Václav Havel Airport',co:'CZ',lat:50.101,lon:14.260},
+    {c:'OTP',city:'Bucharest',n:'Henri Coandă Intl',co:'RO',lat:44.572,lon:26.102},
+    {c:'SOF',city:'Sofia',n:'Sofia Airport',co:'BG',lat:42.697,lon:23.406},
+    {c:'BEG',city:'Belgrade',n:'Nikola Tesla Airport',co:'RS',lat:44.818,lon:20.309},
+    {c:'RIX',city:'Riga',n:'Riga Intl',co:'LV',lat:56.923,lon:23.971},
+    {c:'TLL',city:'Tallinn',n:'Tallinn Airport',co:'EE',lat:59.413,lon:24.833},
+    {c:'VNO',city:'Vilnius',n:'Vilnius Airport',co:'LT',lat:54.634,lon:25.286},
+    // Middle East
+    {c:'DXB',city:'Dubai',n:'Dubai Intl',co:'AE',lat:25.253,lon:55.364},
+    {c:'DOH',city:'Doha',n:'Hamad Intl',co:'QA',lat:25.273,lon:51.608},
+    {c:'AUH',city:'Abu Dhabi',n:'Zayed Intl',co:'AE',lat:24.443,lon:54.651},
+    {c:'RUH',city:'Riyadh',n:'King Khalid Intl',co:'SA',lat:24.958,lon:46.699},
+    {c:'JED',city:'Jeddah',n:'King Abdulaziz Intl',co:'SA',lat:21.680,lon:39.157},
+    {c:'KWI',city:'Kuwait City',n:'Kuwait Intl',co:'KW',lat:29.227,lon:47.969},
+    {c:'BAH',city:'Bahrain',n:'Bahrain Intl',co:'BH',lat:26.270,lon:50.634},
+    {c:'AMM',city:'Amman',n:'Queen Alia Intl',co:'JO',lat:31.723,lon:35.993},
+    {c:'TLV',city:'Tel Aviv',n:'Ben Gurion Intl',co:'IL',lat:32.011,lon:34.886},
+    // Africa
+    {c:'CAI',city:'Cairo',n:'Cairo Intl',co:'EG',lat:30.122,lon:31.406},
+    {c:'JNB',city:'Johannesburg',n:'O.R. Tambo Intl',co:'ZA',lat:-26.133,lon:28.242},
+    {c:'CPT',city:'Cape Town',n:'Cape Town Intl',co:'ZA',lat:-33.965,lon:18.602},
+    {c:'NBO',city:'Nairobi',n:'Jomo Kenyatta Intl',co:'KE',lat:-1.319,lon:36.926},
+    {c:'CMN',city:'Casablanca',n:'Mohammed V Intl',co:'MA',lat:33.368,lon:-7.590},
+    {c:'LOS',city:'Lagos',n:'Murtala Muhammed Intl',co:'NG',lat:6.577,lon:3.322},
+    {c:'ADD',city:'Addis Ababa',n:'Bole Intl',co:'ET',lat:8.978,lon:38.799},
+    {c:'ACC',city:'Accra',n:'Kotoka Intl',co:'GH',lat:5.605,lon:-0.167},
+    // Asia
+    {c:'NRT',city:'Tokyo',n:'Narita Intl',co:'JP',lat:35.765,lon:140.386},
+    {c:'HND',city:'Tokyo',n:'Haneda',co:'JP',lat:35.552,lon:139.780},
+    {c:'KIX',city:'Osaka',n:'Kansai Intl',co:'JP',lat:34.431,lon:135.244},
+    {c:'PEK',city:'Beijing',n:'Beijing Capital Intl',co:'CN',lat:40.080,lon:116.584},
+    {c:'PKX',city:'Beijing',n:'Beijing Daxing Intl',co:'CN',lat:39.509,lon:116.410},
+    {c:'PVG',city:'Shanghai',n:'Pudong Intl',co:'CN',lat:31.143,lon:121.805},
+    {c:'SHA',city:'Shanghai',n:'Hongqiao Intl',co:'CN',lat:31.198,lon:121.336},
+    {c:'CAN',city:'Guangzhou',n:'Baiyun Intl',co:'CN',lat:23.392,lon:113.299},
+    {c:'CTU',city:'Chengdu',n:'Tianfu Intl',co:'CN',lat:30.313,lon:104.442},
+    {c:'HKG',city:'Hong Kong',n:'Hong Kong Intl',co:'HK',lat:22.309,lon:113.915},
+    {c:'SIN',city:'Singapore',n:'Changi Airport',co:'SG',lat:1.360,lon:103.989},
+    {c:'ICN',city:'Seoul',n:'Incheon Intl',co:'KR',lat:37.460,lon:126.441},
+    {c:'GMP',city:'Seoul',n:'Gimpo Intl',co:'KR',lat:37.558,lon:126.791},
+    {c:'BKK',city:'Bangkok',n:'Suvarnabhumi',co:'TH',lat:13.681,lon:100.747},
+    {c:'DMK',city:'Bangkok',n:'Don Mueang Intl',co:'TH',lat:13.912,lon:100.607},
+    {c:'DEL',city:'New Delhi',n:'Indira Gandhi Intl',co:'IN',lat:28.556,lon:77.100},
+    {c:'BOM',city:'Mumbai',n:'Chhatrapati Shivaji Maharaj',co:'IN',lat:19.089,lon:72.868},
+    {c:'BLR',city:'Bangalore',n:'Kempegowda Intl',co:'IN',lat:13.199,lon:77.706},
+    {c:'MAA',city:'Chennai',n:'Chennai Intl',co:'IN',lat:12.990,lon:80.169},
+    {c:'HYD',city:'Hyderabad',n:'Rajiv Gandhi Intl',co:'IN',lat:17.231,lon:78.430},
+    {c:'CCU',city:'Kolkata',n:'Netaji Subhas Chandra Bose Intl',co:'IN',lat:22.655,lon:88.447},
+    {c:'KUL',city:'Kuala Lumpur',n:'KL Intl',co:'MY',lat:2.746,lon:101.710},
+    {c:'CGK',city:'Jakarta',n:'Soekarno-Hatta Intl',co:'ID',lat:-6.126,lon:106.656},
+    {c:'MNL',city:'Manila',n:'Ninoy Aquino Intl',co:'PH',lat:14.509,lon:121.019},
+    {c:'SGN',city:'Ho Chi Minh City',n:'Tan Son Nhat Intl',co:'VN',lat:10.818,lon:106.652},
+    {c:'HAN',city:'Hanoi',n:'Noi Bai Intl',co:'VN',lat:21.221,lon:105.807},
+    {c:'CMB',city:'Colombo',n:'Bandaranaike Intl',co:'LK',lat:7.180,lon:79.884},
+    {c:'DAC',city:'Dhaka',n:'Hazrat Shahjalal Intl',co:'BD',lat:23.843,lon:90.398},
+    {c:'KTM',city:'Kathmandu',n:'Tribhuvan Intl',co:'NP',lat:27.697,lon:85.360},
+    {c:'KHI',city:'Karachi',n:'Jinnah Intl',co:'PK',lat:24.906,lon:67.161},
+    // Australia & New Zealand
+    {c:'SYD',city:'Sydney',n:'Kingsford Smith',co:'AU',lat:-33.947,lon:151.177},
+    {c:'MEL',city:'Melbourne',n:'Melbourne Airport',co:'AU',lat:-37.673,lon:144.844},
+    {c:'BNE',city:'Brisbane',n:'Brisbane Airport',co:'AU',lat:-27.385,lon:153.117},
+    {c:'PER',city:'Perth',n:'Perth Airport',co:'AU',lat:-31.940,lon:115.967},
+    {c:'ADL',city:'Adelaide',n:'Adelaide Airport',co:'AU',lat:-34.946,lon:138.531},
+    {c:'CBR',city:'Canberra',n:'Canberra Airport',co:'AU',lat:-35.307,lon:149.195},
+    {c:'OOL',city:'Gold Coast',n:'Gold Coast Airport',co:'AU',lat:-28.165,lon:153.505},
+    {c:'AKL',city:'Auckland',n:'Auckland Airport',co:'NZ',lat:-37.009,lon:174.785},
+    {c:'CHC',city:'Christchurch',n:'Christchurch Airport',co:'NZ',lat:-43.489,lon:172.532},
+    {c:'WLG',city:'Wellington',n:'Wellington Airport',co:'NZ',lat:-41.327,lon:174.805},
+    // Latin America
+    {c:'MEX',city:'Mexico City',n:'Benito Juárez Intl',co:'MX',lat:19.436,lon:-99.072},
+    {c:'CUN',city:'Cancun',n:'Cancun Intl',co:'MX',lat:21.036,lon:-86.877},
+    {c:'GDL',city:'Guadalajara',n:'Miguel Hidalgo y Costilla Intl',co:'MX',lat:20.521,lon:-103.311},
+    {c:'GRU',city:'São Paulo',n:'Guarulhos Intl',co:'BR',lat:-23.432,lon:-46.473},
+    {c:'GIG',city:'Rio de Janeiro',n:'Galeão Intl',co:'BR',lat:-22.809,lon:-43.244},
+    {c:'BSB',city:'Brasília',n:'Presidente Juscelino Kubitschek Intl',co:'BR',lat:-15.869,lon:-47.921},
+    {c:'SCL',city:'Santiago',n:'Arturo Merino Benítez',co:'CL',lat:-33.393,lon:-70.786},
+    {c:'BOG',city:'Bogotá',n:'El Dorado Intl',co:'CO',lat:4.702,lon:-74.147},
+    {c:'MDE',city:'Medellín',n:'José María Córdova Intl',co:'CO',lat:6.164,lon:-75.423},
+    {c:'EZE',city:'Buenos Aires',n:'Ministro Pistarini',co:'AR',lat:-34.822,lon:-58.536},
+    {c:'LIM',city:'Lima',n:'Jorge Chávez Intl',co:'PE',lat:-12.022,lon:-77.115},
+    {c:'UIO',city:'Quito',n:'Mariscal Sucre Intl',co:'EC',lat:-0.129,lon:-78.358},
+    {c:'MVD',city:'Montevideo',n:'Carrasco Intl',co:'UY',lat:-34.838,lon:-56.031},
+    {c:'PTY',city:'Panama City',n:'Tocumen Intl',co:'PA',lat:9.071,lon:-79.383},
+    {c:'SJO',city:'San José',n:'Juan Santamaría Intl',co:'CR',lat:9.994,lon:-84.209},
+    {c:'SJU',city:'San Juan',n:'Luis Muñoz Marín Intl',co:'PR',lat:18.439,lon:-66.002}
   ];
 
-  var selectedFrom={}, selectedTo={}, tripType='round';
+  var tripType = 'round';
+  var lastProviderUrls = [];
 
+  // ── Haversine distance (km) ───────────────────────────────────────────────────
+  function haversine(a, b) {
+    if (!a || !b || a.lat == null || b.lat == null) return null;
+    var R = 6371, r = Math.PI / 180;
+    var dLat = (b.lat - a.lat) * r, dLon = (b.lon - a.lon) * r;
+    var h = Math.sin(dLat/2)*Math.sin(dLat/2) +
+            Math.cos(a.lat*r)*Math.cos(b.lat*r)*Math.sin(dLon/2)*Math.sin(dLon/2);
+    return Math.round(R * 2 * Math.atan2(Math.sqrt(h), Math.sqrt(1-h)));
+  }
+
+  // ── Estimate flight duration from distance ────────────────────────────────────
+  function flightTimeStr(km) {
+    if (!km) return null;
+    var stops = km > 10000 ? 1 : 0;
+    var hrs = km / 850 + 0.5 + stops * 1.5;
+    var h = Math.floor(hrs), m = Math.round((hrs % 1) * 60);
+    if (m === 60) { h++; m = 0; }
+    return h + 'h ' + (m < 10 ? '0' : '') + m + 'm' + (stops ? ' (1 stop est.)' : ' (direct est.)');
+  }
+
+  // ── Typical price range per person (economy) ─────────────────────────────────
+  function priceRange(km) {
+    if (!km) return null;
+    if (km < 400)   return {min:70,  max:220,  note:'Short-haul domestic'};
+    if (km < 1500)  return {min:130, max:420,  note:'Regional / medium domestic'};
+    if (km < 4000)  return {min:250, max:700,  note:'Long domestic / short-haul intl'};
+    if (km < 8000)  return {min:450, max:1100, note:'Medium-haul international'};
+    if (km < 12000) return {min:750, max:1800, note:'Long-haul international'};
+    return {min:1000, max:2800, note:'Ultra long-haul'};
+  }
+
+  // ── Autocomplete ──────────────────────────────────────────────────────────────
   function showAC(input, dropId) {
-    var q = input.value.toLowerCase();
+    var q = input.value.toLowerCase().trim();
     var drop = document.getElementById(dropId);
-    if (q.length < 2) { drop.style.display='none'; return; }
-    var matches = AP.filter(function(a){
-      return a.c.toLowerCase().indexOf(q)!==-1 || a.city.toLowerCase().indexOf(q)!==-1 || a.n.toLowerCase().indexOf(q)!==-1;
-    }).slice(0, 8);
-    if (!matches.length) { drop.style.display='none'; return; }
+    if (q.length < 2) { drop.style.display = 'none'; return; }
+    var matches = AP.filter(function(a) {
+      return a.c.toLowerCase().indexOf(q) !== -1 ||
+             a.city.toLowerCase().indexOf(q) !== -1 ||
+             a.n.toLowerCase().indexOf(q) !== -1 ||
+             a.co.toLowerCase().indexOf(q) !== -1;
+    }).slice(0, 10);
+    if (!matches.length) { drop.style.display = 'none'; return; }
     drop.innerHTML = '';
     matches.forEach(function(a) {
       var d = document.createElement('div');
       d.className = 'ac-item';
-      d.innerHTML = '<strong>' + a.c + '</strong> — ' + a.city + '<small>' + a.n + ', ' + a.co + '</small>';
+      d.innerHTML = '<strong>' + a.c + '</strong> — ' + a.city + '<small>' + a.n + ' · ' + a.co + '</small>';
       d.addEventListener('click', function() {
         input.value = a.c + ' — ' + a.city;
         input.dataset.code = a.c;
         input.dataset.city = a.city;
+        input.dataset.lat = a.lat;
+        input.dataset.lon = a.lon;
+        input.dataset.fullname = a.n;
         drop.style.display = 'none';
       });
       drop.appendChild(d);
@@ -266,113 +493,227 @@
 
   document.addEventListener('click', function(e) {
     document.querySelectorAll('.ac-dropdown').forEach(function(d) {
-      if (!d.contains(e.target) && e.target !== d.previousElementSibling) d.style.display='none';
+      if (!d.contains(e.target) && e.target !== d.previousElementSibling) d.style.display = 'none';
     });
   });
 
   function switchTab(tab, btn) {
-    document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active')});
-    document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('active')});
+    document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
+    document.querySelectorAll('.panel').forEach(function(p) { p.classList.remove('active'); });
     btn.classList.add('active');
-    document.getElementById('panel-'+tab).classList.add('active');
-    document.getElementById('results').style.display='none';
+    document.getElementById('panel-' + tab).classList.add('active');
+    document.getElementById('results').style.display = 'none';
   }
 
   function setTrip(type, btn) {
     tripType = type;
-    document.querySelectorAll('.trip-btn').forEach(function(b){b.classList.remove('active')});
+    document.querySelectorAll('.trip-btn').forEach(function(b) { b.classList.remove('active'); });
     btn.classList.add('active');
-    document.getElementById('f-return-group').style.display = type==='oneway' ? 'none' : 'flex';
+    document.getElementById('f-return-group').style.display = type === 'oneway' ? 'none' : 'flex';
   }
 
-  // Set default dates
-  (function(){
-    var today=new Date(), tmrw=new Date(today), nw=new Date(today);
-    tmrw.setDate(today.getDate()+1); nw.setDate(today.getDate()+8);
-    var fmt=function(d){return d.toISOString().split('T')[0]};
-    ['f-depart','h-checkin','c-pickdate'].forEach(function(id){document.getElementById(id).value=fmt(tmrw)});
-    ['f-return','h-checkout','c-dropdate'].forEach(function(id){document.getElementById(id).value=fmt(nw)});
+  // ── Set default dates ─────────────────────────────────────────────────────────
+  (function() {
+    var today = new Date(), tmrw = new Date(today), nw = new Date(today);
+    tmrw.setDate(today.getDate() + 1); nw.setDate(today.getDate() + 8);
+    var fmt = function(d) { return d.toISOString().split('T')[0]; };
+    ['f-depart','h-checkin','c-pickdate'].forEach(function(id) { document.getElementById(id).value = fmt(tmrw); });
+    ['f-return','h-checkout','c-dropdate'].forEach(function(id) { document.getElementById(id).value = fmt(nw); });
   })();
 
-  var lastProviderUrls = [];
-  function showResults(title, providers) {
-    lastProviderUrls = providers.map(function(p){return p.url});
-    document.getElementById('resultsTitle').textContent = title;
-    var grid = document.getElementById('providerGrid');
-    grid.innerHTML = '';
-    providers.forEach(function(p) {
-      var card = document.createElement('a');
-      card.href = p.url; card.target='_blank'; card.rel='noopener'; card.className='provider-card';
-      card.innerHTML = '<div class="provider-icon">'+p.icon+'</div><h3>'+p.name+'</h3><p>'+p.desc+'</p><span class="go-btn">Search '+p.name+' →</span>';
-      grid.appendChild(card);
-    });
+  function getCode(id) { var el = document.getElementById(id); return (el.dataset.code || el.value.split(' ')[0] || '').toUpperCase(); }
+  function getCity(id) { var el = document.getElementById(id); return el.dataset.city || el.value.replace(/\s*[—\-].*$/, '').trim(); }
+  function getAP(id) {
+    var el = document.getElementById(id);
+    if (el.dataset.lat) return {c:el.dataset.code, city:el.dataset.city, n:el.dataset.fullname||'', lat:parseFloat(el.dataset.lat), lon:parseFloat(el.dataset.lon)};
+    var code = getCode(id);
+    return AP.find(function(a) { return a.c === code; }) || null;
+  }
+
+  function fmtDate(s) {
+    if (!s) return '';
+    var d = new Date(s + 'T12:00:00');
+    return d.toLocaleDateString('en-US', {weekday:'short', month:'short', day:'numeric', year:'numeric'});
+  }
+
+  // ── Core results renderer with loading animation ──────────────────────────────
+  function showResults(loadingMsg, providers, routeHtml, insightCards) {
+    lastProviderUrls = providers.map(function(p) { return p.url; });
     var rp = document.getElementById('results');
+    var loading = document.getElementById('resultsLoading');
+    var content = document.getElementById('resultsContent');
+    document.getElementById('loadingText').textContent = loadingMsg;
+    loading.style.display = 'flex';
+    content.style.display = 'none';
     rp.style.display = 'block';
-    rp.scrollIntoView({behavior:'smooth'});
+    rp.scrollIntoView({ behavior: 'smooth' });
+
+    setTimeout(function() {
+      // Route card
+      var rc = document.getElementById('routeCard');
+      rc.innerHTML = routeHtml || '';
+      rc.style.display = routeHtml ? 'block' : 'none';
+
+      // Insight cards
+      var ir = document.getElementById('insightsRow');
+      ir.innerHTML = '';
+      if (insightCards && insightCards.length) {
+        insightCards.forEach(function(ic) {
+          ir.innerHTML += '<div class="insight-card"><div class="ic-icon">' + ic.icon + '</div>' +
+            '<div class="ic-label">' + ic.label + '</div>' +
+            '<div class="ic-value">' + ic.value + '</div>' +
+            '<div class="ic-note">' + ic.note + '</div></div>';
+        });
+      }
+
+      // Provider cards
+      var grid = document.getElementById('providerGrid');
+      grid.innerHTML = '';
+      providers.forEach(function(p) {
+        var card = document.createElement('a');
+        card.href = p.url; card.target = '_blank'; card.rel = 'noopener'; card.className = 'provider-card';
+        card.innerHTML = '<div class="provider-icon">' + p.icon + '</div><h3>' + p.name + '</h3>' +
+          '<p>' + p.desc + '</p><span class="go-btn">Search ' + p.name + ' →</span>';
+        grid.appendChild(card);
+      });
+
+      loading.style.display = 'none';
+      content.style.display = 'block';
+    }, 1400);
   }
 
-  function openAll() { lastProviderUrls.forEach(function(u){window.open(u,'_blank')}); }
+  function openAll() { lastProviderUrls.forEach(function(u) { window.open(u, '_blank'); }); }
 
-  function getCode(id) { var el=document.getElementById(id); return (el.dataset.code||el.value.split(' ')[0]||'').toUpperCase(); }
-  function getCity(id) { var el=document.getElementById(id); return el.dataset.city||el.value.replace(/\s*—.*$/,'').trim(); }
-
+  // ── Flights ───────────────────────────────────────────────────────────────────
   function searchFlights() {
-    var from=getCode('f-from'), to=getCode('f-to');
-    var dep=document.getElementById('f-depart').value, ret=document.getElementById('f-return').value;
-    var pax=document.getElementById('f-pax').value, cls=document.getElementById('f-class').value;
-    if(!from||!to||!dep){alert('Please fill in From, To, and Departure date');return;}
-    var fromCity=getCity('f-from'), toCity=getCity('f-to');
-    var skyDep=dep.replace(/-/g,'').slice(2), skyRet=ret?ret.replace(/-/g,'').slice(2):'';
+    var from = getCode('f-from'), to = getCode('f-to');
+    var dep = document.getElementById('f-depart').value;
+    var ret = document.getElementById('f-return').value;
+    var pax = document.getElementById('f-pax').value;
+    var cls = document.getElementById('f-class').value;
+    if (!from || !to || !dep) { alert('Please fill in From, To, and Departure date'); return; }
+
+    var fromAP = getAP('f-from'), toAP = getAP('f-to');
+    var fromCity = getCity('f-from'), toCity = getCity('f-to');
+    var km = (fromAP && toAP) ? haversine(fromAP, toAP) : null;
+    var skyDep = dep.replace(/-/g, '').slice(2);
+    var skyRet = ret ? ret.replace(/-/g, '').slice(2) : '';
+    var isRound = tripType === 'round' && ret;
+
+    var routeHtml =
+      '<div class="route-airports">' +
+        '<div class="airport-block"><span>' + from + '</span>' +
+          '<small>' + fromCity + (fromAP ? ' · ' + fromAP.n : '') + '</small></div>' +
+        '<span class="route-plane">✈️</span>' +
+        '<div class="airport-block"><span>' + to + '</span>' +
+          '<small>' + toCity + (toAP ? ' · ' + toAP.n : '') + '</small></div>' +
+      '</div>' +
+      '<div class="route-meta">' +
+        fmtDate(dep) + (isRound ? ' → ' + fmtDate(ret) : ' (One Way)') +
+        ' · ' + pax + ' passenger' + (pax > 1 ? 's' : '') +
+        ' · ' + cls.charAt(0).toUpperCase() + cls.slice(1) +
+        (km ? ' · ~' + km.toLocaleString() + ' km' : '') +
+      '</div>';
+
+    var insights = [];
+    if (km) {
+      var ft = flightTimeStr(km), pr = priceRange(km);
+      insights.push({icon:'🕐', label:'Est. Flight Time', value:ft, note:km.toLocaleString() + ' km'});
+      insights.push({icon:'💰', label:'Typical Economy', value:'$' + pr.min + '–$' + pr.max, note:pr.note + ' / person'});
+      insights.push({icon:'📅', label:'Book Ahead', value:km > 5000 ? '2–3 months' : '4–6 weeks', note:'For lowest fares'});
+      insights.push({icon:'💡', label:'Cheapest Days', value:'Tue – Thu', note:'~20% cheaper midweek'});
+    }
+
     var providers = [
-      {name:'Google Flights',icon:'✈️',desc:'Comprehensive search across airlines',
-       url:'https://www.google.com/travel/flights?q='+encodeURIComponent('flights from '+fromCity+' '+from+' to '+toCity+' '+to+' on '+dep+(ret?' return '+ret:''))},
-      {name:'Skyscanner',icon:'🔍',desc:'Compare 1,200+ airlines & agents',
-       url:'https://www.skyscanner.com/transport/flights/'+from.toLowerCase()+'/'+to.toLowerCase()+'/'+skyDep+'/'+(tripType==='round'?skyRet+'/?':'?')+'adults='+pax+'&cabinclass='+cls},
-      {name:'Kayak',icon:'🛶',desc:'Flexible search with price alerts',
-       url:'https://www.kayak.com/flights/'+from+'-'+to+'/'+dep+'/'+(tripType==='round'?ret+'/':'')+pax+'adults/'+cls+'?sort=bestflight_a'},
-      {name:'Momondo',icon:'🌍',desc:'Find hidden deals & budget airlines',
-       url:'https://www.momondo.com/flight-search/'+from+'-'+to+'/'+dep+'/'+(tripType==='round'?ret:'')},
-      {name:'Kiwi.com',icon:'🥝',desc:'Virtual interlining for cheaper routes',
-       url:'https://www.kiwi.com/en/search/results/'+from+'/'+to+'/'+dep+'/'+(tripType==='round'?ret:'')}
+      {name:'Google Flights', icon:'✈️', desc:'Most comprehensive airline overview',
+       url:'https://www.google.com/travel/flights?q=' + encodeURIComponent('flights from ' + fromCity + ' to ' + toCity + ' on ' + dep + (isRound ? ' return ' + ret : ''))},
+      {name:'Skyscanner', icon:'🔍', desc:'Compare 1,200+ airlines & agents',
+       url:'https://www.skyscanner.com/transport/flights/' + from.toLowerCase() + '/' + to.toLowerCase() + '/' + skyDep + '/' + (isRound ? skyRet + '/?' : '?') + 'adults=' + pax + '&cabinclass=' + cls},
+      {name:'Kayak', icon:'🛶', desc:'Flexible dates & price alerts',
+       url:'https://www.kayak.com/flights/' + from + '-' + to + '/' + dep + '/' + (isRound ? ret + '/' : '') + pax + 'adults/' + cls + '?sort=bestflight_a'},
+      {name:'Momondo', icon:'🌍', desc:'Find hidden deals & budget airlines',
+       url:'https://www.momondo.com/flight-search/' + from + '-' + to + '/' + dep + '/' + (isRound ? ret : '')},
+      {name:'Kiwi.com', icon:'🥝', desc:'Virtual interlining for cheaper routes',
+       url:'https://www.kiwi.com/en/search/results/' + from + '/' + to + '/' + dep + '/' + (isRound ? ret : '')}
     ];
-    showResults('✈️ Flights: '+from+' → '+to+' · '+dep+(tripType==='round'?' – '+ret:' (one way)')+' · '+pax+' pax', providers);
+
+    showResults('Searching flights ' + from + ' → ' + to + '…', providers, routeHtml, insights);
   }
 
+  // ── Hotels ────────────────────────────────────────────────────────────────────
   function searchHotels() {
-    var dest=getCity('h-dest'), ci=document.getElementById('h-checkin').value, co=document.getElementById('h-checkout').value;
-    var guests=document.getElementById('h-guests').value, rooms=document.getElementById('h-rooms').value;
-    if(!dest||!ci||!co){alert('Please fill in destination and dates');return;}
-    var ed=encodeURIComponent(dest);
-    var providers = [
-      {name:'Booking.com',icon:'🏨',desc:'28M+ listings, free cancellation options',
-       url:'https://www.booking.com/searchresults.html?ss='+ed+'&checkin='+ci+'&checkout='+co+'&group_adults='+guests+'&no_rooms='+rooms},
-      {name:'Hotels.com',icon:'🌟',desc:'Rewards program, price match guarantee',
-       url:'https://www.hotels.com/search.do?q-destination='+ed+'&q-check-in='+ci+'&q-check-out='+co+'&q-rooms='+rooms+'&q-room-0-adults='+guests},
-      {name:'Agoda',icon:'🏢',desc:'Best for Asia-Pacific, member deals',
-       url:'https://www.agoda.com/search?q='+ed+'&checkIn='+ci+'&checkOut='+co+'&rooms='+rooms+'&adults='+guests},
-      {name:'Trivago',icon:'🔎',desc:'Meta-search across 400+ booking sites',
-       url:'https://www.trivago.com/en-US/srl?search='+ed},
-      {name:'Hostelworld',icon:'🎒',desc:'Budget hostels in 170+ countries',
-       url:'https://www.hostelworld.com/s?q='+ed+'&dateFrom='+ci+'&dateTo='+co+'&guests='+guests}
+    var dest = getCity('h-dest');
+    var ci = document.getElementById('h-checkin').value;
+    var co = document.getElementById('h-checkout').value;
+    var guests = document.getElementById('h-guests').value;
+    var rooms = document.getElementById('h-rooms').value;
+    if (!dest || !ci || !co) { alert('Please fill in destination and dates'); return; }
+    var ed = encodeURIComponent(dest);
+    var nights = Math.max(1, Math.round((new Date(co) - new Date(ci)) / 86400000));
+
+    var routeHtml =
+      '<div class="route-airports"><div class="airport-block"><span>🏨</span><small>&nbsp;</small></div>' +
+      '<span class="route-plane">→</span>' +
+      '<div class="airport-block"><span>' + dest + '</span><small>' + fmtDate(ci) + ' – ' + fmtDate(co) + '</small></div></div>' +
+      '<div class="route-meta">' + nights + ' night' + (nights !== 1 ? 's' : '') + ' · ' + guests + ' guest' + (guests > 1 ? 's' : '') + ' · ' + rooms + ' room' + (rooms > 1 ? 's' : '') + '</div>';
+
+    var insights = [
+      {icon:'🌙', label:'Stay Duration', value:nights + ' night' + (nights !== 1 ? 's' : ''), note:fmtDate(ci) + ' → ' + fmtDate(co)},
+      {icon:'👥', label:'Guests / Rooms', value:guests + ' guest' + (guests > 1 ? 's' : ''), note:rooms + ' room' + (rooms > 1 ? 's' : '')},
+      {icon:'🔄', label:'Free Cancellation', value:'Filter for it', note:'Most sites let you filter by this'},
+      {icon:'💡', label:'Pro Tip', value:'Check direct too', note:"Hotels often match OTA prices"}
     ];
-    showResults('🏨 Hotels in '+dest+' · '+ci+' to '+co+' · '+guests+' guests', providers);
+
+    var providers = [
+      {name:'Booking.com', icon:'🏨', desc:'28M+ listings, free cancellation options',
+       url:'https://www.booking.com/searchresults.html?ss=' + ed + '&checkin=' + ci + '&checkout=' + co + '&group_adults=' + guests + '&no_rooms=' + rooms},
+      {name:'Hotels.com', icon:'🌟', desc:'Rewards program, price match',
+       url:'https://www.hotels.com/search.do?q-destination=' + ed + '&q-check-in=' + ci + '&q-check-out=' + co + '&q-rooms=' + rooms + '&q-room-0-adults=' + guests},
+      {name:'Agoda', icon:'🏢', desc:'Best for Asia-Pacific, member deals',
+       url:'https://www.agoda.com/search?q=' + ed + '&checkIn=' + ci + '&checkOut=' + co + '&rooms=' + rooms + '&adults=' + guests},
+      {name:'Trivago', icon:'🔎', desc:'Meta-search across 400+ booking sites',
+       url:'https://www.trivago.com/en-US/srl?search=' + ed},
+      {name:'Hostelworld', icon:'🎒', desc:'Budget hostels in 170+ countries',
+       url:'https://www.hostelworld.com/s?q=' + ed + '&dateFrom=' + ci + '&dateTo=' + co + '&guests=' + guests}
+    ];
+
+    showResults('Searching hotels in ' + dest + '…', providers, routeHtml, insights);
   }
 
+  // ── Cars ──────────────────────────────────────────────────────────────────────
   function searchCars() {
-    var loc=getCity('c-pickup'), pd=document.getElementById('c-pickdate').value, dd=document.getElementById('c-dropdate').value;
-    if(!loc||!pd||!dd){alert('Please fill in location and dates');return;}
-    var el=encodeURIComponent(loc);
-    var providers = [
-      {name:'Kayak Cars',icon:'🛶',desc:'Compare across major rental companies',
-       url:'https://www.kayak.com/cars/'+el+'/'+pd+'/'+dd+'?sort=price_a'},
-      {name:'RentalCars.com',icon:'🚗',desc:'900+ rental companies, best price guarantee',
-       url:'https://www.rentalcars.com/search-results?location='+el+'&puDate='+pd+'&doDate='+dd},
-      {name:'Discover Cars',icon:'🔍',desc:'Compare 500+ car rental companies',
-       url:'https://www.discovercars.com/search?pick='+el+'&pdate='+pd+'&ddate='+dd},
-      {name:'AutoEurope',icon:'🌍',desc:'20,000+ locations, price match',
-       url:'https://www.autoeurope.com/go/searchresults.cfm?location='+el+'&puDate='+pd+'&doDate='+dd}
+    var loc = getCity('c-pickup');
+    var pd = document.getElementById('c-pickdate').value;
+    var dd = document.getElementById('c-dropdate').value;
+    if (!loc || !pd || !dd) { alert('Please fill in location and dates'); return; }
+    var el = encodeURIComponent(loc);
+    var days = Math.max(1, Math.round((new Date(dd) - new Date(pd)) / 86400000));
+
+    var routeHtml =
+      '<div class="route-airports"><div class="airport-block"><span>🚗</span><small>&nbsp;</small></div>' +
+      '<span class="route-plane">→</span>' +
+      '<div class="airport-block"><span>' + loc + '</span><small>' + fmtDate(pd) + ' – ' + fmtDate(dd) + '</small></div></div>' +
+      '<div class="route-meta">' + days + ' day' + (days !== 1 ? 's' : '') + ' rental · Pick up ' + fmtDate(pd) + '</div>';
+
+    var insights = [
+      {icon:'📅', label:'Rental Period', value:days + ' day' + (days !== 1 ? 's' : ''), note:fmtDate(pd) + ' → ' + fmtDate(dd)},
+      {icon:'💡', label:'Book Ahead', value:'2+ weeks', note:'Better selection & lower rates'},
+      {icon:'🛡️', label:'Insurance Tip', value:'Check CC coverage', note:'Many credit cards include rental insurance'},
+      {icon:'⛽', label:'Fuel Policy', value:'Full-to-full', note:'Always confirm before signing'}
     ];
-    showResults('🚗 Car Rental in '+loc+' · '+pd+' to '+dd, providers);
+
+    var providers = [
+      {name:'Kayak Cars', icon:'🛶', desc:'Compare across major rental companies',
+       url:'https://www.kayak.com/cars/' + el + '/' + pd + '/' + dd + '?sort=price_a'},
+      {name:'RentalCars.com', icon:'🚗', desc:'900+ companies, best price guarantee',
+       url:'https://www.rentalcars.com/search-results?location=' + el + '&puDate=' + pd + '&doDate=' + dd},
+      {name:'Discover Cars', icon:'🔍', desc:'Compare 500+ car rental companies',
+       url:'https://www.discovercars.com/search?pick=' + el + '&pdate=' + pd + '&ddate=' + dd},
+      {name:'AutoEurope', icon:'🌍', desc:'20,000+ locations, price match',
+       url:'https://www.autoeurope.com/go/searchresults.cfm?location=' + el + '&puDate=' + pd + '&doDate=' + dd}
+    ];
+
+    showResults('Searching car rentals in ' + loc + '…', providers, routeHtml, insights);
   }
   </script>
 </body>
