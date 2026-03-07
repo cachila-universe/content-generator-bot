@@ -63,8 +63,8 @@
 | # | Task | Status | Dependency | Est. Impact |
 |---|------|--------|------------|-------------|
 | 3.1 | **Apply for Google AdSense** | ⬜ | 30+ posts, legal pages | ★★★★★ |
-| 3.2 | **Replace ad-slot placeholders** with real AdSense code | ⬜ | 3.1 approved | ★★★★★ |
-| 3.3 | **Add email newsletter** (ConvertKit, Beehiiv, or Substack) | ⬜ | 2.1 traffic | ★★★★☆ |
+| 3.2 | **Activate AdSense Auto Ads** — paste ONE script tag into `<head>` | ⬜ | 3.1 approved | ★★★★★ |
+| 3.3 | **Set up email newsletter** (Brevo free / Mailchimp free / ConvertKit free) | ⬜ | 2.1 traffic | ★★★★☆ |
 | 3.4 | **A/B test article titles** for higher CTR | ⬜ | GA4 data | ★★★☆☆ |
 | 3.5 | **Add more niches** if profitable ones are identified | ⬜ | Analytics data | ★★★☆☆ |
 
@@ -73,7 +73,7 @@
 - Must have **Privacy Policy, About, and Contact** pages ✅
 - Must comply with Google's content policies
 - Apply at [adsense.google.com](https://www.adsense.google.com)
-- Once approved, replace `<span>Advertisement</span>` placeholders in templates with your ad unit code
+- ✅ **No space reservation needed.** Once approved, paste ONE `<script>` tag into `<head>` of your templates — Google Auto Ads detects optimal ad placement automatically across every article and page. No div tags, no layout changes needed. See [§32 of MASTER_MANUAL.md](MASTER_MANUAL.md) for exact steps.
 
 ---
 

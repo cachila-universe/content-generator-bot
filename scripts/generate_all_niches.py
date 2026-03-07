@@ -50,7 +50,7 @@ DASHBOARD_URL = f"http://localhost:{settings.get('dashboard', {}).get('port', 50
 
 print("\n" + "=" * 60)
 print("  🤖 Generate One Article Per Niche")
-print(f"  Model: llama3.1  |  Site: {SITE_URL}")
+print(f"  Model: qwen2.5:14b  |  Site: {SITE_URL}")
 print("=" * 60)
 
 results = []

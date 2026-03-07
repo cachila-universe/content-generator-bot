@@ -154,6 +154,8 @@ This generates one test article across all niches to verify everything works.
 36. [YouTube Video Quality Tips](#36-youtube-video-quality-tips)
 37. [Pinterest — Status & Configuration](#37-pinterest--status--configuration)
 38. [Windows PC Migration](#38-windows-pc-migration)
+39. [Newsletter Email List Setup — "📬 Get Our Best Guides Weekly"](#39-newsletter-email-list--how-to-set-up--get-our-best-guides-weekly)
+40. [YouTube — Best Free Video Content Makers](#40-youtube--best-free-video-content-makers)
 
 ---
 
@@ -1714,6 +1716,16 @@ Your contact page (`/contact.html`) has a form that submits to Formspree. Withou
    ```
 9. Test by submitting the form — you'll receive an email at your Formspree-registered address
 
+### What Email Does Formspree Send To?
+
+> **Formspree sends all form submissions to the email address you used when you signed up at [formspree.io](https://formspree.io).**
+
+To check or change the notification email:
+1. Log in at [formspree.io](https://formspree.io)
+2. Click on your form → **Settings** → **Email Notifications**
+3. You can add multiple recipient emails here
+4. You can also set a **custom redirect URL** after submission (e.g., a "Thank You" page)
+
 ### Formspree Free Plan Limits
 | Feature | Free |
 |---|---|
@@ -1802,6 +1814,8 @@ ollama run qwen2.5:14b "Write a 200-word intro for an article about the best rob
 ---
 
 ## 32. Google AdSense — Do You Need to Reserve Space?
+
+> ✅ **No action needed right now.** Once your AdSense account is approved, you paste **ONE `<script>` tag** into `<head>` of your templates — Google Auto Ads handles placement automatically across every article and page. You don't need to reserve ad space, add divs, or change any content layout.
 
 **Short answer: No. AdSense Auto Ads handles placement automatically.**
 
@@ -2104,5 +2118,174 @@ Key topics covered:
 
 ---
 
-*Manual Version 2.0 — March 2026*
-*For the latest updates, check the repository README.*
+## 39. Newsletter Email List — How to Set Up "📬 Get Our Best Guides Weekly"
+
+### Is It Free?
+
+**Yes — all recommended options below have a free plan that covers you until you grow.**
+
+The "📬 Get Our Best Guides Weekly" banner on your homepage currently links to your contact page. It's cosmetic only — no real email list is connected yet. Here's how to set up a real newsletter for free.
+
+---
+
+### Option 1 — Mailchimp (Most Popular, Free Up to 500 Contacts)
+
+**Free plan:** 500 subscribers, 1,000 emails/month
+
+1. Sign up at [mailchimp.com](https://mailchimp.com) — click **Sign Up Free**
+2. Create an **Audience** (this is your email list)
+3. Go to **Audience** → **Signup forms** → **Form builder**
+4. Customize the form title (e.g., "Get Our Best Guides Weekly")
+5. Copy the **Form URL** from the top of the page — it looks like:
+   `https://techlifeinsights.us21.list-manage.com/subscribe/post?u=...`
+6. Open `site/templates/index.html` and find the "Subscribe Free →" button:
+   ```html
+   <a href="/contact.html" ...>Subscribe Free →</a>
+   ```
+7. Replace `/contact.html` with your Mailchimp form URL:
+   ```html
+   <a href="https://techlifeinsights.us21.list-manage.com/subscribe/post?u=..." ...>Subscribe Free →</a>
+   ```
+8. Do the same in `site/templates/niche_index.html` (the sidebar subscribe button)
+9. Rebuild and push:
+   ```bash
+   PYTHONPATH=. python scripts/rebuild_site.py
+   git add site/output/ site/templates/
+   git commit -m "Connect newsletter to Mailchimp"
+   git push origin main
+   ```
+
+> **Tip**: In Mailchimp you can also create a **Landing Page** (free) — a hosted signup page with a clean URL like `mailchi.mp/techlifeinsights/weekly`. Use this URL for your subscribe button instead.
+
+---
+
+### Option 2 — Brevo (Best Free Tier — 300 Emails/Day, Unlimited Contacts)
+
+**Free plan:** Unlimited subscribers, 300 emails/day (9,000/month)
+
+1. Sign up at [brevo.com](https://brevo.com)
+2. Go to **Contacts** → **Forms** → **Create a subscription form**
+3. Copy the embed code or the hosted form URL
+4. Replace the subscribe button href as shown in Option 1, steps 6–9 above
+
+> Brevo's free plan is the most generous for contacts. Once you have a large list, 300 emails/day is plenty for a weekly newsletter.
+
+---
+
+### Option 3 — ConvertKit / Kit (Free Up to 10,000 Subscribers)
+
+**Free plan:** Up to 10,000 subscribers (as of 2025), unlimited landing pages
+
+1. Sign up at [kit.com](https://kit.com) (formerly ConvertKit)
+2. Create a **Form** or **Landing Page**
+3. Use the hosted URL or copy the embed code
+4. Update the subscribe button href in your templates (same process as Option 1 steps 6–9)
+
+> ConvertKit's free tier is the most powerful for the long term. When you're ready to send broadcasts, they charge only at 10,000+ subscribers.
+
+---
+
+### Comparison
+
+| Service | Free Contacts | Free Emails/Month | Ease | Best For |
+|---|---|---|---|---|
+| **Mailchimp** | 500 | 1,000 | ⭐⭐⭐⭐⭐ Easy | Getting started fast |
+| **Brevo** | Unlimited | 9,000 (300/day) | ⭐⭐⭐⭐ Good | Most generous free tier |
+| **ConvertKit/Kit** | 10,000 | Unlimited broadcasts | ⭐⭐⭐⭐ Good | Scaling up |
+| **Substack** | Unlimited | Unlimited | ⭐⭐⭐⭐⭐ Easiest | Paid newsletters (10% fee on paid only) |
+
+**Recommendation**: Start with **Brevo** (most generous free tier) or **Mailchimp** (easiest to embed). Migrate to ConvertKit when you hit 500+ subscribers.
+
+---
+
+### What to Send Your Subscribers
+
+Once set up, use Mailchimp/Brevo to send a **weekly digest** of your best new articles. The bot publishes 8 articles/day — pick the top 3–5 for the weekly email. Takes 10 minutes/week.
+
+---
+
+## 40. YouTube — Best Free Video Content Makers
+
+### What the Bot Already Uses
+
+The bot auto-generates and uploads videos using:
+- **MoviePy** — stitches slide images into MP4 video
+- **gTTS (Google Text-to-Speech)** — converts article text to audio narration
+- **Pillow** — generates slide images (text on colored backgrounds)
+
+This works but produces a basic robotic-voice video. Here's how to upgrade for free.
+
+---
+
+### 🥇 Best Free Upgrade: Microsoft Edge TTS (Already Documented in §36)
+
+**The single best free improvement you can make.** Replace gTTS with Edge TTS for a natural-sounding AI voice — it's free and requires no API key.
+
+```bash
+# Install (one command)
+pip install edge-tts
+```
+
+Best free voices:
+| Voice | Style |
+|---|---|
+| `en-US-AriaNeural` | Female, professional, warm |
+| `en-US-GuyNeural` | Male, clear, natural |
+| `en-US-JennyNeural` | Female, friendly, upbeat |
+| `en-GB-RyanNeural` | British male, authoritative |
+| `en-AU-NatashaNeural` | Australian female, clear |
+
+See [§36 YouTube Video Quality Tips](#36-youtube-video-quality-tips) for the exact code swap.
+
+---
+
+### 🥈 CapCut Desktop (Free — Best for Editing & Shorts)
+
+**Best for:** Polished Shorts with transitions, text effects, and auto-captions
+**Download:** [capcut.com/download](https://www.capcut.com/download) (Windows + macOS)
+
+What it does:
+- Drag-and-drop video editor with one-click auto-captions
+- 300+ free transitions and effects
+- AI background remover
+- Exports 1080p/4K with no watermark
+
+**How to use with this bot:** The bot generates MP4 videos. Download them from YouTube Studio → drop into CapCut → add captions, music, and transitions → re-upload as Shorts.
+
+---
+
+### 🥉 Canva Video (Free Tier — Best for Thumbnails + Slideshows)
+
+**Best for:** Professional thumbnails and simple slideshow videos
+**Platform:** Browser at [canva.com](https://www.canva.com) — no download needed
+
+Recommended uses:
+1. **Thumbnails** → Create Design → YouTube Thumbnail (1280×720) → bold template → swap text → download
+2. **Simple Shorts** → Upload your article Picsum images + Edge TTS audio → assemble into a 60-second Short
+
+---
+
+### DaVinci Resolve (Free — Professional Grade, No Watermark)
+
+**Best for:** Serious video editing — Hollywood-grade editor, completely free forever
+**Download:** [blackmagicdesign.com/products/davinciresolve](https://www.blackmagicdesign.com/products/davinciresolve) (Windows + macOS + Linux)
+
+> Zero limitations on the free version. No watermark. No time limit. The paid version ($295 one-time) only adds collaboration tools — you don't need it.
+
+---
+
+### Recommended Free Stack
+
+| Step | Tool | Cost |
+|---|---|---|
+| AI narration | Edge TTS `en-US-AriaNeural` | Free |
+| Video assembly | MoviePy (bot handles automatically) | Free |
+| Editing / Shorts | CapCut Desktop | Free |
+| Thumbnails | Canva | Free |
+| Pro editing | DaVinci Resolve | Free |
+| Background music | [pixabay.com/music](https://pixabay.com/music) | Free (CC0 license) |
+| Free B-roll video | [pexels.com/videos](https://www.pexels.com/videos) | Free (CC0 license) |
+
+---
+
+*Manual Version 2.1 — March 2026*

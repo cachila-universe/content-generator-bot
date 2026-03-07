@@ -48,6 +48,9 @@ def optimize(article: dict, niche_id: str, niche_config: dict, site_url: str, ou
     if faq_schema:
         schema_markup += "\n" + faq_schema
 
+    # Inject inline images after every H2 heading (richer articles)
+    enriched_content = _inject_inline_images(html_content, slug)
+
     # Update sitemap
     _update_sitemap(output_dir, canonical_url, published_at)
 
@@ -57,6 +60,7 @@ def optimize(article: dict, niche_id: str, niche_config: dict, site_url: str, ou
 
     return {
         **article,
+        "html_content": enriched_content,
         "slug": slug,
         "meta_html": meta_html,
         "schema_markup": schema_markup,
@@ -64,6 +68,37 @@ def optimize(article: dict, niche_id: str, niche_config: dict, site_url: str, ou
         "published_at": published_at,
         "image_url": image_url,
     }
+
+
+def _inject_inline_images(html_content: str, base_slug: str) -> str:
+    """
+    Inject a Picsum image after every <h2> heading in the article body.
+    Skips the FAQ section (injecting images there looks odd).
+    """
+    img_counter = [0]
+
+    def _replace_h2(match: re.Match) -> str:
+        heading_text = match.group(1)
+        # Skip image injection for FAQ / Conclusion sections
+        lower = heading_text.lower()
+        if any(word in lower for word in ("faq", "frequently", "question", "conclusion")):
+            return match.group(0)
+
+        img_counter[0] += 1
+        # Build a deterministic seed from slug + section number
+        seed = f"{base_slug}-section-{img_counter[0]}"
+        img_html = (
+            f'\n<figure style="margin:24px 0;text-align:center;">'
+            f'<img src="https://picsum.photos/seed/{seed}/800/400" '
+            f'alt="{heading_text}" '
+            f'style="width:100%;max-width:800px;border-radius:10px;box-shadow:0 4px 16px rgba(0,0,0,0.10);" '
+            f'loading="lazy" width="800" height="400">'
+            f'</figure>'
+        )
+        return match.group(0) + img_html
+
+    enriched = re.sub(r"<h2>(.*?)</h2>", _replace_h2, html_content, flags=re.IGNORECASE | re.DOTALL)
+    return enriched
 
 
 def _build_meta_html(title: str, description: str, canonical_url: str, site_name: str, tags: list, image_url: str = "") -> str:

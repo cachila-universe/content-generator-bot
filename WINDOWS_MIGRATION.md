@@ -168,36 +168,49 @@ python -c "import flask; import ollama; print('OK')"
 Open a new PowerShell window (Ollama must be running first):
 
 ```powershell
-# Your current model (fast, good quality)
-ollama pull llama3.1
+# Primary model for Windows (48 GB+ RAM — best free model available)
+ollama pull llama3.3:70b
 
-# Verify it's available
+# Fallback model (32 GB RAM — excellent quality, slightly smaller)
+ollama pull llama3.1:70b
+
+# Verify both are available
 ollama list
 ```
 
+> **Which one to use?** See the table below. The bot reads `OLLAMA_MODEL` from your `.env` file — just set the right value for your RAM.
+
 ### Choosing the Best Free Model for Your RAM
 
-| Model | RAM Needed | Quality | Speed |
-|---|---|---|---|
-| `llama3.1:8b` | 8 GB | ⭐⭐⭐ Good | Fast (~2 min/article) |
-| `llama3.1:70b` | 40 GB | ⭐⭐⭐⭐⭐ Excellent | Slow (~20 min/article) |
-| `mistral:7b` | 8 GB | ⭐⭐⭐ Good | Fast |
-| `qwen2.5:14b` | 10 GB | ⭐⭐⭐⭐ Very Good | Medium |
-| `phi4:14b` | 10 GB | ⭐⭐⭐⭐ Very Good | Medium |
-| `gemma3:12b` | 8 GB | ⭐⭐⭐⭐ Very Good | Medium (~3 min/article) |
+| Model | RAM Needed | Quality | Speed | Recommended For |
+|---|---|---|---|---|
+| `llama3.1:8b` | 8 GB | ⭐⭐⭐ Good | Fast (~2 min/article) | Low-RAM machines |
+| `qwen2.5:14b` | 10 GB | ⭐⭐⭐⭐ Very Good | Medium | 16 GB RAM |
+| `phi4:14b` | 10 GB | ⭐⭐⭐⭐ Very Good | Medium | 16 GB RAM |
+| `gemma3:12b` | 8 GB | ⭐⭐⭐⭐ Very Good | Medium (~3 min/article) | 8–16 GB RAM |
+| `llama3.1:70b` | 40 GB | ⭐⭐⭐⭐⭐ Excellent | Slow (~20 min/article) | **32 GB RAM — FALLBACK** |
+| `llama3.3:70b` | 48 GB | ⭐⭐⭐⭐⭐ Best Free | Slow (~20 min/article) | **48 GB+ RAM — PRIMARY** |
 
-**Recommendation by RAM:**
-- 8 GB RAM → `llama3.1:8b` (default) or `gemma3:12b`
-- 16 GB RAM → `qwen2.5:14b` or `phi4:14b` (noticeably better articles)
-- 32 GB RAM → `llama3.1:70b` (best quality, much slower)
-- 64 GB+ RAM → `llama3.3:70b` (best available free model)
+### ✅ Recommended Setup for Your Windows PC (48 GB+ RAM)
 
-To switch models, update your `.env`:
+**Primary — set this in your `.env`:**
 ```env
-OLLAMA_MODEL=qwen2.5:14b
+OLLAMA_MODEL=llama3.3:70b
 ```
 
-Or change in `core/llm_writer.py` line where `model="llama3.1"` is set.
+This is the best free AI model currently available. It writes near-GPT-4 quality articles.
+
+**Fallback — only switch to this if llama3.3:70b is too slow or runs out of memory:**
+```env
+OLLAMA_MODEL=llama3.1:70b
+```
+
+`llama3.1:70b` needs ~40 GB of RAM and is slightly faster than llama3.3:70b while still being excellent quality.
+
+**How to switch:**
+1. Open `.env` in your project folder
+2. Change the `OLLAMA_MODEL` line
+3. Restart the bot — it will use the new model immediately (no rebuild needed)
 
 ---
 

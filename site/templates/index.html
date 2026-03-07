@@ -156,7 +156,7 @@
         <h2 class="section-title">Explore Topics</h2>
       </div>
       <div class="niches-grid">
-        {% set icons = {'ai_tools': '🤖', 'personal_finance': '💰', 'health_biohacking': '💪', 'home_tech': '🏠', 'travel': '✈️'} %}
+        {% set icons = {'ai_tools': '🤖', 'personal_finance': '💰', 'health_biohacking': '💪', 'home_tech': '🏠', 'travel': '✈️', 'pet_care': '🐾', 'fitness_wellness': '🏋️', 'remote_work': '💻'} %}
         {% for niche_id, niche in niches.items() %}
           {% if niche.enabled %}
           <a href="/{{ niche_id }}/" class="niche-card">
@@ -232,7 +232,7 @@
       <div style="font-family:'Inter',sans-serif;font-size:16px;font-weight:700;color:var(--text);margin-bottom:8px;">🏆 Explore Our Top Picks</div>
       <div style="font-family:'Inter',sans-serif;font-size:14px;color:var(--text-secondary);margin-bottom:16px;">Curated best-of lists across every topic we cover.</div>
       <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
-        {% set icons = {'ai_tools':'🤖','personal_finance':'💰','health_biohacking':'💪','home_tech':'🏠','travel':'✈️'} %}
+        {% set icons = {'ai_tools':'🤖','personal_finance':'💰','health_biohacking':'💪','home_tech':'🏠','travel':'✈️','pet_care':'🐾','fitness_wellness':'🏋️','remote_work':'💻'} %}
         {% for nid, niche in niches.items() %}{% if niche.enabled %}
         <a href="/{{ nid }}/best-of.html" style="background:var(--accent-light);color:var(--accent);text-decoration:none;padding:7px 16px;border-radius:8px;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;">{{ icons.get(nid,'📌') }} {{ niche.name }}</a>
         {% endif %}{% endfor %}

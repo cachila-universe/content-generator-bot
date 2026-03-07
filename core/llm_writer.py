@@ -28,7 +28,7 @@ def generate_article(topic: str, niche_config: dict) -> dict | None:
         return None
 
     host = os.getenv("OLLAMA_HOST", "http://localhost:11434")
-    model = os.getenv("OLLAMA_MODEL", "llama3.1")
+    model = os.getenv("OLLAMA_MODEL", "qwen2.5:14b")
     niche_name = niche_config.get("name", "General")
     seed_keywords = niche_config.get("seed_keywords", [])
 
