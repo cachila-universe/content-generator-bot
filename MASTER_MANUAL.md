@@ -156,6 +156,7 @@ This generates one test article across all niches to verify everything works.
 38. [Windows PC Migration](#38-windows-pc-migration)
 39. [Newsletter Email List Setup — "📬 Get Our Best Guides Weekly"](#39-newsletter-email-list--how-to-set-up--get-our-best-guides-weekly)
 40. [YouTube — Best Free Video Content Makers](#40-youtube--best-free-video-content-makers)
+41. [YouTube Channel — Connect the Bot for Auto-Uploads](#41-youtube-channel--connect-the-bot-for-auto-uploads)
 
 ---
 
@@ -1737,6 +1738,40 @@ To check or change the notification email:
 
 > 50 submissions/month is plenty for a growing site. Upgrade only if you get a lot of contact requests.
 
+### ⚠️ Troubleshooting — "Form not found. Please check the form hashid."
+
+This is the #1 Formspree error. Here's exactly what causes it and how to fix it:
+
+**Cause 1 — The form ID in `contact.html` is a placeholder, not your real form**
+The file currently contains `xwvrkzov` which was a test ID. You need to replace it with YOUR form's ID.
+
+**Cause 2 — You haven't created a form in Formspree yet**
+Signing up for Formspree is NOT enough. You must also create a form:
+1. Log in at [formspree.io](https://formspree.io)
+2. Click **+ New Form** (top right of dashboard)
+3. Name it anything → **Create Form**
+4. Copy the 8-character ID from the endpoint URL shown (e.g. `xpznkqrb`)
+
+**Cause 3 — First submission requires activation (most missed step)**
+After you update the form ID and push, submit the form ONCE on your live site. Formspree will send you an **"Activate Your Form"** email. **You must click the confirmation link in that email.** Until you do, ALL submissions return "Form not found" — even with a valid ID.
+
+**Step-by-step fix:**
+```bash
+# 1. Update site/templates/contact.html — replace xwvrkzov with your real ID
+# (Edit the file, find xwvrkzov, replace it)
+
+# 2. Rebuild and push
+PYTHONPATH=. python scripts/rebuild_site.py
+git add site/output/ site/templates/contact.html
+git commit -m "Fix Formspree form ID"
+git push origin main
+
+# 3. Go to https://tech-life-insights.com/contact.html
+# 4. Submit the form with your own email
+# 5. Check your inbox for "Activate your Formspree form" → click the link
+# 6. Done — all future submissions deliver to your inbox
+```
+
 ### Formspree Alternatives (Also Free)
 
 | Service | Free Plan | Notes |
@@ -2172,16 +2207,75 @@ The "📬 Get Our Best Guides Weekly" banner on your homepage currently links to
 
 ---
 
-### Option 3 — ConvertKit / Kit (Free Up to 10,000 Subscribers)
+### Option 3 — ConvertKit / Kit ✅ RECOMMENDED (Free Up to 10,000 Subscribers)
 
-**Free plan:** Up to 10,000 subscribers (as of 2025), unlimited landing pages
+**Free plan:** Up to 10,000 subscribers, unlimited landing pages, unlimited forms
+**Best for:** Long-term growth — the most powerful free tier available
 
-1. Sign up at [kit.com](https://kit.com) (formerly ConvertKit)
-2. Create a **Form** or **Landing Page**
-3. Use the hosted URL or copy the embed code
-4. Update the subscribe button href in your templates (same process as Option 1 steps 6–9)
+#### Full Setup Instructions
 
-> ConvertKit's free tier is the most powerful for the long term. When you're ready to send broadcasts, they charge only at 10,000+ subscribers.
+**Step 1 — Create your Kit account**
+1. Go to [kit.com](https://kit.com) and click **Get started free**
+2. Enter your name, email, and password → **Create account**
+3. Answer the onboarding questions (choose "I'm a creator" and "Blogging/Content")
+4. Verify your email address (click the link they send)
+
+**Step 2 — Create a signup form**
+1. In your Kit dashboard, click **Grow** → **Landing Pages & Forms**
+2. Click **+ Create new** → choose **Form** (inline, not landing page)
+3. Choose a template — "Minimal" or "Charlotte" look clean on blog sites
+4. Customize the title: `📬 Get Our Best Guides Weekly`
+5. Customize the description: `Free expert tips on AI, finance, health, home tech, travel, pet care, fitness & remote work — delivered to your inbox.`
+6. In the form settings, set the **Success message**: "You're in! Check your inbox to confirm your subscription."
+7. Click **Save** then **Publish**
+
+**Step 3 — Get your form's hosted URL**
+1. After publishing, click **Share** → copy the **URL** (it looks like `app.kit.com/forms/1234567/embed`)
+2. Alternatively, copy the **Hosted URL** (e.g. `kit.com/techlife-insights/weekly-guides`)
+
+**Step 4 — Update the Subscribe button on your site**
+1. Open `site/templates/index.html`
+2. Find the "Subscribe Free →" button — change the `href`:
+   ```html
+   <!-- FROM: -->
+   <a href="/contact.html" style="...">Subscribe Free →</a>
+
+   <!-- TO: -->
+   <a href="https://app.kit.com/forms/YOUR_FORM_ID/hosted" target="_blank" rel="noopener" style="...">Subscribe Free →</a>
+   ```
+   (Replace `YOUR_FORM_ID` with the number from your Kit form URL)
+3. Do the same in `site/templates/niche_index.html` (sidebar subscribe button):
+   ```html
+   <!-- Find: -->
+   <a href="/contact.html" style="background:#2563eb;...">Subscribe Free →</a>
+   <!-- Replace href the same way -->
+   ```
+
+**Step 5 — Rebuild and push**
+```bash
+PYTHONPATH=. python scripts/rebuild_site.py
+git add site/output/ site/templates/
+git commit -m "Connect newsletter to Kit/ConvertKit"
+git push origin main
+```
+
+**Step 6 — Test**
+1. Visit your live site at [tech-life-insights.com](https://tech-life-insights.com)
+2. Click the **Subscribe Free →** button — it opens your Kit form
+3. Enter a test email and subscribe
+4. Check your inbox for the confirmation email — click it
+5. In your Kit dashboard → **Subscribers** — you should see the new subscriber ✅
+
+**Step 7 — Send your first broadcast (when ready)**
+1. In Kit dashboard → **Send** → **Broadcasts** → **+ New broadcast**
+2. Pick your 3–5 best new articles from the week
+3. Write a short intro, paste article titles + links
+4. **Send** — free plan lets you send unlimited broadcasts
+
+#### What Emails Does Kit Send From?
+Kit sends from `yourname@kit.com` by default. Once you have a custom domain, you can set up a custom "from" address like `hello@tech-life-insights.com`. (Available on free plan after domain verification.)
+
+> **Kit vs Mailchimp:** Kit is better for long-term growth (10,000 free subscribers vs 500). Mailchimp is easier to embed inline. Either works — start with Kit if you want to scale without paying until you're large.
 
 ---
 
@@ -2288,4 +2382,140 @@ Recommended uses:
 
 ---
 
-*Manual Version 2.1 — March 2026*
+## 41. YouTube Channel — Connect the Bot for Auto-Uploads
+
+Your channel: **[TechLife Insights YouTube](https://www.youtube.com/channel/UCV0XW2sQNv2TWqtz3wFAxhA)**
+
+The bot is fully built to upload videos automatically. It only needs a one-time OAuth2 setup. Here's the complete process.
+
+---
+
+### What the Bot Uploads
+
+Every day after publishing articles, the bot:
+1. Converts each article into a narrated video (slide show + voice)
+2. Generates a thumbnail (dark background with article title)
+3. Uploads to YouTube with title, description, affiliate links, and tags
+4. Stores the YouTube URL in the database
+
+> Videos appear as **regular uploads** in your channel. YouTube Shorts need to be ≤60 seconds with `#Shorts` in the title (already configured in `settings.yaml`).
+
+---
+
+### Step 1 — Create a Google Cloud Project
+
+1. Go to [console.cloud.google.com](https://console.cloud.google.com)
+2. Click **Select a project** (top left) → **New Project**
+3. Name it `TechLife Insights Bot` → **Create**
+4. Make sure the new project is selected in the dropdown
+
+### Step 2 — Enable the YouTube Data API
+
+1. In the Cloud Console, go to **APIs & Services** → **Library**
+2. Search for **YouTube Data API v3**
+3. Click it → **Enable**
+
+### Step 3 — Create OAuth 2.0 Credentials
+
+1. Go to **APIs & Services** → **Credentials**
+2. Click **+ Create Credentials** → **OAuth client ID**
+3. If prompted, configure the **OAuth consent screen** first:
+   - User type: **External**
+   - App name: `TechLife Insights Bot`
+   - User support email: your email
+   - Click **Save and Continue** through all screens
+   - On the **Test users** screen, add YOUR Google account email → **Save**
+4. Back on Create Credentials:
+   - Application type: **Desktop app**
+   - Name: `TechLife Bot Desktop`
+   - Click **Create**
+5. Click **Download JSON** → save the file as `client_secrets.json` in your project root:
+   ```
+   /Users/thekelvinlachica/Documents/Github/Projects/content-generator-bot/client_secrets.json
+   ```
+
+### Step 4 — Set the Credentials File Path in `.env`
+
+Open your `.env` file (create it if it doesn't exist) and add:
+```env
+YOUTUBE_CLIENT_SECRETS_FILE=client_secrets.json
+```
+
+### Step 5 — Run the One-Time Authentication
+
+This opens a browser window to authorize the bot:
+
+```bash
+cd /Users/thekelvinlachica/Documents/Github/Projects/content-generator-bot
+source contentgenerator/bin/activate
+PYTHONPATH=. python3 -c "from core.youtube_uploader import authenticate; authenticate()"
+```
+
+What happens:
+1. A browser tab opens asking you to sign in with Google
+2. Sign in with the **same Google account that owns your YouTube channel**
+3. You'll see "This app isn't verified" — click **Advanced** → **Go to TechLife Insights Bot (unsafe)**
+   (This is safe — it's YOUR app on YOUR Google account)
+4. Click **Allow** on the permissions screen
+5. The browser shows "The authentication flow has completed" — you can close it
+6. The bot saves a token file to `data/youtube_token.json`
+
+**You only need to do this ONCE.** The token auto-refreshes forever.
+
+### Step 6 — Test the Upload
+
+Generate a test article and verify the upload works:
+
+```bash
+source contentgenerator/bin/activate
+PYTHONPATH=. python3 -c "
+from core import youtube_uploader
+from pathlib import Path
+import os
+
+# Quick test — checks credentials are valid
+secrets = os.getenv('YOUTUBE_CLIENT_SECRETS_FILE', 'client_secrets.json')
+creds = youtube_uploader._get_credentials(secrets)
+if creds and creds.valid:
+    print('✅ YouTube credentials valid — bot is ready to upload!')
+else:
+    print('❌ Credentials invalid — re-run the authentication step')
+"
+```
+
+### Step 7 — Let the Bot Run
+
+Once authenticated, the bot automatically uploads videos at the scheduled times (see §34 Daily Schedule). No further action needed.
+
+**To verify a successful upload:**
+1. Check your YouTube Studio: [studio.youtube.com](https://studio.youtube.com)
+2. Go to **Content** — new videos appear within a few minutes of upload
+3. Or check the bot dashboard at http://localhost:5002 → **Posts** — URLs starting with `youtube.com/watch?v=` confirm successful uploads
+
+---
+
+### Troubleshooting YouTube Uploads
+
+| Error | Cause | Fix |
+|---|---|---|
+| `YouTube client secrets not configured` | `.env` missing `YOUTUBE_CLIENT_SECRETS_FILE` | Add the line to `.env` |
+| `client_secrets.json not found` | Wrong path | Put file in project root, or set full path in `.env` |
+| `403 quotaExceeded` | Hit YouTube daily upload quota (10,000 units/day) | Wait 24 hours — resets at midnight Pacific |
+| `Token expired` | Refresh token issue | Re-run the authentication step (Step 5) |
+| `Video uploaded but not visible` | YouTube processing | Wait 5–10 minutes — large files take time to process |
+| `This app isn't verified` at auth step | Normal for personal OAuth apps | Click Advanced → proceed (it's your own app) |
+
+### Notes on YouTube Shorts vs Regular Videos
+
+The bot currently generates **regular videos** (landscape 1280×720). To publish as **Shorts** (which get more algorithmic reach):
+
+1. In `config/settings.yaml`, the `format: "shorts"` setting is already set
+2. Shorts must be ≤60 seconds vertical (1080×1920) — this is already configured
+3. The bot adds `#Shorts` to the title automatically when format is "shorts"
+
+> **Best strategy**: publish as Shorts first (60s vertical clips get free views), then repost longer horizontal versions later.
+
+---
+
+*Manual Version 2.2 — March 2026*
+*For the latest updates, check the repository README.*

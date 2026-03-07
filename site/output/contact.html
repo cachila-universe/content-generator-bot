@@ -135,7 +135,30 @@
       <h2>Send a Message</h2>
       <p>Fill out the form below and we'll get back to you within 1–2 business days.</p>
 
-      <form action="https://formspree.io/f/YOUR_FORM_ID" method="POST" style="margin-top: 20px;">
+      <!--
+        FORMSPREE SETUP (takes 2 minutes, free):
+        1. Go to https://formspree.io and sign in (or create a free account)
+        2. Click the + button → "New Form" → name it anything → click "Create Form"
+        3. You will see a form endpoint like: https://formspree.io/f/abcdefgh
+        4. Copy the 8-character ID (e.g. abcdefgh)
+        5. Replace xwvrkzov below with YOUR 8-character form ID
+        6. Run:  PYTHONPATH=. python scripts/rebuild_site.py
+                 git add site/output/ site/templates/contact.html
+                 git commit -m "Fix Formspree form ID"
+                 git push origin main
+        7. Submit the form ONCE — Formspree sends you an activation email. Click "Confirm Form".
+           Until you click that link, submissions show "Form not found".
+
+        TROUBLESHOOTING "Form not found":
+        - Make sure you are logged in to formspree.io and the form exists in your dashboard
+        - The ID must be EXACTLY 8 characters — check for typos
+        - After first submission, you MUST click the activation email from Formspree
+        - Emails go to the address you used to sign up at formspree.io
+      -->
+      <form action="https://formspree.io/f/xwvrkzov" method="POST" style="margin-top: 20px;">
+        <!-- Formspree helper fields -->
+        <input type="hidden" name="_subject" value="New contact from TechLife Insights">
+        <input type="text" name="_gotcha" style="display:none">
         <div class="form-group">
           <label class="form-label" for="name">Name</label>
           <input type="text" id="name" name="name" class="form-input" placeholder="Your name" required>
@@ -152,12 +175,27 @@
           <label class="form-label" for="message">Message</label>
           <textarea id="message" name="message" class="form-textarea" placeholder="Your message..." required></textarea>
         </div>
-        <!-- TODO: Replace YOUR_FORM_ID with your actual Formspree form ID.
-             Sign up free at https://formspree.io → New Form → copy the 8-char ID. -->
         <button type="submit" class="btn-submit">Send Message →</button>
       </form>
 
-      <h2>Frequently Asked Questions</h2>
+      <h2>Find Us Online</h2>
+      <div class="contact-cards">
+        <div class="contact-card">
+          <div class="icon">▶️</div>
+          <h3>YouTube</h3>
+          <p><a href="https://www.youtube.com/channel/UCV0XW2sQNv2TWqtz3wFAxhA" target="_blank" rel="noopener">Watch our video guides</a> — tips, product reviews, and tutorials published weekly.</p>
+        </div>
+        <div class="contact-card">
+          <div class="icon">📌</div>
+          <h3>Pinterest</h3>
+          <p>Pinterest coming soon — we're setting up our boards. Check back shortly.</p>
+        </div>
+        <div class="contact-card">
+          <div class="icon">📬</div>
+          <h3>Newsletter</h3>
+          <p>Get our best guides weekly. <a href="/contact.html#newsletter">Subscribe free</a> — no spam, unsubscribe anytime.</p>
+        </div>
+      </div>
       <div class="faq-item">
         <h3>How do you choose which products to recommend?</h3>
         <p>We research extensively, compare features and pricing, read user reviews, and test products when possible. We only recommend tools and services we believe offer genuine value.</p>
@@ -179,7 +217,7 @@
 
   <footer class="footer">
     <div>
-      <a href="/">Home</a> · <a href="/privacy.html">Privacy</a> · <a href="/about.html">About</a> · <a href="/contact.html">Contact</a>
+      <a href="/">Home</a> · <a href="/privacy.html">Privacy</a> · <a href="/about.html">About</a> · <a href="/contact.html">Contact</a> · <a href="https://www.youtube.com/channel/UCV0XW2sQNv2TWqtz3wFAxhA" target="_blank" rel="noopener">▶ YouTube</a>
     </div>
     <p style="margin-top: 8px;">&copy; 2026 TechLife Insights. All rights reserved.</p>
   </footer>

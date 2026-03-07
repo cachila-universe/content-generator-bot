@@ -49,7 +49,7 @@ def optimize(article: dict, niche_id: str, niche_config: dict, site_url: str, ou
         schema_markup += "\n" + faq_schema
 
     # Inject inline images after every H2 heading (richer articles)
-    enriched_content = _inject_inline_images(html_content, slug)
+    enriched_content = _inject_inline_images(html_content, slug, niche_id)
 
     # Update sitemap
     _update_sitemap(output_dir, canonical_url, published_at)
@@ -70,27 +70,73 @@ def optimize(article: dict, niche_id: str, niche_config: dict, site_url: str, ou
     }
 
 
-def _inject_inline_images(html_content: str, base_slug: str) -> str:
+def _inject_inline_images(html_content: str, base_slug: str, niche_id: str = "") -> str:
     """
-    Inject a Picsum image after every <h2> heading in the article body.
-    Skips the FAQ section (injecting images there looks odd).
+    Inject a topic-relevant image after the 1st and 3rd content H2 headings.
+    Uses LoremFlickr (keyword-based, free) so images actually relate to the section.
+    Skips FAQ, Conclusion, and any heading that is purely an affiliate link.
     """
+
+    # Words that add no keyword value — filtered out before building the image query
+    _STOP_WORDS = {
+        'best', 'top', 'most', 'the', 'a', 'an', 'and', 'or', 'for', 'in', 'to',
+        'of', 'how', 'why', 'what', 'when', 'where', 'your', 'our', 'my', 'get',
+        'all', 'new', 'free', 'great', 'good', 'about', 'with', 'from', 'this',
+        'that', 'are', 'is', 'was', 'were', 'be', 'been', 'have', 'has', 'had',
+        'do', 'does', 'did', 'will', 'would', 'could', 'should', 'may', 'might',
+        'must', 'can', 'up', 'out', 'on', 'at', 'by', 'as', 'its', 'it', 'we',
+        'you', 'they', 'he', 'she', 'ultimate', 'guide', 'complete', 'right',
+        'choosing', 'tips', 'tricks', 'review', 'reviews', 'buying', 'finding',
+        'using', 'making', 'getting', 'having', 'setting', 'understanding',
+    }
+
+    # Per-niche fallback keywords if heading yields nothing useful
+    _NICHE_FALLBACK = {
+        'ai_tools': 'technology,software',
+        'personal_finance': 'finance,money',
+        'health_biohacking': 'health,wellness',
+        'home_tech': 'smart,home',
+        'travel': 'travel,destination',
+        'pet_care': 'pets,animals',
+        'fitness_wellness': 'fitness,exercise',
+        'remote_work': 'office,laptop',
+    }
+
     img_counter = [0]
 
+    def _keywords_from_heading(raw_html: str) -> str:
+        """Strip HTML, remove stop words, return comma-separated keywords for LoremFlickr."""
+        clean = re.sub(r'<[^>]+>', '', raw_html)          # strip HTML tags
+        clean = re.sub(r'[^a-zA-Z0-9 ]', ' ', clean)      # keep only alphanumeric
+        words = [w.lower() for w in clean.split() if len(w) > 2 and w.lower() not in _STOP_WORDS]
+        keywords = words[:2]
+        if not keywords:
+            keywords = _NICHE_FALLBACK.get(niche_id, 'lifestyle,guide').split(',')
+        return ','.join(keywords)
+
     def _replace_h2(match: re.Match) -> str:
-        heading_text = match.group(1)
-        # Skip image injection for FAQ / Conclusion sections
-        lower = heading_text.lower()
+        heading_html = match.group(1)
+        plain_heading = re.sub(r'<[^>]+>', '', heading_html).strip()
+
+        # Skip image injection for FAQ / Conclusion / Questions sections
+        lower = plain_heading.lower()
         if any(word in lower for word in ("faq", "frequently", "question", "conclusion")):
             return match.group(0)
 
         img_counter[0] += 1
-        # Build a deterministic seed from slug + section number
-        seed = f"{base_slug}-section-{img_counter[0]}"
+
+        # Only inject after the 1st and 3rd content H2 — 2 images per article
+        if img_counter[0] not in (1, 3):
+            return match.group(0)
+
+        keywords = _keywords_from_heading(heading_html)
+        alt_text = plain_heading[:80] if plain_heading else keywords.replace(',', ' ')
+        # LoremFlickr returns a real photo matching the keywords (from Flickr CC)
+        img_src = f"https://loremflickr.com/800/400/{keywords}?random={img_counter[0]}"
         img_html = (
             f'\n<figure style="margin:24px 0;text-align:center;">'
-            f'<img src="https://picsum.photos/seed/{seed}/800/400" '
-            f'alt="{heading_text}" '
+            f'<img src="{img_src}" '
+            f'alt="{alt_text}" '
             f'style="width:100%;max-width:800px;border-radius:10px;box-shadow:0 4px 16px rgba(0,0,0,0.10);" '
             f'loading="lazy" width="800" height="400">'
             f'</figure>'
