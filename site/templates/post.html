@@ -244,21 +244,30 @@
       <h1 class="article-title">{{ article.title }}</h1>
     </header>
 
-    <!-- Ad slot (top) -->
-    <div class="ad-slot">
-      <!-- Google AdSense: Replace with your ad unit code -->
-      <span>Advertisement</span>
+    <!-- Hero image -->
+    {% if article.image_url %}
+    <div style="margin: 0 0 40px;">
+      <img
+        src="{{ article.image_url }}"
+        alt="{{ article.title }}"
+        loading="lazy"
+        style="width:100%; border-radius:var(--radius); max-height:420px; object-fit:cover; display:block;"
+      >
     </div>
+    {% endif %}
 
     <!-- Article body -->
     <article class="article-body">
       {{ article.html_content | safe }}
     </article>
 
-    <!-- Ad slot (bottom) -->
-    <div class="ad-slot">
-      <!-- Google AdSense: Replace with your ad unit code -->
-      <span>Advertisement</span>
+    <!-- Niche navigation CTA -->
+    <div style="background:var(--accent-light); border:1px solid #bfdbfe; border-radius:var(--radius); padding:24px 28px; margin:40px 0; font-family:'Inter',sans-serif; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+      <div>
+        <div style="font-weight:700; font-size:15px; color:var(--accent); margin-bottom:4px;">📚 Explore More {{ niche_name }} Guides</div>
+        <div style="font-size:14px; color:#3b5fb5;">Browse all articles in this category</div>
+      </div>
+      <a href="/{{ niche_id }}/" style="background:var(--accent); color:#fff; text-decoration:none; padding:10px 20px; border-radius:8px; font-size:14px; font-weight:600; white-space:nowrap;">Browse {{ niche_name }} →</a>
     </div>
 
     <!-- Related posts -->

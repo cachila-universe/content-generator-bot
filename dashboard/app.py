@@ -261,6 +261,38 @@ def api_posts_chart():
     return jsonify(analytics_tracker.get_posts_chart_data(db))
 
 
+@app.route("/api/posts/<int:post_id>/delete", methods=["POST"])
+def api_delete_post(post_id):
+    """Delete a post: remove from DB, delete HTML file, rebuild site indexes."""
+    from core import analytics_tracker, publisher
+    db = _get_db()
+    settings = _load_settings()
+    site_url = os.getenv("SITE_URL", settings.get("site_url", "https://tech-life-insights.com"))
+
+    deleted = analytics_tracker.delete_post(db, post_id)
+    if not deleted:
+        return jsonify({"ok": False, "error": "Post not found"}), 404
+
+    # Delete the static HTML file
+    niche_id = deleted.get("niche_id", "")
+    slug = deleted.get("slug", "")
+    if niche_id and slug:
+        html_path = _PROJECT_ROOT / "site" / "output" / niche_id / f"{slug}.html"
+        if html_path.exists():
+            html_path.unlink()
+            logger.info("Deleted file: %s", html_path)
+
+    # Rebuild site indexes so the deleted post no longer appears
+    try:
+        publisher.rebuild_site(settings, db, site_url)
+    except Exception as exc:
+        logger.warning("Site rebuild after delete failed: %s", exc)
+
+    title = deleted.get("title", slug)
+    logger.info("Post deleted: %s", title)
+    return jsonify({"ok": True, "message": f"Deleted: {title}"})
+
+
 if __name__ == "__main__":
     port = int(os.getenv("DASHBOARD_PORT", 5002))
     _get_db()

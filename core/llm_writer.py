@@ -28,52 +28,30 @@ def generate_article(topic: str, niche_config: dict) -> dict | None:
         return None
 
     host = os.getenv("OLLAMA_HOST", "http://localhost:11434")
-    model = os.getenv("OLLAMA_MODEL", "mistral")
+    model = os.getenv("OLLAMA_MODEL", "llama3.1")
     niche_name = niche_config.get("name", "General")
     seed_keywords = niche_config.get("seed_keywords", [])
 
-    prompt = f"""Write a comprehensive SEO-optimized blog post about: "{topic}"
+    prompt = f"""Write a complete, expert blog post about: "{topic}"
 
 Niche: {niche_name}
-Target keywords: {', '.join(seed_keywords[:5])}
+Naturally include these keywords: {', '.join(seed_keywords[:5])}
 
-Structure your response EXACTLY as follows:
+Format the article in markdown:
+- Start with a # H1 title (specific and compelling, not generic)
+- Write an engaging 2-3 sentence introduction
+- Write 5 sections — each with a descriptive ## H2 heading and 2-3 paragraphs of substantive content
+- End with a ## Frequently Asked Questions section containing 3 Q&As in this format:
+  **Q: your question here**
+  A: your answer here
+- Finish with a short ## Conclusion paragraph
 
-# [Write the H1 title here]
-
-[Write a compelling 2-3 sentence introduction paragraph here]
-
-## [H2 Section 1 Title]
-[2-3 paragraphs of detailed content]
-
-## [H2 Section 2 Title]
-[2-3 paragraphs of detailed content]
-
-## [H2 Section 3 Title]
-[2-3 paragraphs of detailed content]
-
-## [H2 Section 4 Title]
-[2-3 paragraphs of detailed content]
-
-## [H2 Section 5 Title]
-[2-3 paragraphs of detailed content]
-
-## Frequently Asked Questions
-
-**Q: [Question 1]**
-A: [Answer 1]
-
-**Q: [Question 2]**
-A: [Answer 2]
-
-**Q: [Question 3]**
-A: [Answer 3]
-
-## Ready to Get Started?
-
-[Write a compelling 2-3 sentence call to action here]
-
-Write in a friendly, authoritative tone. Target 1000-1200 words total. Do not include any meta commentary."""
+Rules:
+- Begin the article immediately — do NOT write any preamble like "Sure, here's an article"
+- Every ## heading must be a real, descriptive title — never use placeholder words
+- Be specific with product names, tips, and examples
+- Friendly, authoritative tone
+- Target 1000-1200 words"""
 
     for attempt in range(3):
         try:
@@ -169,6 +147,8 @@ def _markdown_to_html(markdown: str) -> str:
                 html_lines.append("</p>")
                 in_paragraph = False
             heading_text = stripped[3:].strip()
+            # Strip any [placeholder] artifacts the LLM may have included literally
+            heading_text = re.sub(r'^\[[^\]]*\]\s*', '', heading_text).strip()
             in_faq = "faq" in heading_text.lower() or "question" in heading_text.lower()
             html_lines.append(f"<h2>{heading_text}</h2>")
             continue

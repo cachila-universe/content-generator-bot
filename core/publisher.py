@@ -223,3 +223,15 @@ def _rebuild_legal_pages(env: Environment, settings: dict, site_url: str) -> Non
                 pass  # Template may not exist yet
     except Exception as exc:
         logger.warning("Could not rebuild legal pages: %s", exc)
+
+
+def rebuild_site(settings: dict, db_path: Path, site_url: str) -> None:
+    """Rebuild all static site pages. Call after any content change (e.g. delete)."""
+    env = Environment(
+        loader=FileSystemLoader(str(_TEMPLATES_DIR)),
+        autoescape=True,
+    )
+    _rebuild_index(env, settings, db_path, site_url)
+    _rebuild_niche_indexes(env, settings, db_path, site_url)
+    _rebuild_best_of_pages(env, settings, db_path, site_url)
+    _rebuild_legal_pages(env, settings, site_url)

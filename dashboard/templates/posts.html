@@ -26,12 +26,12 @@
           <th>Affiliate Links</th>
           <th>Est. Clicks</th>
           <th>Est. Income</th>
-          <th>View</th>
+          <th>Actions</th>
         </tr>
       </thead>
       <tbody>
         {% for post in posts %}
-        <tr class="post-row" data-title="{{ post.title|lower }}" data-niche="{{ post.niche_name|lower }}">
+        <tr class="post-row" data-post-id="{{ post.id }}" data-title="{{ post.title|lower }}" data-niche="{{ post.niche_name|lower }}">
           <td class="text-muted">{{ loop.index }}</td>
           <td><span class="niche-badge">{{ post.niche_name }}</span></td>
           <td class="post-title">{{ post.title }}</td>
@@ -40,7 +40,7 @@
           <td>{{ post.affiliate_links_count }}</td>
           <td>{{ post.estimated_clicks }}</td>
           <td class="income-cell">${{ "%.2f"|format(post.estimated_income) }}</td>
-          <td>
+          <td style="white-space:nowrap;">
             {% if post.url %}
             <a href="{{ post.url }}" target="_blank" class="btn btn-sm">View →</a>
             {% else %}
@@ -49,6 +49,7 @@
             {% if post.youtube_url %}
             <a href="{{ post.youtube_url }}" target="_blank" class="btn btn-sm btn-yt">▶ YT</a>
             {% endif %}
+            <button class="btn btn-sm" style="background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;" onclick="deletePost({{ post.id }}, '{{ post.title|replace("'", "\\'") }}')">🗑️ Del</button>
           </td>
         </tr>
         {% else %}
@@ -70,6 +71,25 @@ function filterPosts(query) {
     const niche = row.dataset.niche || '';
     row.style.display = (title.includes(q) || niche.includes(q)) ? '' : 'none';
   });
+}
+
+function deletePost(postId, title) {
+  if (!confirm(`Delete "${title}"?\n\nThis will permanently remove the article from the site.`)) return;
+  fetch(`/api/posts/${postId}/delete`, { method: 'POST' })
+    .then(r => r.json())
+    .then(data => {
+      if (data.ok) {
+        const row = document.querySelector(`tr[data-post-id="${postId}"]`);
+        if (row) row.remove();
+        // Update the header count
+        const remaining = document.querySelectorAll('.post-row').length;
+        const header = document.querySelector('.card-title');
+        if (header) header.textContent = `All Posts (${remaining})`;
+      } else {
+        alert('Delete failed: ' + (data.error || 'Unknown error'));
+      }
+    })
+    .catch(() => alert('Delete request failed. Is the dashboard running?'));
 }
 </script>
 {% endblock %}

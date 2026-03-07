@@ -138,11 +138,14 @@
     </div>
   </section>
 
-  <!-- Ad Slot (top) -->
+  <!-- Newsletter CTA -->
   <div class="container">
-    <div class="ad-slot">
-      <!-- Google AdSense: Replace with your ad unit code when approved -->
-      <span>Advertisement</span>
+    <div style="background:linear-gradient(135deg,#eff6ff 0%,#f0fdf4 100%);border:1px solid #bfdbfe;border-radius:14px;padding:28px 32px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;margin:24px 0;">
+      <div>
+        <div style="font-family:'Inter',sans-serif;font-size:18px;font-weight:800;color:#1e40af;margin-bottom:6px;">📬 Get Our Best Guides Weekly</div>
+        <div style="font-family:'Inter',sans-serif;font-size:14px;color:#3b82f6;">Free expert tips on AI, finance, health, tech &amp; travel — delivered to your inbox.</div>
+      </div>
+      <a href="/contact.html" style="background:#2563eb;color:#fff;text-decoration:none;padding:11px 24px;border-radius:8px;font-family:'Inter',sans-serif;font-size:14px;font-weight:700;white-space:nowrap;">Subscribe Free →</a>
     </div>
   </div>
 
@@ -223,11 +226,17 @@
     </div>
   </section>
 
-  <!-- Ad Slot (bottom) -->
+  <!-- Best-of CTA -->
   <div class="container">
-    <div class="ad-slot">
-      <!-- Google AdSense: Replace with your ad unit code when approved -->
-      <span>Advertisement</span>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:28px 32px;text-align:center;margin:24px 0;">
+      <div style="font-family:'Inter',sans-serif;font-size:16px;font-weight:700;color:var(--text);margin-bottom:8px;">🏆 Explore Our Top Picks</div>
+      <div style="font-family:'Inter',sans-serif;font-size:14px;color:var(--text-secondary);margin-bottom:16px;">Curated best-of lists across every topic we cover.</div>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+        {% set icons = {'ai_tools':'🤖','personal_finance':'💰','health_biohacking':'💪','home_tech':'🏠','travel':'✈️'} %}
+        {% for nid, niche in niches.items() %}{% if niche.enabled %}
+        <a href="/{{ nid }}/best-of.html" style="background:var(--accent-light);color:var(--accent);text-decoration:none;padding:7px 16px;border-radius:8px;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;">{{ icons.get(nid,'📌') }} {{ niche.name }}</a>
+        {% endif %}{% endfor %}
+      </div>
     </div>
   </div>
 

@@ -317,3 +317,25 @@ def get_posts_chart_data(db_path: Path) -> dict:
         return {"labels": labels, "data": data}
     except Exception:
         return {"labels": [], "data": []}
+
+
+def delete_post(db_path: Path, post_id: int):
+    """Delete a post by ID. Returns the deleted post dict, or None if not found."""
+    try:
+        conn = sqlite3.connect(str(db_path))
+        conn.row_factory = sqlite3.Row
+        row = conn.execute("SELECT * FROM posts WHERE id = ?", (post_id,)).fetchone()
+        if not row:
+            conn.close()
+            return None
+        post_data = dict(row)
+        slug = post_data.get("slug", "")
+        conn.execute("DELETE FROM posts WHERE id = ?", (post_id,))
+        if slug:
+            conn.execute("DELETE FROM clicks WHERE post_slug = ?", (slug,))
+        conn.commit()
+        conn.close()
+        return post_data
+    except Exception as exc:
+        logger.warning("Failed to delete post %d: %s", post_id, exc)
+        return None

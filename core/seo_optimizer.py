@@ -30,9 +30,13 @@ def optimize(article: dict, niche_id: str, niche_config: dict, site_url: str, ou
     slug = slugify(title, max_length=80, word_boundary=True, save_order=True)
     canonical_url = f"{site_url.rstrip('/')}/{niche_id}/{slug}.html"
 
+    # Hero image via Picsum Photos (free, no API key needed)
+    # For production: replace with Unsplash API or your own image CDN
+    image_url = f"https://picsum.photos/seed/{slug}/800/450"
+
     # Build meta HTML block
     site_name = os.getenv("SITE_NAME", "TechLife Insights")
-    meta_html = _build_meta_html(title, meta_description, canonical_url, site_name, tags)
+    meta_html = _build_meta_html(title, meta_description, canonical_url, site_name, tags, image_url)
 
     # Build JSON-LD Article schema
     article_schema = _build_article_schema(title, meta_description, canonical_url, site_name, published_at)
@@ -58,12 +62,14 @@ def optimize(article: dict, niche_id: str, niche_config: dict, site_url: str, ou
         "schema_markup": schema_markup,
         "canonical_url": canonical_url,
         "published_at": published_at,
+        "image_url": image_url,
     }
 
 
-def _build_meta_html(title: str, description: str, canonical_url: str, site_name: str, tags: list) -> str:
+def _build_meta_html(title: str, description: str, canonical_url: str, site_name: str, tags: list, image_url: str = "") -> str:
     """Build HTML meta tags block."""
     keywords = ", ".join(tags)
+    img_tags = f'\n<meta property="og:image" content="{image_url}">\n<meta name="twitter:image" content="{image_url}">' if image_url else ""
     return f"""<title>{title} | {site_name}</title>
 <meta name="description" content="{description}">
 <meta name="keywords" content="{keywords}">
@@ -72,7 +78,7 @@ def _build_meta_html(title: str, description: str, canonical_url: str, site_name
 <meta property="og:description" content="{description}">
 <meta property="og:url" content="{canonical_url}">
 <meta property="og:type" content="article">
-<meta property="og:site_name" content="{site_name}">
+<meta property="og:site_name" content="{site_name}">{img_tags}
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="{title}">
 <meta name="twitter:description" content="{description}">"""
