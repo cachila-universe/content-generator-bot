@@ -145,6 +145,15 @@ This generates one test article across all niches to verify everything works.
 27. [Troubleshooting](#27-troubleshooting)
 28. [FAQ](#28-faq)
 29. [Legal & Compliance](#29-legal--compliance)
+30. [Formspree — Contact Form Setup](#30-formspree--making-your-contact-form-work)
+31. [Best Free AI Models (by RAM)](#31-best-free-ai-models-ranked-by-quality)
+32. [Google AdSense — Auto Ads (No Space Reserved Needed)](#32-google-adsense--do-you-need-to-reserve-space)
+33. [Amazon Product Cards in Articles](#33-amazon-product-cards-in-articles)
+34. [Daily Bot Schedule](#34-daily-bot-schedule)
+35. [Maintenance Schedule](#35-maintenance-schedule)
+36. [YouTube Video Quality Tips](#36-youtube-video-quality-tips)
+37. [Pinterest — Status & Configuration](#37-pinterest--status--configuration)
+38. [Windows PC Migration](#38-windows-pc-migration)
 
 ---
 
