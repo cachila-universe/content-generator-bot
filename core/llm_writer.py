@@ -39,19 +39,31 @@ Naturally include these keywords: {', '.join(seed_keywords[:5])}
 
 Format the article in markdown:
 - Start with a # H1 title (specific and compelling, not generic)
-- Write an engaging 2-3 sentence introduction
-- Write 5 sections — each with a descriptive ## H2 heading and 2-3 paragraphs of substantive content
+- Write an engaging 2-3 sentence introduction that hooks the reader immediately
+- Write 5-7 sections — each with a descriptive ## H2 heading
+- Mix up the format across sections. DO NOT write every section as long paragraphs. Use a variety of:
+  • Bullet-point lists when comparing features, pros/cons, or listing recommendations
+  • Numbered steps for how-to or process sections
+  • Short punchy paragraphs (2-3 sentences max) mixed with lists
+  • Bold key takeaways or product names at the start of list items
+  • Quick comparison tables in markdown where relevant
+- When recommending products or tools, ALWAYS use bullet points with this pattern:
+  • **Product Name** — one-line description of why it's good, who it's for, and a standout feature
 - End with a ## Frequently Asked Questions section containing 3 Q&As in this format:
   **Q: your question here**
   A: your answer here
-- Finish with a short ## Conclusion paragraph
+- Finish with a short ## Conclusion paragraph (2-3 sentences, not a wall of text)
 
-Rules:
+Writing style rules:
 - Begin the article immediately — do NOT write any preamble like "Sure, here's an article"
 - Every ## heading must be a real, descriptive title — never use placeholder words
-- Be specific with product names, tips, and examples
-- Friendly, authoritative tone
-- Target 1000-1200 words"""
+- Be specific with product names, prices, specs, and real-world examples
+- Vary your sentence length — mix short punchy sentences with longer explanatory ones
+- Use conversational, friendly tone but back it up with authority and specifics
+- Break up long explanations with subheadings (### H3) when a section gets long
+- Include at least one "Pro tip:" or "Worth noting:" callout somewhere in the article
+- Do NOT repeat the same sentence structure over and over
+- Target 1000-1400 words"""
 
     for attempt in range(3):
         try:

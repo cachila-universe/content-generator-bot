@@ -72,10 +72,13 @@ def optimize(article: dict, niche_id: str, niche_config: dict, site_url: str, ou
 
 def _inject_inline_images(html_content: str, base_slug: str, niche_id: str = "") -> str:
     """
-    Inject a topic-relevant image after the 1st and 3rd content H2 headings.
-    Uses LoremFlickr (keyword-based, free) so images actually relate to the section.
-    Skips FAQ, Conclusion, and any heading that is purely an affiliate link.
+    Inject topic-relevant images throughout the article dynamically.
+    Uses Unsplash Source (keyword-based, free, no API key) so images relate to the section.
+    Number of images varies per article — typically 2-5 depending on section count.
+    Each image uses a unique seed to avoid duplicates within the same article.
+    Skips FAQ, Conclusion, and headings that are purely affiliate links.
     """
+    import hashlib
 
     # Words that add no keyword value — filtered out before building the image query
     _STOP_WORDS = {
@@ -102,17 +105,59 @@ def _inject_inline_images(html_content: str, base_slug: str, niche_id: str = "")
         'remote_work': 'office,laptop',
     }
 
+    # Count total content H2s (excluding FAQ/Conclusion) to decide image placement
+    all_h2s = re.findall(r"<h2>(.*?)</h2>", html_content, flags=re.IGNORECASE | re.DOTALL)
+    content_h2s = []
+    for h2_html in all_h2s:
+        plain = re.sub(r'<[^>]+>', '', h2_html).strip().lower()
+        if not any(w in plain for w in ("faq", "frequently", "question", "conclusion")):
+            content_h2s.append(plain)
+
+    total_sections = len(content_h2s)
+
+    # Decide which sections get images — spread them out, never the same pattern
+    # For 1-2 sections: image on every section
+    # For 3-4 sections: image on 2-3 sections (skip one in the middle)
+    # For 5+ sections:  image on 3-4 sections (spread evenly)
+    if total_sections <= 2:
+        image_positions = set(range(1, total_sections + 1))
+    elif total_sections <= 4:
+        # Always first, always last content section, and one in middle
+        image_positions = {1, total_sections}
+        if total_sections >= 3:
+            image_positions.add(total_sections // 2 + 1)
+    else:
+        # Spread evenly: first, ~1/3, ~2/3, last
+        image_positions = {1, total_sections}
+        step = max(1, total_sections // 3)
+        for i in range(step, total_sections, step):
+            image_positions.add(i)
+        # Cap at 5 images max for very long articles
+        if len(image_positions) > 5:
+            image_positions = set(sorted(image_positions)[:5])
+
+    used_seeds = set()
     img_counter = [0]
 
     def _keywords_from_heading(raw_html: str) -> str:
-        """Strip HTML, remove stop words, return comma-separated keywords for LoremFlickr."""
+        """Strip HTML, remove stop words, return comma-separated keywords."""
         clean = re.sub(r'<[^>]+>', '', raw_html)          # strip HTML tags
         clean = re.sub(r'[^a-zA-Z0-9 ]', ' ', clean)      # keep only alphanumeric
         words = [w.lower() for w in clean.split() if len(w) > 2 and w.lower() not in _STOP_WORDS]
-        keywords = words[:2]
+        keywords = words[:3]  # up to 3 keywords for better specificity
         if not keywords:
             keywords = _NICHE_FALLBACK.get(niche_id, 'lifestyle,guide').split(',')
         return ','.join(keywords)
+
+    def _unique_seed(keywords: str) -> str:
+        """Generate a unique seed from keywords + counter so no two images repeat."""
+        raw = f"{base_slug}-{keywords}-{img_counter[0]}"
+        seed = hashlib.md5(raw.encode()).hexdigest()[:8]
+        # Ensure uniqueness even if keywords repeat
+        while seed in used_seeds:
+            seed = hashlib.md5(f"{seed}x".encode()).hexdigest()[:8]
+        used_seeds.add(seed)
+        return seed
 
     def _replace_h2(match: re.Match) -> str:
         heading_html = match.group(1)
@@ -125,14 +170,17 @@ def _inject_inline_images(html_content: str, base_slug: str, niche_id: str = "")
 
         img_counter[0] += 1
 
-        # Only inject after the 1st and 3rd content H2 — 2 images per article
-        if img_counter[0] not in (1, 3):
+        # Only inject at dynamically chosen positions
+        if img_counter[0] not in image_positions:
             return match.group(0)
 
         keywords = _keywords_from_heading(heading_html)
+        seed = _unique_seed(keywords)
         alt_text = plain_heading[:80] if plain_heading else keywords.replace(',', ' ')
-        # LoremFlickr returns a real photo matching the keywords (from Flickr CC)
-        img_src = f"https://loremflickr.com/800/400/{keywords}?random={img_counter[0]}"
+
+        # Picsum with seed ensures deterministic unique images per section
+        # Use keyword-derived seed so the same topic always gets the same image
+        img_src = f"https://picsum.photos/seed/{seed}/800/400"
         img_html = (
             f'\n<figure style="margin:24px 0;text-align:center;">'
             f'<img src="{img_src}" '
