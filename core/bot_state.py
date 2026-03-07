@@ -35,6 +35,7 @@ _DEFAULT_STATE = {
     },
     "manual_trigger_queue": [],    # list of {"niche_id": ..., "platforms": [...], "requested_at": ...}
     "last_runs": {},               # niche_id -> ISO timestamp of last post
+    "last_roundup_runs": {},       # niche_id -> ISO timestamp of last landscape roundup video
     "posts_today": 0,
     "posts_today_date": "",
     "created_at": "",
@@ -293,6 +294,34 @@ def can_post_now(niche_id: str, ignore_mode: bool = False) -> tuple[bool, str]:
             pass
 
     return True, "OK"
+
+
+def record_roundup_run(niche_id: str) -> None:
+    """Record that a landscape roundup video was generated for this niche."""
+    state = load_state()
+    state.setdefault("last_roundup_runs", {})[niche_id] = _now_iso()
+    save_state(state)
+    logger.info("Roundup run recorded for niche: %s (7-day cooldown started)", niche_id)
+
+
+def can_run_roundup_now(niche_id: str, cooldown_days: int = 7) -> tuple[bool, str]:
+    """
+    Check if a landscape roundup video is allowed (7-day cooldown per niche).
+    Returns (allowed: bool, reason: str).
+    """
+    state = load_state()
+    last_run_str = state.get("last_roundup_runs", {}).get(niche_id)
+    if not last_run_str:
+        return True, "No previous roundup — first run"
+    try:
+        last_run = datetime.fromisoformat(last_run_str)
+        days_since = (datetime.now(timezone.utc) - last_run).total_seconds() / 86400
+        if days_since < cooldown_days:
+            remaining = round(cooldown_days - days_since, 1)
+            return False, f"Roundup cooldown: {remaining}d remaining (last ran {days_since:.1f}d ago)"
+        return True, f"Ready — {days_since:.1f}d since last roundup"
+    except Exception:
+        return True, "No valid previous roundup timestamp"
 
 
 def get_full_state() -> dict:

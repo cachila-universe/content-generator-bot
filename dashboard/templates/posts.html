@@ -19,13 +19,13 @@
       <thead>
         <tr>
           <th>#</th>
-          <th>Niche</th>
-          <th>Title</th>
-          <th>Published</th>
-          <th>Words</th>
-          <th>Affiliate Links</th>
-          <th>Active Affiliates</th>
-          <th>Est. Income</th>
+          <th class="sortable" data-col="1">Niche <span class="sort-icon">⇅</span></th>
+          <th class="sortable" data-col="2">Title <span class="sort-icon">⇅</span></th>
+          <th class="sortable" data-col="3">Published <span class="sort-icon">⇅</span></th>
+          <th class="sortable" data-col="4">Words <span class="sort-icon">⇅</span></th>
+          <th class="sortable" data-col="5">Affiliate Links <span class="sort-icon">⇅</span></th>
+          <th class="sortable" data-col="6">Active Affiliates <span class="sort-icon">⇅</span></th>
+          <th class="sortable" data-col="7">Est. Income <span class="sort-icon">⇅</span></th>
           <th>Actions</th>
         </tr>
       </thead>
@@ -35,7 +35,7 @@
           <td class="text-muted">{{ loop.index }}</td>
           <td><span class="niche-badge">{{ post.niche_name }}</span></td>
           <td class="post-title">{{ post.title }}</td>
-          <td class="text-muted">{{ post.published_at[:10] if post.published_at else '—' }}</td>
+          <td class="text-muted" style="white-space:nowrap;">{{ post.published_at[:16] | replace('T', ' ') if post.published_at else '—' }}</td>
           <td>{{ post.word_count }}</td>
           <td>{{ post.affiliate_links_count }}</td>
           <td>
@@ -90,15 +90,69 @@ function deletePost(postId, title) {
       if (data.ok) {
         const row = document.querySelector(`tr[data-post-id="${postId}"]`);
         if (row) row.remove();
-        // Update the header count
         const remaining = document.querySelectorAll('.post-row').length;
         const header = document.querySelector('.card-title');
         if (header) header.textContent = `All Posts (${remaining})`;
+        reindexRows();
       } else {
         alert('Delete failed: ' + (data.error || 'Unknown error'));
       }
     })
     .catch(() => alert('Delete request failed. Is the dashboard running?'));
 }
+
+// ── Sortable headers ──────────────────────────────────────────
+let _sortCol = -1, _sortDir = 'asc';
+
+function reindexRows() {
+  document.querySelectorAll('#postsTable tbody tr.post-row').forEach((row, i) => {
+    row.querySelector('td:first-child').textContent = i + 1;
+  });
+}
+
+function doSort(col, dir) {
+  const tbody = document.querySelector('#postsTable tbody');
+  const rows = Array.from(tbody.querySelectorAll('tr.post-row'));
+  rows.sort((a, b) => {
+    const aRaw = a.cells[col]?.textContent.trim() || '';
+    const bRaw = b.cells[col]?.textContent.trim() || '';
+    const aNum = parseFloat(aRaw.replace(/[$,\s]/g, ''));
+    const bNum = parseFloat(bRaw.replace(/[$,\s]/g, ''));
+    if (!isNaN(aNum) && !isNaN(bNum)) {
+      return dir === 'asc' ? aNum - bNum : bNum - aNum;
+    }
+    const cmp = aRaw.localeCompare(bRaw);
+    return dir === 'asc' ? cmp : -cmp;
+  });
+  rows.forEach((row, i) => {
+    row.querySelector('td:first-child').textContent = i + 1;
+    tbody.appendChild(row);
+  });
+}
+
+function initSortable() {
+  document.querySelectorAll('#postsTable th.sortable').forEach(th => {
+    th.addEventListener('click', () => {
+      const col = parseInt(th.dataset.col);
+      if (_sortCol === col) {
+        _sortDir = _sortDir === 'asc' ? 'desc' : 'asc';
+      } else {
+        _sortCol = col;
+        _sortDir = 'asc';
+      }
+      document.querySelectorAll('#postsTable th.sortable').forEach(h => {
+        h.classList.remove('sort-asc', 'sort-desc');
+        const icon = h.querySelector('.sort-icon');
+        if (icon) icon.textContent = '⇅';
+      });
+      th.classList.add(_sortDir === 'asc' ? 'sort-asc' : 'sort-desc');
+      const icon = th.querySelector('.sort-icon');
+      if (icon) icon.textContent = _sortDir === 'asc' ? '▲' : '▼';
+      doSort(col, _sortDir);
+    });
+  });
+}
+
+initSortable();
 </script>
 {% endblock %}

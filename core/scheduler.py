@@ -561,8 +561,15 @@ def job_generate_and_upload_short(
 def _manual_generate_roundup(niche_id, niche_cfg, settings, db_path, site_url):
     """Manual trigger version of weekly roundup video generation."""
     from core import video_generator, youtube_uploader, analytics_tracker
+    from core import bot_state as _bs
 
     if not settings.get("video", {}).get("enabled", True):
+        return
+
+    # Landscape videos are weekly content — enforce 7-day cooldown
+    allowed, reason = _bs.can_run_roundup_now(niche_id)
+    if not allowed:
+        logger.info("Roundup skipped for %s: %s", niche_id, reason)
         return
 
     niche_name = niche_cfg.get("name", niche_id.replace("_", " ").title())
@@ -621,9 +628,7 @@ def _manual_generate_roundup(niche_id, niche_cfg, settings, db_path, site_url):
             )
         conn.commit()
         conn.close()
-
-
-def job_generate_and_upload_roundup(
+        _bs.record_roundup_run(niche_id)
     niche_id: str,
     niche_cfg: dict,
     settings: dict,
