@@ -101,7 +101,7 @@ source contentgenerator/bin/activate
 python scripts/start_dashboard.py
 ```
 
-Access the dashboard at: **http://localhost:5000**
+Access the dashboard at: **http://localhost:5002**
 
 ### Step 7: Test Run (Recommended Before Full Start)
 
@@ -587,7 +587,7 @@ content-generator-bot/
 │   ├── trend_finder.py           ← Fetches trending topics from Google Trends
 │   ├── affiliate_injector.py     ← Injects affiliate links into articles
 │   ├── seo_optimizer.py          ← Adds meta tags, sitemap, schema markup
-│   ├── publisher.py              ← Builds static HTML files for your website
+│   ├── publisher.py              ← Builds static HTML files + homepage + niche index pages
 │   ├── video_generator.py        ← Creates MP4 videos from articles
 │   ├── youtube_uploader.py       ← Uploads videos to YouTube
 │   ├── pinterest_poster.py       ← Posts pins to Pinterest
@@ -595,13 +595,22 @@ content-generator-bot/
 │   └── analytics_tracker.py      ← Tracks all data in SQLite database
 │
 ├── 📁 dashboard/                 ← Web monitoring interface
-│   ├── app.py                    ← Flask web server (http://localhost:5000)
+│   ├── app.py                    ← Flask web server (http://localhost:5002)
 │   ├── templates/                ← HTML pages for dashboard
 │   └── static/                   ← CSS + JavaScript for dashboard
 │
 ├── 📁 site/                      ← Your actual website (this goes live)
-│   ├── templates/                ← Blog article + homepage HTML templates
+│   ├── templates/                ← Blog article + homepage + niche index HTML templates
+│   │   ├── index.html            ← Homepage template (hero, niche cards, posts grid)
+│   │   ├── niche_index.html      ← Per-niche category page template
+│   │   └── post.html             ← Individual article template
 │   └── output/                   ← Generated website files (deploy this folder)
+│       ├── index.html            ← Generated homepage
+│       ├── ai_tools/index.html   ← AI Tools category page
+│       ├── personal_finance/     ← Finance category page + articles
+│       ├── health_biohacking/    ← Health category page + articles
+│       ├── home_tech/            ← Home Tech category page + articles
+│       └── travel/               ← Travel category page + articles
 │
 ├── 📁 data/                      ← Local data storage
 │   ├── posts.db                  ← SQLite database (all posts, clicks, income)
@@ -611,7 +620,8 @@ content-generator-bot/
 │   ├── setup.py                  ← First-time setup (run once)
 │   ├── start_bot.py              ← Start everything
 │   ├── start_dashboard.py        ← Start dashboard only
-│   └── test_run.py               ← Test one article cycle
+│   ├── test_run.py               ← Test one article cycle
+│   └── rebuild_site.py           ← Rebuild all homepage + niche index pages
 │
 ├── .env                          ← Your private config (API keys, settings)
 ├── .env.example                  ← Template for .env
@@ -1270,7 +1280,7 @@ source .venv/bin/activate
 python scripts/start_dashboard.py
 ```
 
-Then open: [http://localhost:5000](http://localhost:5000)
+Then open: [http://localhost:5002](http://localhost:5002)
 
 ### Starting on VPS (Background, 24/7)
 
@@ -1296,10 +1306,10 @@ make unittest   # Run unit tests
 
 1. Loads `.env` configuration
 2. Initializes/connects to SQLite database
-3. Starts Flask dashboard at http://localhost:5000
+3. Starts Flask dashboard at http://localhost:5002
 4. Schedules all jobs via APScheduler
 5. If database is empty (first run): runs an immediate test cycle for all niches
-6. Prints confirmation: "Bot is running. Dashboard at http://localhost:5000"
+6. Prints confirmation: "Bot is running. Dashboard at http://localhost:5002"
 
 ---
 
@@ -1351,7 +1361,7 @@ The bot resumes from where it left off. Your scheduled jobs will run at their ne
 
 ## 24. The Dashboard
 
-Access the dashboard at: **http://localhost:5000**
+Access the dashboard at: **http://localhost:5002**
 
 The dashboard only works while `start_bot.py` or `start_dashboard.py` is running.
 
@@ -1468,28 +1478,45 @@ npm install -g netlify-cli
 netlify deploy --dir=site/output --prod
 ```
 
-### Option C: Cloudflare Pages (Best Performance — Free)
+### Option C: Cloudflare Pages (Currently Active — Best Performance — Free)
 
-**Cost: $0 forever, unlimited bandwidth**
+**Cost: $0 forever, unlimited bandwidth, unlimited requests**
 
-1. Go to [pages.cloudflare.com](https://pages.cloudflare.com)
-2. Connect your GitHub account
-3. Select your `my-income-blog` repository
-4. Build settings: Build command = (none), Output directory = `/`
-5. Deploy
+Your site is live at: [https://tech-life-insights.com](https://tech-life-insights.com)
 
-Every time you push to GitHub, Cloudflare auto-deploys your site.
+Cloudflare auto-deploys every time you push to GitHub. To deploy new content:
+
+```bash
+git add site/output/
+git commit -m "New content"
+git push origin main
+```
+
+**Cloudflare Pages Free Tier Limits:**
+| Resource | Limit |
+|---|---|
+| Page views / requests | Unlimited |
+| Bandwidth | Unlimited |
+| Builds per month | 500 |
+| Concurrent builds | 1 |
+| Max file size | 25 MB |
+
+You'll never hit these limits with normal use.
 
 ### After Deploying — Update Site URL
 
 Update your `.env`:
 ```env
-SITE_URL=https://yourdomain.com
+SITE_URL=https://tech-life-insights.com
 ```
 
-Then regenerate all articles so links point to your live domain:
+Then regenerate all pages so links point to your live domain:
 ```bash
-python scripts/rebuild_site.py
+source contentgenerator/bin/activate
+PYTHONPATH=. python scripts/rebuild_site.py
+git add site/output/
+git commit -m "Rebuild with live domain URL"
+git push origin main
 ```
 
 ---
@@ -1503,7 +1530,7 @@ python scripts/rebuild_site.py
 - Dashboard auto-updates hourly
 
 ### Weekly (5 minutes)
-1. Check dashboard at http://localhost:5000
+1. Check dashboard at http://localhost:5002
 2. Review logs page for any ERROR entries
 3. Check that new articles are appearing in `site/output/`
 4. Push new articles to your hosting (if not auto-deploying)
@@ -1554,9 +1581,9 @@ python scripts/rebuild_site.py
 
 ### Problem: AdSense not showing ads
 **Fix:**
-1. Verify you added the AdSense code to `site/templates/post.html`
-2. Re-publish all articles by running `python scripts/rebuild_site.py`
-3. Push the updated files to your hosting
+1. Verify you added the AdSense code to `site/templates/post.html` and `site/templates/index.html`
+2. Re-publish all articles by running `PYTHONPATH=. python scripts/rebuild_site.py`
+3. Push the updated files: `git add site/output/ && git commit -m "Rebuild" && git push origin main`
 4. AdSense can take 24 hours to start showing ads after first approval
 
 ### Problem: "ModuleNotFoundError" on startup
@@ -1602,7 +1629,7 @@ A: Google's policy is about content quality, not how it was written. The bot gen
 A: You need 1,000 subscribers and 4,000 watch hours. With 5 videos/day, you'll have 1,825 videos in a year. Getting subscribers requires promoting your channel. Focus on AdSense and affiliate income first.
 
 **Q: Can I add more niches?**
-A: Yes. Copy a niche block in `config/niches.yaml`, change the name and keywords, and the bot will start covering it automatically.
+A: Yes. Copy a niche block in `config/niches.yaml`, change the name and keywords, run `PYTHONPATH=. python scripts/rebuild_site.py` to generate the new niche's index page, push to GitHub, and restart the bot. It will start covering the new niche automatically.
 
 ---
 

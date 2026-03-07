@@ -95,13 +95,14 @@
 | `core/trend_finder.py` | Uses Google Trends (pytrends) to find viral topics |
 | `core/affiliate_injector.py` | Injects Amazon/ShareASale/CJ links + FTC disclosure |
 | `core/seo_optimizer.py` | Generates meta tags, JSON-LD schema, sitemap.xml |
-| `core/publisher.py` | Renders Jinja2 templates → static HTML files |
+| `core/publisher.py` | Renders Jinja2 templates → static HTML files; rebuilds homepage + niche index pages |
 | `core/video_generator.py` | Builds 1280×720 MP4 with Pillow slides + gTTS narration |
 | `core/youtube_uploader.py` | Uploads video to YouTube via OAuth2 |
 | `core/pinterest_poster.py` | Creates Pinterest pins via API v5 |
 | `core/scheduler.py` | APScheduler: orchestrates all jobs on a daily cron schedule |
 | `core/analytics_tracker.py` | SQLite CRUD for posts, logs, clicks, income snapshots |
-| `dashboard/app.py` | Flask web app: live dashboard at localhost:5000 |
+| `dashboard/app.py` | Flask web app: live dashboard at localhost:5002 |
+| `scripts/rebuild_site.py` | Manual rebuild of homepage + all niche index pages |
 
 ---
 
@@ -479,7 +480,7 @@ make run
 ```
 
 The bot will:
-1. Start the Flask dashboard at `http://localhost:5000`
+1. Start the Flask dashboard at `http://localhost:5002`
 2. Start APScheduler with all cron jobs
 3. Run an immediate bootstrap cycle if no posts exist yet
 
@@ -495,7 +496,7 @@ python scripts/start_bot.py
 
 ### Check Everything is Working
 
-1. Open `http://localhost:5000` — dashboard should load
+1. Open `http://localhost:5002` — dashboard should load
 2. Check the **Logs** page — you should see "Scheduler started" message
 3. Check **Posts** page — articles will appear after 9 AM
 
@@ -531,7 +532,7 @@ kill <pid>
 
 ## 15. Dashboard Guide
 
-Open **http://localhost:5000** in your browser.
+Open **http://localhost:5002** in your browser.
 
 ### Overview Page (`/`)
 
@@ -642,7 +643,7 @@ These are rough estimates. Actual income depends on:
 | 12:45 PM | Pinterest: Home Tech | Same for Home Tech |
 | 12:50 PM | Pinterest: Travel | Same for Travel |
 | Every hour | Income Snapshot | Calculates estimated income from click data, saves to `income_snapshots` table |
-| Sunday 12:00 AM | Rebuild Site | Rebuilds `site/output/index.html` with all published posts |
+| Sunday 12:00 AM | Rebuild Site | Rebuilds `site/output/index.html` and all niche index pages (`/ai_tools/index.html`, etc.) with all published posts |
 
 ---
 
@@ -677,7 +678,12 @@ niches:
 1. Add a new entry in `config/niches.yaml`
 2. Use a unique `niche_id` (lowercase, underscores only)
 3. Set a schedule time that doesn't conflict with existing niches
-4. Restart the bot
+4. Rebuild the site to create the new niche index page:
+   ```bash
+   PYTHONPATH=. python scripts/rebuild_site.py
+   ```
+5. Push to GitHub (Cloudflare auto-deploys)
+6. Restart the bot
 
 ### Disabling a Niche
 
@@ -776,16 +782,35 @@ Or drag and drop `site/output/` at [netlify.com/drop](https://app.netlify.com/dr
 
 **Custom domain**: Netlify Dashboard → Domain settings → Add custom domain.
 
-### Option 3: Cloudflare Pages
+### Option 3: Cloudflare Pages (Currently Active)
 
-1. Sign up at [pages.cloudflare.com](https://pages.cloudflare.com)
-2. **Connect to Git** → choose your repository
-3. Build settings:
-   - Build command: (leave empty for static sites)
-   - Build output directory: `site/output`
-4. Add custom domain in Cloudflare Pages settings
+1. Your site is live at [tech-life-insights.com](https://tech-life-insights.com)
+2. Cloudflare Pages auto-deploys on every push to `main` branch
+3. Build output directory: `site/output`
+4. No build command needed (static HTML)
 
-**Advantage**: Cloudflare Pages + Cloudflare DNS = fastest performance globally.
+**To deploy new content:**
+```bash
+git add site/output/
+git commit -m "New content $(date +%Y-%m-%d)"
+git push origin main
+```
+
+**Cloudflare Pages Free Tier:**
+- ✅ Unlimited requests (page views)
+- ✅ Unlimited bandwidth
+- ✅ 500 builds/month (more than enough — you'd need 500 pushes)
+- ✅ Free SSL/HTTPS
+- ✅ Global CDN
+
+**To rebuild and deploy all pages manually:**
+```bash
+source contentgenerator/bin/activate
+PYTHONPATH=. python scripts/rebuild_site.py
+git add site/output/
+git commit -m "Rebuild all pages"
+git push origin main
+```
 
 ### Automated Deployment Script
 
@@ -872,14 +897,14 @@ curl http://localhost:11434/api/version
 4. Try manual run: `python scripts/test_run.py`
 
 ### Issue 6: Dashboard won't load
-**Symptom**: `http://localhost:5000` shows "Connection refused"
+**Symptom**: `http://localhost:5002` shows "Connection refused"
 **Fix**:
 ```bash
 # Start dashboard separately
 python scripts/start_dashboard.py
 # Check the port isn't in use
-# Windows: netstat -ano | findstr 5000
-# Linux/Mac: lsof -i :5000
+# Windows: netstat -ano | findstr 5002
+# Linux/Mac: lsof -i :5002
 ```
 
 ### Issue 7: Templates not found
@@ -939,19 +964,15 @@ OLLAMA_MODEL=llama3
 **Symptom**: Homepage shows old posts
 **Fix**: Manually trigger a rebuild:
 ```bash
-python -c "
-from pathlib import Path
-from core import analytics_tracker, publisher
-from jinja2 import Environment, FileSystemLoader
-import yaml
-
-with open('config/settings.yaml') as f:
-    settings = yaml.safe_load(f)
-db = Path('data/bot.db')
-# Rebuild will happen on next successful publish
-"
-# Or restart the bot — it rebuilds on Sunday automatically
-# Or wait for the next publish cycle
+source contentgenerator/bin/activate
+PYTHONPATH=. python scripts/rebuild_site.py
+```
+This regenerates the homepage and all niche index pages.
+Then push to GitHub to deploy:
+```bash
+git add site/output/
+git commit -m "Rebuild site pages"
+git push origin main
 ```
 
 ---

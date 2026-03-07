@@ -25,18 +25,6 @@
 
 ## 1. Prerequisites
 
-Requirement
-
-Minimum
-
-Recommended
-
-macOS / Linux / Windows WSL
-
-Any
-
-macOS Ventura+
-
 | Requirement | Minimum | Recommended |
 |---|---|---|
 | macOS / Linux / Windows WSL | Any | macOS Ventura+ |
@@ -296,7 +284,17 @@ Overview → Arm Trigger → Select niche → Fire
 ## 8. Run the Bot
 
 ```bash
-# Option 1: Via the dashboard (recommended)# Start the dashboard, then click "Start" in the top bar# Option 2: Command linepython scripts/start_bot.py# Option 3: One-time test runpython scripts/test_run.py
+# Option 1: Via the dashboard (recommended)
+# Start the dashboard, then click "Start" in the top bar
+
+# Option 2: Command line
+python scripts/start_bot.py
+
+# Option 3: One-time test run
+python scripts/test_run.py
+
+# Option 4: Rebuild all site pages manually
+PYTHONPATH=. python scripts/rebuild_site.py
 ```
 
 The bot will:
@@ -848,6 +846,9 @@ With your actual AdSense code:
 ### Bot Verification
 - [ ] Dashboard runs at `localhost:5002`
 - [ ] Bot can generate a test article (`python scripts/test_run.py`)
+- [ ] Rebuild site generates all pages (`PYTHONPATH=. python scripts/rebuild_site.py`)
+- [ ] Homepage shows all 5 niche category cards
+- [ ] Each niche has its own index page (`/ai_tools/`, `/personal_finance/`, etc.)
 
 ### Domain & Hosting
 - [ ] Domain purchased (`tech-life-insights.com`)
@@ -917,6 +918,109 @@ DASHBOARD_PORT=5003 python scripts/start_dashboard.py
 
 ---
 
+## 15. Site Architecture & Templates
+
+### How Pages Are Generated
+
+The bot uses **3 Jinja2 templates** in `site/templates/` to generate all HTML pages into `site/output/`:
+
+| Template | Generates | URL Pattern |
+|---|---|---|
+| `index.html` | Homepage with niche cards + all posts | `tech-life-insights.com/` |
+| `niche_index.html` | Per-niche category page with articles list | `tech-life-insights.com/ai_tools/` |
+| `post.html` | Individual article page | `tech-life-insights.com/ai_tools/best-ai-tools-2026.html` |
+
+### Generated Output Structure
+
+```
+site/output/
+├── index.html                          ← Homepage
+├── ai_tools/
+│   ├── index.html                      ← AI Tools category page
+│   └── best-ai-tools-productivity.html ← Article
+├── personal_finance/
+│   ├── index.html                      ← Finance category page
+│   └── ...articles...
+├── health_biohacking/
+│   ├── index.html                      ← Health category page
+│   └── ...articles...
+├── home_tech/
+│   ├── index.html                      ← Home Tech category page
+│   └── ...articles...
+└── travel/
+    ├── index.html                      ← Travel category page
+    └── ...articles...
+```
+
+### Automatic Rebuilds
+
+Every time the bot publishes an article, `core/publisher.py` automatically:
+
+1. Renders the article → `site/output/{niche}/{slug}.html`
+2. Rebuilds the homepage → `site/output/index.html`
+3. Rebuilds all 5 niche index pages → `site/output/{niche}/index.html`
+
+### Manual Rebuild
+
+To regenerate all pages at any time:
+
+```bash
+source contentgenerator/bin/activate
+PYTHONPATH=. python scripts/rebuild_site.py
+```
+
+### Adding Amazon Affiliate Products
+
+1. Get your Amazon Associate tag (e.g., `yourtag-20`) from [affiliate-program.amazon.com](https://affiliate-program.amazon.com)
+2. Open `config/niches.yaml`
+3. Replace `YOUR_TAG` with your actual tag in the Amazon entries:
+
+```yaml
+affiliate_programs:
+  - name: "Amazon Health"
+    url: "https://amazon.com?tag=yourtag-20"
+    keywords: ["supplement", "vitamins", "protein powder"]
+```
+
+4. The bot's `affiliate_injector.py` automatically scans every article for matching keywords and wraps them with your affiliate link
+5. You can add specific product URLs too:
+
+```yaml
+  - name: "Roomba j7+"
+    url: "https://amazon.com/dp/B094NYHTMF?tag=yourtag-20"
+    keywords: ["Roomba", "robot vacuum", "Roomba j7"]
+```
+
+### Adding a New Niche
+
+1. Open `config/niches.yaml`
+2. Add a new entry at the bottom:
+
+```yaml
+  new_niche_id:
+    name: "Display Name"
+    enabled: true
+    seed_keywords:
+      - "keyword 1"
+      - "keyword 2"
+    affiliate_programs:
+      - name: "Program Name"
+        url: "https://example.com?aff=YOUR_ID"
+        keywords: ["keyword1", "keyword2"]
+    post_schedule_hour: 10
+    post_schedule_minute: 15
+    video_schedule_hour: 13
+    video_schedule_minute: 0
+    pinterest_schedule_hour: 15
+    pinterest_schedule_minute: 0
+```
+
+3. Restart the bot — it automatically picks up the new niche
+4. Run `PYTHONPATH=. python scripts/rebuild_site.py` to generate the new niche's index page
+5. Push to GitHub — Cloudflare deploys the new page automatically
+
+---
+
 ## Quick Start (TL;DR)
 
 ```bash
@@ -935,4 +1039,4 @@ python scripts/start_dashboard.py
 # Open http://localhost:5002 → Click "Start"
 ```
 
-That's it. The bot handles the rest. 🤖
+That's it. The system handles the rest. ✅
