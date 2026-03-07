@@ -6,6 +6,20 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+# Any affiliate URL that still contains one of these placeholder strings is
+# treated as "not yet configured" and will be silently skipped.
+_PLACEHOLDER_TOKENS = {
+    "YOUR_ID", "YOUR_TAG", "YOUR_AFF_ID", "YOUR_CJ_LINK",
+    "YOUR_CHANNEL", "YOUR_REF", "YOUR_CODE", "YOUR_AFFILIATE",
+}
+
+
+def _is_configured(url: str) -> bool:
+    """Return True only if the affiliate URL contains no known placeholder tokens."""
+    url_upper = url.upper()
+    return not any(tok in url_upper for tok in _PLACEHOLDER_TOKENS)
+
+
 FTC_DISCLOSURE = (
     '<div class="ftc-disclosure" style="background:#fff3cd;border:1px solid #ffc107;'
     'padding:10px 14px;border-radius:4px;margin-bottom:20px;font-size:0.9em;">'
@@ -34,6 +48,15 @@ def inject_links(html_content: str, niche_config: dict, track_base_url: str = ""
         aff_url = program.get("url", "")
         keywords = program.get("keywords", [])
         if not aff_url or not keywords:
+            continue
+
+        # Skip programs that still have a placeholder affiliate ID — injecting
+        # broken links is worse than injecting no links at all.
+        if not _is_configured(aff_url):
+            logger.debug(
+                "Skipping unconfigured affiliate program '%s' (placeholder URL detected)",
+                program.get("name", "unknown"),
+            )
             continue
 
         for keyword in keywords:
