@@ -236,6 +236,13 @@
       </div>
     </div>
 
+    <!-- Contextual product recommendations (affiliate-ready) -->
+    <div class="calc-card" id="financeRecs" style="display:none;margin-top:24px;border:1px solid #bfdbfe;background:#eff6ff">
+      <h2 style="color:#2563eb">💡 Recommended Financial Tools</h2>
+      <p style="font-size:13px;color:var(--text-secondary);margin-bottom:16px">Based on your results, these tools could help you reach your goals faster:</p>
+      <div id="recsContent"></div>
+    </div>
+
     <div class="disclaimer"><strong>Disclaimer:</strong> This calculator is for informational and educational purposes only and does not constitute financial advice. Results are estimates. Consult a qualified financial advisor for personalized financial planning.</div>
   </div></div>
 
@@ -243,6 +250,37 @@
   <a href="https://techlife-insights.kit.com/be266c00d5" target="_blank" rel="noopener" class="subscribe-float">📬 Subscribe</a>
 
   <script>
+  /* ── Affiliate IDs (injected from settings.yaml at build time) ── */
+  var BAFF = {
+    sofi:        '{{ affiliates.sofi_ref        | default("") }}',
+    wealthfront: '{{ affiliates.wealthfront_ref  | default("") }}',
+    betterment:  '{{ affiliates.betterment_ref   | default("") }}'
+  };
+  function baffUrl(base, key, param) {
+    var id = BAFF[key]; if (!id) return base;
+    return base + (base.indexOf('?') === -1 ? '?' : '&') + param + '=' + encodeURIComponent(id);
+  }
+  /* Product recommendations shown after calculations */
+  var finProducts = [
+    {id:'sofi',       name:'SoFi Checking & Savings',   desc:'4.00% APY, no fees, FDIC insured.',          url:baffUrl('https://www.sofi.com/banking','sofi','ref'),          icon:'🏦', for:['savings','emergency','budget']},
+    {id:'wealthfront',name:'Wealthfront',                desc:'Automated investing & 5.00% APY cash account.', url:baffUrl('https://www.wealthfront.com','wealthfront','inv'),   icon:'📈', for:['savings','budget']},
+    {id:'betterment', name:'Betterment',                  desc:'Robo-advisor for hands-off investing.',       url:baffUrl('https://www.betterment.com','betterment','ref'),      icon:'🤖', for:['savings','budget']}
+  ];
+  function showRecs(tab) {
+    var recs = finProducts.filter(function(p){return p.for.indexOf(tab) !== -1;});
+    if (!recs.length) { document.getElementById('financeRecs').style.display='none'; return; }
+    var html = '';
+    recs.forEach(function(p){
+      html += '<div style="display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid #bfdbfe">';
+      html += '<span style="font-size:28px">'+p.icon+'</span>';
+      html += '<div style="flex:1"><strong style="font-size:14px">'+p.name+'</strong><br><span style="font-size:13px;color:var(--text-secondary)">'+p.desc+'</span></div>';
+      html += '<a href="'+p.url+'" target="_blank" rel="noopener" style="background:#2563eb;color:#fff;padding:8px 16px;border-radius:6px;font-size:13px;font-weight:700;text-decoration:none;white-space:nowrap">Learn More \u2192</a>';
+      html += '</div>';
+    });
+    document.getElementById('recsContent').innerHTML = html;
+    document.getElementById('financeRecs').style.display = 'block';
+  }
+
   // ── Tab switching ──────────────────────────────────────────────────────────
   document.getElementById('mainTabs').addEventListener('click', function(e) {
     var btn = e.target.closest('.tab-btn');
@@ -298,6 +336,7 @@
     if (surplus > 0 && savePct < 10) tips.push('<strong>💡 Saving only '+savePct+'%</strong> — Try to redirect more surplus to savings or investments.');
     document.getElementById('budgetInsights').innerHTML = tips.length ? tips.join('<br>') : '<strong>✅ Your budget looks balanced!</strong> Keep tracking monthly.';
     showPanel('results-budget');
+    showRecs('budget');
   }
 
   // ── Tab 2: Debt Payoff ─────────────────────────────────────────────────────
@@ -340,6 +379,7 @@
     detailHtml += '<div class="rule-row" style="margin-top:8px"><span>💡 Tip</span><span>Even $50/mo extra can save thousands in interest.</span></div>';
     document.getElementById('debtDetail').innerHTML = detailHtml;
     showPanel('results-debt');
+    showRecs('debt');
   }
 
   // ── Tab 3: Savings Goal ────────────────────────────────────────────────────
@@ -375,6 +415,7 @@
     detailHtml += '<div class="rule-row"><span>At +50% contribution (' + fmt(faster) + '/mo)</span><span>Done in ' + fmtYM(mFast) + ' (' + (months-mFast) + ' mo sooner)</span></div>';
     document.getElementById('savingsDetail').innerHTML = detailHtml;
     showPanel('results-savings');
+    showRecs('savings');
   }
 
   // ── Tab 4: Emergency Fund ──────────────────────────────────────────────────
@@ -406,6 +447,7 @@
     detailHtml += '<div class="rule-row"><span>💡 Where to keep it</span><span>High-interest savings account or money market fund</span></div>';
     document.getElementById('emergencyDetail').innerHTML = detailHtml;
     showPanel('results-emergency');
+    showRecs('emergency');
   }
   </script>
 </body></html>

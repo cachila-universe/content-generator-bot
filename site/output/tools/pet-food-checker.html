@@ -157,6 +157,15 @@
       <div class="tips-card" id="tipsCard"></div>
     </div>
 
+    <!-- Pet food brand recommendations (affiliate-ready) -->
+    <div class="results" id="brandRecs" style="display:none;margin-top:0">
+      <div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:24px">
+        <h3 style="font-size:16px;font-weight:800;color:#c2410c;margin-bottom:14px">🛒 Top-Rated Pet Food Brands</h3>
+        <div id="brandContent"></div>
+        <p style="font-size:11px;color:var(--text-secondary);margin-top:12px">Some links may be affiliate links — we may earn a commission at no extra cost to you.</p>
+      </div>
+    </div>
+
     <div class="disclaimer"><strong>Disclaimer:</strong> This tool provides general informational assessments based on common pet nutrition guidelines. It is NOT a substitute for professional veterinary advice. Individual pets may have specific dietary needs, allergies, or health conditions. Always consult your veterinarian before making changes to your pet's diet.</div>
   </div></div>
 
@@ -164,6 +173,47 @@
   <a href="https://techlife-insights.kit.com/be266c00d5" target="_blank" rel="noopener" class="subscribe-float">📬 Subscribe</a>
 
   <script>
+  /* ── Affiliate config (injected from settings.yaml) ── */
+  var PAFF = {
+    amazon_tag: 'techlife0ac-20',
+    chewy:      ''
+  };
+  function chewyUrl(q) {
+    var base = 'https://www.chewy.com/s?query=' + encodeURIComponent(q);
+    return PAFF.chewy ? base + '&ref=' + PAFF.chewy : base;
+  }
+  function amzPetUrl(q) {
+    return 'https://www.amazon.com/s?k=' + encodeURIComponent(q) + '&tag=' + PAFF.amazon_tag;
+  }
+  var petBrands = {
+    dog: [
+      {name:'Blue Buffalo Life Protection', q:'Blue Buffalo Life Protection dog food', icon:'🐕'},
+      {name:'Taste of the Wild', q:'Taste of the Wild dog food grain free', icon:'🐺'},
+      {name:'Orijen Original', q:'Orijen original dog food', icon:'🥩'},
+      {name:'Wellness CORE', q:'Wellness CORE grain free dog food', icon:'💚'}
+    ],
+    cat: [
+      {name:'Blue Buffalo Wilderness', q:'Blue Buffalo Wilderness cat food', icon:'🐱'},
+      {name:'Taste of the Wild Canyon River', q:'Taste of the Wild Canyon River cat food', icon:'🐟'},
+      {name:'Orijen Cat & Kitten', q:'Orijen cat and kitten food', icon:'🥩'},
+      {name:'Wellness CORE Indoor', q:'Wellness CORE indoor cat food', icon:'💚'}
+    ]
+  };
+  function showBrandRecs(pet) {
+    var brands = petBrands[pet] || petBrands.dog;
+    var html = '';
+    brands.forEach(function(b){
+      html += '<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #fed7aa;flex-wrap:wrap">';
+      html += '<span style="font-size:24px">'+b.icon+'</span>';
+      html += '<span style="flex:1;font-size:14px;font-weight:600;min-width:160px">'+b.name+'</span>';
+      html += '<a href="'+chewyUrl(b.q)+'" target="_blank" rel="noopener" style="background:#ea580c;color:#fff;padding:7px 12px;border-radius:6px;font-size:12px;font-weight:700;text-decoration:none">Chewy \u2192</a> ';
+      html += '<a href="'+amzPetUrl(b.q)+'" target="_blank" rel="noopener" style="background:#f59e0b;color:#111;padding:7px 12px;border-radius:6px;font-size:12px;font-weight:700;text-decoration:none">Amazon \u2192</a>';
+      html += '</div>';
+    });
+    document.getElementById('brandContent').innerHTML = html;
+    document.getElementById('brandRecs').style.display = 'block';
+  }
+
   var petType='dog';
 
   // Event delegation for pet type buttons
@@ -223,6 +273,7 @@
     document.getElementById('tipsCard').innerHTML=tips;
     document.getElementById('results').style.display='block';
     document.getElementById('results').scrollIntoView({behavior:'smooth'});
+    showBrandRecs(petType);
   }
   </script>
 </body></html>

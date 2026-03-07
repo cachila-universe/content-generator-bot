@@ -194,6 +194,15 @@
     <div id="exerciseList"></div>
   </div>
 
+  <!-- Equipment & Gear Recommendations (affiliate-ready) -->
+  <div class="workout-result" id="gearRecs" style="display:none">
+    <div style="background:#fff;border:1px solid #ddd6fe;border-radius:10px;padding:24px;margin-top:20px">
+      <h3 style="font-size:16px;font-weight:800;color:#5b21b6;margin-bottom:14px">🛒 Gear Up for Your Workout</h3>
+      <div id="gearContent"></div>
+      <p style="font-size:11px;color:var(--text-secondary);margin-top:12px">Prices & availability may vary. Some links may be affiliate links.</p>
+    </div>
+  </div>
+
   <div class="disclaimer"><strong>Disclaimer:</strong> This workout generator provides general exercise suggestions for informational purposes only. It is not a substitute for professional medical or fitness advice. Consult a doctor before starting any exercise program. Listen to your body and stop if you feel pain.</div>
   </div>
 
@@ -201,6 +210,46 @@
   <a href="https://techlife-insights.kit.com/be266c00d5" target="_blank" rel="noopener" class="subscribe-float">📬 Subscribe</a>
 
   <script>
+  /* ── Affiliate config (injected from settings.yaml) ── */
+  var WAFF_TAG = 'techlife0ac-20';
+  function amzSearch(q){ return 'https://www.amazon.com/s?k='+encodeURIComponent(q)+'&tag='+WAFF_TAG; }
+  var gearMap = {
+    dumbbells: [
+      {name:'Adjustable Dumbbells', icon:'🏋️', q:'adjustable dumbbells set'},
+      {name:'Exercise Mat', icon:'🧘', q:'thick exercise mat'},
+      {name:'Workout Gloves', icon:'🧤', q:'workout gloves weight lifting'}
+    ],
+    home: [
+      {name:'Resistance Bands Set', icon:'💪', q:'resistance bands set workout'},
+      {name:'Adjustable Weight Bench', icon:'🪑', q:'adjustable weight bench'},
+      {name:'Pull-Up Bar', icon:'🔩', q:'doorway pull up bar'},
+      {name:'Foam Roller', icon:'🧊', q:'foam roller muscle recovery'}
+    ],
+    full: [
+      {name:'Lifting Belt', icon:'🔒', q:'weightlifting belt leather'},
+      {name:'Wrist Wraps', icon:'✋', q:'wrist wraps weightlifting'},
+      {name:'Gym Bag', icon:'👜', q:'gym bag with shoe compartment'}
+    ],
+    none: [
+      {name:'Exercise Mat', icon:'🧘', q:'thick exercise mat home workout'},
+      {name:'Jump Rope', icon:'⚡', q:'speed jump rope fitness'},
+      {name:'Resistance Bands', icon:'💪', q:'resistance bands set'}
+    ]
+  };
+  function showGear(equip) {
+    var items = gearMap[equip] || gearMap.none;
+    var html = '';
+    items.forEach(function(g){
+      html += '<div style="display:flex;align-items:center;gap:14px;padding:10px 0;border-bottom:1px solid #e5e7eb">';
+      html += '<span style="font-size:24px">'+g.icon+'</span>';
+      html += '<span style="flex:1;font-size:14px;font-weight:600">'+g.name+'</span>';
+      html += '<a href="'+amzSearch(g.q)+'" target="_blank" rel="noopener" style="background:#f59e0b;color:#111;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:700;text-decoration:none">Shop on Amazon \u2192</a>';
+      html += '</div>';
+    });
+    document.getElementById('gearContent').innerHTML = html;
+    document.getElementById('gearRecs').style.display = 'block';
+  }
+
   var sel={goal:'',equip:'',time:'',level:''};
 
   // Event delegation — one listener on the whole config section
@@ -310,6 +359,7 @@
     document.getElementById('exerciseList').innerHTML=summaryHtml+listHtml;
     document.getElementById('workoutResult').style.display='block';
     document.getElementById('workoutResult').scrollIntoView({behavior:'smooth'});
+    showGear(sel.equip);
   }
   </script>
 </body></html>

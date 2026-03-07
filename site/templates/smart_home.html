@@ -47,6 +47,7 @@
     .compat-badge.yes{background:#ecfdf5;color:var(--green)}.compat-badge.no{background:#fef2f2;color:var(--red)}.compat-badge.partial{background:#fffbeb;color:#d97706}
     .device-count{text-align:center;padding:8px 0;font-size:13px;color:var(--text-secondary);margin-bottom:8px}
     .search-wrap{max-width:400px;margin:0 auto 20px}.search-wrap input{width:100%;padding:10px 16px;border-radius:50px;border:1px solid var(--border);font-size:14px;font-family:inherit;outline:none}.search-wrap input:focus{border-color:var(--accent)}
+    .buy-link{display:inline-block;margin-top:10px;font-size:12px;font-weight:700;color:#ff9900;text-decoration:none;transition:color .15s}.buy-link:hover{color:#e68a00;text-decoration:underline}
     .disclaimer{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 20px;margin-top:24px;font-size:12px;color:var(--text-secondary);line-height:1.7}
     .footer{background:#0f172a;color:rgba(255,255,255,.7);padding:32px 0;font-size:13px;text-align:center;margin-top:48px}.footer a{color:rgba(255,255,255,.6)}.footer a:hover{color:#fff}
 
@@ -184,7 +185,8 @@
       compat+='<span class="compat-badge '+(d.homekit==='yes'?'yes':'no')+'">'+(d.homekit==='yes'?'✓':'✗')+' HomeKit</span>';
       if(d.matter==='yes')compat+='<span class="compat-badge yes">✓ Matter</span>';
       compat+='</div>';
-      card.innerHTML='<h3>'+d.name+' <span class="cat-tag">'+d.cat+'</span></h3><p>'+d.desc+'</p>'+compat;
+      var buyUrl = 'https://www.amazon.com/s?k=' + encodeURIComponent(d.name) + '&tag={{ affiliates.amazon_tag | default("techlife0ac-20") }}';
+      card.innerHTML='<h3>'+d.name+' <span class="cat-tag">'+d.cat+'</span></h3><p>'+d.desc+'</p>'+compat+'<a href="'+buyUrl+'" target="_blank" rel="noopener" class="buy-link">Check Price on Amazon →</a>';
       grid.appendChild(card);
     });
   }

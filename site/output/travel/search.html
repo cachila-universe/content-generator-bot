@@ -262,6 +262,16 @@
   <footer class="footer"><div class="container">&copy; 2026 TechLife Insights. · <a href="/privacy.html">Privacy</a> · <a href="/about.html">About</a> · <a href="/tools/">All Tools</a></div></footer>
   <a href="https://techlife-insights.kit.com/be266c00d5" target="_blank" rel="noopener" class="subscribe-float">📬 Subscribe</a>
   <script>
+  // ── Affiliate IDs (set in config/settings.yaml → affiliates section) ──
+  var TAFF = {
+    skyscanner:   '',
+    booking:      '',
+    kayak:        '',
+    hostelworld:  '',
+    rentalcars:   '',
+    discovercars: '',
+    safetywing:   ''
+  };
   // ── Airport database: 175+ airports with lat/lon for distance calculation ────
   var AP = [
     // United States
@@ -663,9 +673,9 @@
       {name:'Google Flights', icon:'✈️', desc:'Most comprehensive airline overview',
        url:'https://www.google.com/travel/flights?q=' + encodeURIComponent('flights from ' + fromCity + ' to ' + toCity + ' on ' + dep + (isRound ? ' return ' + ret : ''))},
       {name:'Skyscanner', icon:'🔍', desc:'Compare 1,200+ airlines & agents',
-       url:'https://www.skyscanner.com/transport/flights/' + from.toLowerCase() + '/' + to.toLowerCase() + '/' + skyDep + '/' + (isRound ? skyRet + '/?' : '?') + 'adults=' + pax + '&cabinclass=' + cls},
+       url:'https://www.skyscanner.com/transport/flights/' + from.toLowerCase() + '/' + to.toLowerCase() + '/' + skyDep + '/' + (isRound ? skyRet + '/?' : '?') + 'adults=' + pax + '&cabinclass=' + cls + (TAFF.skyscanner ? '&associate=' + TAFF.skyscanner : '')},
       {name:'Kayak', icon:'🛶', desc:'Flexible dates & price alerts',
-       url:'https://www.kayak.com/flights/' + from + '-' + to + '/' + dep + '/' + (isRound ? ret + '/' : '') + pax + 'adults/' + cls + '?sort=bestflight_a'},
+       url:'https://www.kayak.com/flights/' + from + '-' + to + '/' + dep + '/' + (isRound ? ret + '/' : '') + pax + 'adults/' + cls + '?sort=bestflight_a' + (TAFF.kayak ? '&mc=' + TAFF.kayak : '')},
       {name:'Momondo', icon:'🌍', desc:'Find hidden deals & budget airlines',
        url:'https://www.momondo.com/flight-search/' + from + '-' + to + '/' + dep + '/' + (isRound ? ret : '')},
       {name:'Kiwi.com', icon:'🥝', desc:'Virtual interlining for cheaper routes',
@@ -701,7 +711,7 @@
 
     var providers = [
       {name:'Booking.com', icon:'🏨', desc:'28M+ listings, free cancellation options',
-       url:'https://www.booking.com/searchresults.html?ss=' + ed + '&checkin=' + ci + '&checkout=' + co + '&group_adults=' + guests + '&no_rooms=' + rooms},
+       url:'https://www.booking.com/searchresults.html?ss=' + ed + '&checkin=' + ci + '&checkout=' + co + '&group_adults=' + guests + '&no_rooms=' + rooms + (TAFF.booking ? '&aid=' + TAFF.booking : '')},
       {name:'Hotels.com', icon:'🌟', desc:'Rewards program, price match',
        url:'https://www.hotels.com/search.do?q-destination=' + ed + '&q-check-in=' + ci + '&q-check-out=' + co + '&q-rooms=' + rooms + '&q-room-0-adults=' + guests},
       {name:'Agoda', icon:'🏢', desc:'Best for Asia-Pacific, member deals',
@@ -709,7 +719,7 @@
       {name:'Trivago', icon:'🔎', desc:'Meta-search across 400+ booking sites',
        url:'https://www.trivago.com/en-US/srl?search=' + ed},
       {name:'Hostelworld', icon:'🎒', desc:'Budget hostels in 170+ countries',
-       url:'https://www.hostelworld.com/s?q=' + ed + '&dateFrom=' + ci + '&dateTo=' + co + '&guests=' + guests}
+       url:'https://www.hostelworld.com/s?q=' + ed + '&dateFrom=' + ci + '&dateTo=' + co + '&guests=' + guests + (TAFF.hostelworld ? '&affiliate=' + TAFF.hostelworld : '')}
     ];
 
     showResults('Searching hotels in ' + dest + '…', providers, routeHtml, insights);
@@ -739,11 +749,11 @@
 
     var providers = [
       {name:'Kayak Cars', icon:'🛶', desc:'Compare across major rental companies',
-       url:'https://www.kayak.com/cars/' + el + '/' + pd + '/' + dd + '?sort=price_a'},
+       url:'https://www.kayak.com/cars/' + el + '/' + pd + '/' + dd + '?sort=price_a' + (TAFF.kayak ? '&mc=' + TAFF.kayak : '')},
       {name:'RentalCars.com', icon:'🚗', desc:'900+ companies, best price guarantee',
-       url:'https://www.rentalcars.com/search-results?location=' + el + '&puDate=' + pd + '&doDate=' + dd},
+       url:'https://www.rentalcars.com/search-results?location=' + el + '&puDate=' + pd + '&doDate=' + dd + (TAFF.rentalcars ? '&affiliateCode=' + TAFF.rentalcars : '')},
       {name:'Discover Cars', icon:'🔍', desc:'Compare 500+ car rental companies',
-       url:'https://www.discovercars.com/search?pick=' + el + '&pdate=' + pd + '&ddate=' + dd},
+       url:'https://www.discovercars.com/search?pick=' + el + '&pdate=' + pd + '&ddate=' + dd + (TAFF.discovercars ? '&a_id=' + TAFF.discovercars : '')},
       {name:'AutoEurope', icon:'🌍', desc:'20,000+ locations, price match',
        url:'https://www.autoeurope.com/go/searchresults.cfm?location=' + el + '&puDate=' + pd + '&doDate=' + dd}
     ];

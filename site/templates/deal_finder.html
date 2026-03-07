@@ -147,13 +147,28 @@
   <a href="https://techlife-insights.kit.com/be266c00d5" target="_blank" rel="noopener" class="subscribe-float">📬 Subscribe</a>
 
   <script>
+  // ── Affiliate IDs (set in config/settings.yaml → affiliates section) ──
+  // Replace the empty strings below with your affiliate IDs.
+  // See TOOLS_MANUAL.md § "Deal Finder Affiliate Setup" for sign-up links.
+  var AFF = {
+    amazon_tag:      '{{ affiliates.amazon_tag      | default("techlife0ac-20") }}',
+    bestbuy_pid:     '{{ affiliates.bestbuy_pid      | default("") }}',
+    walmart_id:      '{{ affiliates.walmart_impact_id | default("") }}',
+    target_id:       '{{ affiliates.target_affiliate_id | default("") }}',
+    newegg_id:       '{{ affiliates.newegg_affiliate_id | default("") }}',
+    ebay_campid:     '{{ affiliates.ebay_campid       | default("") }}'
+  };
+  function affUrl(base, params) {
+    var sep = base.indexOf('?') !== -1 ? '&' : '?';
+    return params ? base + sep + params : base;
+  }
   var retailers = [
-    { name: 'Amazon', icon: '📦', color: '#FF9900', search: 'https://www.amazon.com/s?k=QUERY&tag=techlife0ac-20', desc: 'Millions of products with Prime shipping' },
-    { name: 'Best Buy', icon: '🏪', color: '#0046BE', search: 'https://www.bestbuy.com/site/searchpage.jsp?st=QUERY', desc: 'Electronics, appliances & tech deals' },
-    { name: 'Walmart', icon: '🛒', color: '#0071DC', search: 'https://www.walmart.com/search?q=QUERY', desc: 'Everyday low prices on everything' },
-    { name: 'Target', icon: '🎯', color: '#CC0000', search: 'https://www.target.com/s?searchTerm=QUERY', desc: 'Quality products at great prices' },
-    { name: 'Newegg', icon: '💾', color: '#E76F00', search: 'https://www.newegg.com/p/pl?d=QUERY', desc: 'Tech & computer hardware specialist' },
-    { name: 'eBay', icon: '🏷️', color: '#E53238', search: 'https://www.ebay.com/sch/i.html?_nkw=QUERY', desc: 'New, used & refurbished deals' },
+    { name: 'Amazon', icon: '📦', color: '#FF9900', search: 'https://www.amazon.com/s?k=QUERY&tag=' + AFF.amazon_tag, desc: 'Millions of products with Prime shipping' },
+    { name: 'Best Buy', icon: '🏪', color: '#0046BE', search: affUrl('https://www.bestbuy.com/site/searchpage.jsp?st=QUERY', AFF.bestbuy_pid ? 'irclickid=' + AFF.bestbuy_pid : ''), desc: 'Electronics, appliances & tech deals' },
+    { name: 'Walmart', icon: '🛒', color: '#0071DC', search: affUrl('https://www.walmart.com/search?q=QUERY', AFF.walmart_id ? 'irclickid=' + AFF.walmart_id : ''), desc: 'Everyday low prices on everything' },
+    { name: 'Target', icon: '🎯', color: '#CC0000', search: affUrl('https://www.target.com/s?searchTerm=QUERY', AFF.target_id ? 'ref=' + AFF.target_id : ''), desc: 'Quality products at great prices' },
+    { name: 'Newegg', icon: '💾', color: '#E76F00', search: affUrl('https://www.newegg.com/p/pl?d=QUERY', AFF.newegg_id ? 'ref=' + AFF.newegg_id : ''), desc: 'Tech & computer hardware specialist' },
+    { name: 'eBay', icon: '🏷️', color: '#E53238', search: affUrl('https://www.ebay.com/sch/i.html?_nkw=QUERY', AFF.ebay_campid ? 'campid=' + AFF.ebay_campid + '&toolid=10001' : ''), desc: 'New, used & refurbished deals' },
     { name: 'B&H Photo', icon: '📷', color: '#000', search: 'https://www.bhphotovideo.com/c/search?q=QUERY', desc: 'Camera, audio & electronics pro gear' },
     { name: 'Costco', icon: '🏬', color: '#E31837', search: 'https://www.costco.com/CatalogSearch?dept=All&keyword=QUERY', desc: 'Bulk deals for members' },
     { name: 'Google Shopping', icon: '🔎', color: '#4285F4', search: 'https://www.google.com/search?tbm=shop&q=QUERY', desc: 'Compare prices across all stores' }

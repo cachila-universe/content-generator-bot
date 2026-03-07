@@ -323,6 +323,7 @@ def _rebuild_travel_search(env: Environment, settings: dict, site_url: str) -> N
         rendered = template.render(
             niches=niches,
             settings=settings,
+            affiliates=settings.get("affiliates", {}),
             site_url=site_url,
             site_title=site_title,
             tagline=tagline,
@@ -391,6 +392,7 @@ def _rebuild_tools_pages(env: Environment, settings: dict, site_url: str) -> Non
             rendered = template.render(
                 niches=niches,
                 settings=settings,
+                affiliates=settings.get("affiliates", {}),
                 site_url=site_url,
                 site_title=site_title,
                 tagline=tagline,

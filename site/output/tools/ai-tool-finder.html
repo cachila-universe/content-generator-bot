@@ -143,24 +143,41 @@
   <a href="https://techlife-insights.kit.com/be266c00d5" target="_blank" rel="noopener" class="subscribe-float">📬 Subscribe</a>
 
   <script>
+  /* ── Affiliate tracking IDs (injected from settings.yaml at build time) ── */
+  var AITAFF = {
+    jasper:     '',
+    grammarly:  '',
+    semrush:    '',
+    surferseo:  '',
+    canva:      '',
+    writesonic: '',
+    descript:   ''
+  };
+  /* Helper: append affiliate param to a URL if the ID is set */
+  function aitAff(base, key, param) {
+    var id = AITAFF[key];
+    if (!id) return base;
+    return base + (base.indexOf('?') === -1 ? '?' : '&') + param + '=' + encodeURIComponent(id);
+  }
+
   var aiTools = [
     {name:'ChatGPT',cat:'Writing',desc:'Conversational AI for writing, analysis, coding, and creative tasks.',pricing:'Free / $20/mo',url:'https://chat.openai.com'},
     {name:'Claude',cat:'Writing',desc:'Anthropic’s AI assistant for thoughtful, nuanced writing and analysis.',pricing:'Free / $20/mo',url:'https://claude.ai'},
     {name:'Gemini',cat:'Writing',desc:'Google multimodal AI for text, images, and code generation.',pricing:'Free / $20/mo',url:'https://gemini.google.com'},
-    {name:'Jasper',cat:'Writing',desc:'AI writing platform for marketing copy, blogs, and social media.',pricing:'From $49/mo',url:'https://www.jasper.ai'},
+    {name:'Jasper',cat:'Writing',desc:'AI writing platform for marketing copy, blogs, and social media.',pricing:'From $49/mo',url:aitAff('https://www.jasper.ai','jasper','fpr')},
     {name:'Copy.ai',cat:'Writing',desc:'Generate marketing copy, emails, and social posts with AI.',pricing:'Free / $49/mo',url:'https://www.copy.ai'},
-    {name:'Writesonic',cat:'Writing',desc:'AI writer for SEO articles, ad copy, and product descriptions.',pricing:'Free / $16/mo',url:'https://writesonic.com'},
-    {name:'Grammarly',cat:'Writing',desc:'AI writing assistant for grammar, tone, and clarity.',pricing:'Free / $12/mo',url:'https://www.grammarly.com'},
+    {name:'Writesonic',cat:'Writing',desc:'AI writer for SEO articles, ad copy, and product descriptions.',pricing:'Free / $16/mo',url:aitAff('https://writesonic.com','writesonic','ref')},
+    {name:'Grammarly',cat:'Writing',desc:'AI writing assistant for grammar, tone, and clarity.',pricing:'Free / $12/mo',url:aitAff('https://www.grammarly.com','grammarly','affiliateId')},
     {name:'QuillBot',cat:'Writing',desc:'AI paraphrasing and summarization tool for better writing.',pricing:'Free / $10/mo',url:'https://quillbot.com'},
     {name:'Midjourney',cat:'Images',desc:'Create stunning AI art and images from text prompts.',pricing:'From $10/mo',url:'https://www.midjourney.com'},
     {name:'DALL-E 3',cat:'Images',desc:'OpenAI’s image generator — create art, photos, and designs.',pricing:'Included with ChatGPT Plus',url:'https://openai.com/dall-e-3'},
     {name:'Stable Diffusion',cat:'Images',desc:'Open-source AI image generation — run locally or in cloud.',pricing:'Free (open source)',url:'https://stability.ai'},
     {name:'Leonardo AI',cat:'Images',desc:'AI image generation for creative projects and game assets.',pricing:'Free / $12/mo',url:'https://leonardo.ai'},
-    {name:'Canva AI',cat:'Images',desc:'AI-powered design tool for social media, presentations, and more.',pricing:'Free / $13/mo',url:'https://www.canva.com'},
+    {name:'Canva AI',cat:'Images',desc:'AI-powered design tool for social media, presentations, and more.',pricing:'Free / $13/mo',url:aitAff('https://www.canva.com','canva','affiliateRef')},
     {name:'Adobe Firefly',cat:'Images',desc:'AI image generation integrated into Adobe Creative Cloud.',pricing:'Free / from $10/mo',url:'https://firefly.adobe.com'},
     {name:'Runway',cat:'Video',desc:'AI video generation, editing, and visual effects platform.',pricing:'Free / $12/mo',url:'https://runwayml.com'},
     {name:'Synthesia',cat:'Video',desc:'Create AI avatar videos for training, marketing, and education.',pricing:'From $22/mo',url:'https://www.synthesia.io'},
-    {name:'Descript',cat:'Video',desc:'AI video & podcast editor — edit video by editing text.',pricing:'Free / $24/mo',url:'https://www.descript.com'},
+    {name:'Descript',cat:'Video',desc:'AI video & podcast editor — edit video by editing text.',pricing:'Free / $24/mo',url:aitAff('https://www.descript.com','descript','ref')},
     {name:'HeyGen',cat:'Video',desc:'AI spokesperson videos with realistic avatars and voices.',pricing:'Free / $24/mo',url:'https://www.heygen.com'},
     {name:'Luma AI',cat:'Video',desc:'3D capture and AI video generation from text and images.',pricing:'Free / $10/mo',url:'https://lumalabs.ai'},
     {name:'GitHub Copilot',cat:'Code',desc:'AI pair programmer — code suggestions right in your editor.',pricing:'Free / $10/mo',url:'https://github.com/features/copilot'},
@@ -181,8 +198,8 @@
     {name:'Consensus',cat:'Research',desc:'AI research engine that finds answers from scientific papers.',pricing:'Free / $10/mo',url:'https://consensus.app'},
     {name:'Elicit',cat:'Research',desc:'AI research assistant for literature review and analysis.',pricing:'Free / $10/mo',url:'https://elicit.com'},
     {name:'Scite',cat:'Research',desc:'Smart citations — see how papers have been cited.',pricing:'$20/mo',url:'https://scite.ai'},
-    {name:'SurferSEO',cat:'Marketing',desc:'AI content optimization for better search engine rankings.',pricing:'From $89/mo',url:'https://surferseo.com'},
-    {name:'Semrush AI',cat:'Marketing',desc:'AI-powered SEO toolkit for keyword research and audits.',pricing:'From $130/mo',url:'https://www.semrush.com'},
+    {name:'SurferSEO',cat:'Marketing',desc:'AI content optimization for better search engine rankings.',pricing:'From $89/mo',url:aitAff('https://surferseo.com','surferseo','ref')},
+    {name:'Semrush AI',cat:'Marketing',desc:'AI-powered SEO toolkit for keyword research and audits.',pricing:'From $130/mo',url:aitAff('https://www.semrush.com','semrush','ref')},
     {name:'AdCreative AI',cat:'Marketing',desc:'Generate high-converting ad creatives with AI.',pricing:'From $29/mo',url:'https://www.adcreative.ai'},
     {name:'Pictory',cat:'Marketing',desc:'Turn text content into short marketing videos with AI.',pricing:'From $19/mo',url:'https://pictory.ai'},
     {name:'Opus Clip',cat:'Marketing',desc:'AI tool that turns long videos into viral short clips.',pricing:'Free / $15/mo',url:'https://www.opus.pro'},
