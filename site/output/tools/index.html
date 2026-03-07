@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Free Tools & Resources — TechLife Insights</title>
+  <meta name="description" content="Free tools to help you save money, stay healthy, and make smarter decisions. Deal finder, AI tool directory, budget calculator, and more.">
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root { --bg:#fff; --surface:#f8f9fb; --text:#111827; --text-secondary:#6b7280; --accent:#2563eb; --accent-hover:#1d4ed8; --accent-light:#eff6ff; --border:#e5e7eb; --shadow:0 4px 12px rgba(0,0,0,0.08); --radius:10px; --max-width:1240px; }
+    *{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,sans-serif;font-size:16px;line-height:1.6}a{color:var(--accent);text-decoration:none}.container{max-width:var(--max-width);margin:0 auto;padding:0 24px}
+
+    .header { position: sticky; top: 0; z-index: 50; background: #1e3a8a; }
+    .header-inner { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; }
+    .logo { display: flex; align-items: center; }
+    .logo img { height: 44px; width: auto; }
+    .nav-links { display: flex; gap: 2px; align-items: center; flex-wrap: wrap; }
+    .nav-link { padding: 6px 11px; border-radius: 6px; font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.75); transition: all 0.15s; white-space: nowrap; text-decoration: none; }
+    .nav-link:hover, .nav-link.active { color: #fff; background: rgba(255,255,255,0.12); }
+    .nav-item { position: relative; display: inline-block; }
+    .nav-item:hover .nav-dropdown { display: block; }
+    .nav-dropdown { display: none; position: absolute; top: 100%; left: 0; background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; box-shadow: 0 8px 30px rgba(0,0,0,0.12); min-width: 210px; padding: 6px 0; z-index: 100; }
+    .nav-dropdown a { display: block; padding: 8px 16px; font-size: 13px; color: #111827; font-weight: 500; transition: background 0.1s; text-decoration: none; }
+    .nav-dropdown a:hover { background: #eff6ff; color: #2563eb; }
+    .mobile-toggle { display: none; background: none; border: none; color: #fff; font-size: 22px; cursor: pointer; padding: 6px; }
+    .page-hero{background:linear-gradient(135deg,#1e3a8a 0%,#2563eb 100%);color:#fff;padding:56px 0;text-align:center}
+    .page-hero h1{font-size:36px;font-weight:900;margin-bottom:10px;letter-spacing:-.02em}
+    .page-hero p{font-size:18px;opacity:.85;max-width:560px;margin:0 auto}
+    .tools-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;padding:48px 0}
+    .tool-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:32px 24px;text-decoration:none;color:var(--text);transition:all .25s;text-align:center;display:block}
+    .tool-card:hover{border-color:var(--accent);box-shadow:0 8px 30px rgba(37,99,235,.15);transform:translateY(-4px);color:var(--text)}
+    .tool-icon{font-size:48px;margin-bottom:16px}
+    .tool-card h2{font-size:18px;font-weight:700;margin-bottom:8px}
+    .tool-card p{font-size:14px;color:var(--text-secondary);line-height:1.6}
+    .tool-tag{display:inline-block;background:var(--accent-light);color:var(--accent);padding:3px 10px;border-radius:12px;font-size:11px;font-weight:600;margin-top:12px}
+    .footer{background:#0f172a;color:rgba(255,255,255,.7);padding:32px 0;font-size:13px;text-align:center;margin-top:48px}.footer a{color:rgba(255,255,255,.6)}.footer a:hover{color:#fff}
+
+    .subscribe-float { position: fixed; bottom: 24px; right: 24px; z-index: 1000; background: #2563eb; color: #fff !important; padding: 14px 22px; border-radius: 50px; font-size: 14px; font-weight: 700; text-decoration: none !important; box-shadow: 0 4px 20px rgba(37,99,235,0.45); display: flex; align-items: center; gap: 8px; transition: all 0.2s; font-family: 'Inter', sans-serif; }
+    .subscribe-float:hover { background: #1d4ed8; transform: translateY(-2px); box-shadow: 0 6px 24px rgba(37,99,235,0.55); color: #fff !important; }
+    @media(max-width:768px){.tools-grid{grid-template-columns:1fr}.page-hero h1{font-size:28px}
+    
+      .nav-links { display: none; }
+      .nav-links.open { display: flex; flex-direction: column; position: absolute; top: 100%; left: 0; right: 0; background: #1e3a8a; padding: 12px 24px; border-top: 1px solid rgba(255,255,255,0.1); gap: 4px; z-index: 200; }
+      .nav-links.open .nav-item { display: block; }
+      .nav-links.open .nav-dropdown { position: static; box-shadow: none; border: none; background: rgba(255,255,255,0.05); border-radius: 6px; margin: 4px 0; }
+      .nav-links.open .nav-dropdown a { color: rgba(255,255,255,0.7); }
+      .mobile-toggle { display: block; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="container">
+      <div class="header-inner">
+        <a href="/" class="logo"><img src="/assets/logo-full-dark.svg" alt="TechLife Insights" style="height:44px;width:auto;"></a>
+        <nav class="nav-links" id="navLinks">
+          <a href="/" class="nav-link" style="font-weight:700;color:#fff;">Home</a>
+          
+          <div class="nav-item">
+            <a href="/ai_tools/" class="nav-link">AI Tools &amp; SaaS</a>
+            <div class="nav-dropdown"><a href="/ai_tools/ai_apps/">AI Apps &amp; Software</a><a href="/ai_tools/ai_news/">AI News</a><a href="/ai_tools/ai_automation/">AI Automation</a><a href="/ai_tools/ai_for_business/">AI for Business</a><a href="/ai_tools/ai_creative/">AI Creative Tools</a><a href="/ai_tools/ai_coding/">AI for Developers</a></div>
+          </div>
+          
+          <div class="nav-item">
+            <a href="/personal_finance/" class="nav-link">Personal Finance &amp; Investing</a>
+            <div class="nav-dropdown"><a href="/personal_finance/investing/">Investing</a><a href="/personal_finance/stocks/">Stocks</a><a href="/personal_finance/crypto/">Crypto</a><a href="/personal_finance/budgeting/">Budgeting &amp; Saving</a><a href="/personal_finance/market_news/">Market News</a><a href="/personal_finance/retirement/">Retirement</a><a href="/personal_finance/credit/">Credit &amp; Loans</a><a href="/personal_finance/real_estate/">Real Estate</a></div>
+          </div>
+          
+          <div class="nav-item">
+            <a href="/health_biohacking/" class="nav-link">Health &amp; Biohacking</a>
+            <div class="nav-dropdown"><a href="/health_biohacking/supplements/">Supplements &amp; Vitamins</a><a href="/health_biohacking/biohacking/">Biohacking</a><a href="/health_biohacking/nutrition/">Nutrition &amp; Diet</a><a href="/health_biohacking/sleep/">Sleep Optimization</a><a href="/health_biohacking/mental_health/">Mental Health</a><a href="/health_biohacking/longevity/">Longevity &amp; Anti-Aging</a></div>
+          </div>
+          
+          <div class="nav-item">
+            <a href="/home_tech/" class="nav-link">Home Tech &amp; Smart Devices</a>
+            <div class="nav-dropdown"><a href="/home_tech/smart_home/">Smart Home</a><a href="/home_tech/security/">Home Security</a><a href="/home_tech/appliances/">Smart Appliances</a><a href="/home_tech/entertainment/">Home Entertainment</a><a href="/home_tech/networking/">Wi-Fi &amp; Networking</a><a href="/home_tech/energy/">Energy &amp; Solar</a><a href="/home_tech/product_reviews/">Product Reviews</a></div>
+          </div>
+          
+          <div class="nav-item">
+            <a href="/travel/" class="nav-link">Travel</a>
+            <div class="nav-dropdown"><a href="/travel/tips/">Travel Tips &amp; Advice</a><a href="/travel/destinations/">Destinations</a><a href="/travel/flights/">Flights &amp; Airports</a><a href="/travel/hotels/">Hotels &amp; Accommodation</a><a href="/travel/car_rental/">Car Rental &amp; Transport</a><a href="/travel/travel_gear/">Travel Gear &amp; Products</a><a href="/travel/digital_nomad/">Digital Nomad</a><a href="/travel/travel_insurance/">Travel Insurance</a><a href="/travel/food_culture/">Food &amp; Culture</a></div>
+          </div>
+          
+          <div class="nav-item">
+            <a href="/pet_care/" class="nav-link">Pet Care &amp; Products</a>
+            <div class="nav-dropdown"><a href="/pet_care/dogs/">Dogs</a><a href="/pet_care/cats/">Cats</a><a href="/pet_care/pet_food/">Pet Food &amp; Nutrition</a><a href="/pet_care/pet_products/">Pet Products &amp; Gear</a><a href="/pet_care/pet_health/">Pet Health</a><a href="/pet_care/fish_aquarium/">Fish &amp; Aquarium</a><a href="/pet_care/exotic_pets/">Exotic &amp; Small Pets</a></div>
+          </div>
+          
+          <div class="nav-item">
+            <a href="/fitness_wellness/" class="nav-link">Fitness &amp; Wellness</a>
+            <div class="nav-dropdown"><a href="/fitness_wellness/workouts/">Workouts &amp; Training</a><a href="/fitness_wellness/equipment/">Gym Equipment &amp; Gear</a><a href="/fitness_wellness/nutrition/">Sports Nutrition</a><a href="/fitness_wellness/running/">Running &amp; Cardio</a><a href="/fitness_wellness/yoga_flexibility/">Yoga &amp; Flexibility</a><a href="/fitness_wellness/wearables/">Fitness Wearables</a><a href="/fitness_wellness/product_reviews/">Product Reviews</a></div>
+          </div>
+          
+          <div class="nav-item">
+            <a href="/remote_work/" class="nav-link">Remote Work &amp; Productivity</a>
+            <div class="nav-dropdown"><a href="/remote_work/office_setup/">Office Setup</a><a href="/remote_work/productivity_apps/">Productivity Apps</a><a href="/remote_work/remote_jobs/">Remote Jobs</a><a href="/remote_work/equipment/">Equipment &amp; Gear</a><a href="/remote_work/tips/">Tips &amp; Guides</a><a href="/remote_work/coworking/">Coworking &amp; Spaces</a></div>
+          </div>
+          
+          <div class="nav-item">
+            <a href="/tools/" class="nav-link">🛠️ Tools</a>
+            <div class="nav-dropdown">
+              <a href="/tools/deal-finder.html">🔍 Deal Finder</a>
+              <a href="/tools/ai-tool-finder.html">🤖 AI Tool Directory</a>
+              <a href="/tools/budget-calculator.html">💰 Budget Calculator</a>
+              <a href="/tools/workout-generator.html">💪 Workout Generator</a>
+              <a href="/tools/pet-food-checker.html">🐾 Pet Food Analyzer</a>
+              <a href="/tools/smart-home.html">🏠 Smart Home Hub</a>
+              <a href="/travel/search.html">✈️ Travel Search</a>
+              <a href="/personal_finance/markets.html">📊 Market Data</a>
+            </div>
+          </div>
+        </nav>
+        <button class="mobile-toggle" onclick="document.getElementById('navLinks').classList.toggle('open')" aria-label="Menu">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="page-hero"><div class="container">
+    <h1>🛠️ Free Tools & Resources</h1>
+    <p>Powerful tools to help you save money, stay productive, and make smarter decisions — completely free.</p>
+  </div></div>
+
+  <div class="container">
+    <div class="tools-grid">
+      <a href="/tools/deal-finder.html" class="tool-card"><div class="tool-icon">🔍</div><h2>Deal Finder</h2><p>Search across Amazon, Best Buy, Walmart, and more to find the best deals on any product.</p><span class="tool-tag">Shopping</span></a>
+      <a href="/tools/ai-tool-finder.html" class="tool-card"><div class="tool-icon">🤖</div><h2>AI Tool Directory</h2><p>Browse 60+ AI tools organized by category — writing, images, code, video, and more.</p><span class="tool-tag">AI & Tech</span></a>
+      <a href="/tools/budget-calculator.html" class="tool-card"><div class="tool-icon">💰</div><h2>Budget Calculator</h2><p>Plan your monthly budget with the 50/30/20 rule and track your savings goals.</p><span class="tool-tag">Finance</span></a>
+      <a href="/tools/workout-generator.html" class="tool-card"><div class="tool-icon">💪</div><h2>Workout Generator</h2><p>Generate custom workout plans based on your fitness goals, equipment, and available time.</p><span class="tool-tag">Fitness</span></a>
+      <a href="/tools/pet-food-checker.html" class="tool-card"><div class="tool-icon">🐾</div><h2>Pet Food Analyzer</h2><p>Check ingredient quality and get safety ratings for your pet's food.</p><span class="tool-tag">Pet Care</span></a>
+      <a href="/tools/smart-home.html" class="tool-card"><div class="tool-icon">🏠</div><h2>Smart Home Hub</h2><p>Check device compatibility across Alexa, Google Home, and Apple HomeKit ecosystems.</p><span class="tool-tag">Home Tech</span></a>
+      <a href="/travel/search.html" class="tool-card"><div class="tool-icon">✈️</div><h2>Travel Search</h2><p>Compare flights, hotels, and car rentals from top travel booking platforms.</p><span class="tool-tag">Travel</span></a>
+      <a href="/personal_finance/markets.html" class="tool-card"><div class="tool-icon">📊</div><h2>Market Data</h2><p>Real-time stock market, cryptocurrency, and commodity price data.</p><span class="tool-tag">Finance</span></a>
+    </div>
+  </div>
+
+  <footer class="footer"><div class="container">&copy; 2026 TechLife Insights. · <a href="/privacy.html">Privacy</a> · <a href="/about.html">About</a> · <a href="/contact.html">Contact</a><br><span style="font-size:11px;color:rgba(255,255,255,.35)">Some links are affiliate links. We may earn a commission at no extra cost to you.</span></div></footer>
+  <a href="https://techlife-insights.kit.com/be266c00d5" target="_blank" rel="noopener" class="subscribe-float">📬 Subscribe</a>
+</body></html>

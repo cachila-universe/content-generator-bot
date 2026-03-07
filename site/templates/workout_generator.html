@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Workout Generator — Custom Exercise Plans | {{ site_title }}</title>
+  <meta name="description" content="Generate a custom workout plan based on your fitness goals, available equipment, and time. Free workout builder tool.">
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root { --bg:#fff; --surface:#f8f9fb; --text:#111827; --text-secondary:#6b7280; --accent:#7c3aed; --accent-light:#f5f3ff; --border:#e5e7eb; --radius:10px; --max-width:900px; }
+    *{box-sizing:border-box;margin:0;padding:0}body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,sans-serif;font-size:16px;line-height:1.6}a{color:var(--accent);text-decoration:none}.container{max-width:var(--max-width);margin:0 auto;padding:0 24px}
+
+    .header { position: sticky; top: 0; z-index: 50; background: #1e3a8a; }
+    .header-inner { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; }
+    .logo { display: flex; align-items: center; }
+    .logo img { height: 44px; width: auto; }
+    .nav-links { display: flex; gap: 2px; align-items: center; flex-wrap: wrap; }
+    .nav-link { padding: 6px 11px; border-radius: 6px; font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.75); transition: all 0.15s; white-space: nowrap; text-decoration: none; }
+    .nav-link:hover, .nav-link.active { color: #fff; background: rgba(255,255,255,0.12); }
+    .nav-item { position: relative; display: inline-block; }
+    .nav-item:hover .nav-dropdown { display: block; }
+    .nav-dropdown { display: none; position: absolute; top: 100%; left: 0; background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; box-shadow: 0 8px 30px rgba(0,0,0,0.12); min-width: 210px; padding: 6px 0; z-index: 100; }
+    .nav-dropdown a { display: block; padding: 8px 16px; font-size: 13px; color: #111827; font-weight: 500; transition: background 0.1s; text-decoration: none; }
+    .nav-dropdown a:hover { background: #eff6ff; color: #2563eb; }
+    .mobile-toggle { display: none; background: none; border: none; color: #fff; font-size: 22px; cursor: pointer; padding: 6px; }
+    .page-hero{background:linear-gradient(135deg,#5b21b6 0%,#7c3aed 100%);color:#fff;padding:48px 0;text-align:center}
+    .page-hero h1{font-size:32px;font-weight:900;margin-bottom:8px}.page-hero p{font-size:16px;opacity:.85;max-width:500px;margin:0 auto}
+    .config-section{padding:32px 0}
+    .config-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:16px}
+    .config-card h2{font-size:16px;font-weight:700;margin-bottom:14px}
+    .option-grid{display:flex;flex-wrap:wrap;gap:8px}
+    .option-btn{padding:10px 18px;border:2px solid var(--border);border-radius:8px;background:transparent;color:var(--text);font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s}
+    .option-btn:hover{border-color:var(--accent);color:var(--accent)}
+    .option-btn.selected{border-color:var(--accent);background:var(--accent-light);color:var(--accent)}
+    .btn{background:var(--accent);color:#fff;border:none;padding:14px 28px;border-radius:8px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;width:100%;margin-top:8px;transition:background .2s}
+    .btn:hover{background:#5b21b6}
+    .workout-result{display:none;margin-top:28px}
+    .workout-header{background:var(--accent-light);border:1px solid #ddd6fe;border-radius:var(--radius);padding:20px 24px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center}
+    .workout-header h2{font-size:18px;font-weight:800;color:var(--accent)}
+    .workout-header .stats{font-size:13px;color:var(--text-secondary)}
+    .exercise-card{border:1px solid var(--border);border-radius:var(--radius);padding:16px 20px;margin-bottom:10px;display:flex;align-items:center;gap:16px}
+    .exercise-num{width:36px;height:36px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0}
+    .exercise-info h3{font-size:15px;font-weight:700;margin-bottom:2px}.exercise-info p{font-size:13px;color:var(--text-secondary)}
+    .exercise-detail{display:flex;gap:12px;margin-top:4px}.exercise-detail span{font-size:12px;background:var(--surface);padding:2px 8px;border-radius:4px;font-weight:600}
+    .print-btn{background:transparent;border:1px solid var(--border);color:var(--text);padding:8px 16px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit}
+    .print-btn:hover{border-color:var(--accent);color:var(--accent)}
+    .disclaimer{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 20px;margin-top:24px;font-size:12px;color:var(--text-secondary);line-height:1.7}
+    .footer{background:#0f172a;color:rgba(255,255,255,.7);padding:32px 0;font-size:13px;text-align:center;margin-top:48px}.footer a{color:rgba(255,255,255,.6)}.footer a:hover{color:#fff}
+
+    .subscribe-float { position: fixed; bottom: 24px; right: 24px; z-index: 1000; background: #2563eb; color: #fff !important; padding: 14px 22px; border-radius: 50px; font-size: 14px; font-weight: 700; text-decoration: none !important; box-shadow: 0 4px 20px rgba(37,99,235,0.45); display: flex; align-items: center; gap: 8px; transition: all 0.2s; font-family: 'Inter', sans-serif; }
+    .subscribe-float:hover { background: #1d4ed8; transform: translateY(-2px); box-shadow: 0 6px 24px rgba(37,99,235,0.55); color: #fff !important; }
+    @media(max-width:768px){.workout-header{flex-direction:column;gap:8px}
+    
+      .nav-links { display: none; }
+      .nav-links.open { display: flex; flex-direction: column; position: absolute; top: 100%; left: 0; right: 0; background: #1e3a8a; padding: 12px 24px; border-top: 1px solid rgba(255,255,255,0.1); gap: 4px; z-index: 200; }
+      .nav-links.open .nav-item { display: block; }
+      .nav-links.open .nav-dropdown { position: static; box-shadow: none; border: none; background: rgba(255,255,255,0.05); border-radius: 6px; margin: 4px 0; }
+      .nav-links.open .nav-dropdown a { color: rgba(255,255,255,0.7); }
+      .mobile-toggle { display: block; }
+    }
+    @media print{.header,.page-hero,.config-section,.subscribe-float,.footer,.print-btn,.disclaimer{display:none!important}.workout-result{display:block!important}}
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="container">
+      <div class="header-inner">
+        <a href="/" class="logo"><img src="/assets/logo-full-dark.svg" alt="TechLife Insights" style="height:44px;width:auto;"></a>
+        <nav class="nav-links" id="navLinks">
+          <a href="/" class="nav-link" style="font-weight:700;color:#fff;">Home</a>
+          {% for nid, niche in niches.items() %}{% if niche.enabled %}
+          <div class="nav-item">
+            <a href="/{{ nid }}/" class="nav-link{% if false %} active{% endif %}">{{ niche.name }}</a>
+            {% if niche.subtopics %}<div class="nav-dropdown">{% for sub_id, sub in niche.subtopics.items() %}<a href="/{{ nid }}/{{ sub_id }}/">{{ sub.name }}</a>{% endfor %}</div>{% endif %}
+          </div>
+          {% endif %}{% endfor %}
+          <div class="nav-item">
+            <a href="/tools/" class="nav-link">🛠️ Tools</a>
+            <div class="nav-dropdown">
+              <a href="/tools/deal-finder.html">🔍 Deal Finder</a>
+              <a href="/tools/ai-tool-finder.html">🤖 AI Tool Directory</a>
+              <a href="/tools/budget-calculator.html">💰 Budget Calculator</a>
+              <a href="/tools/workout-generator.html">💪 Workout Generator</a>
+              <a href="/tools/pet-food-checker.html">🐾 Pet Food Analyzer</a>
+              <a href="/tools/smart-home.html">🏠 Smart Home Hub</a>
+              <a href="/travel/search.html">✈️ Travel Search</a>
+              <a href="/personal_finance/markets.html">📊 Market Data</a>
+            </div>
+          </div>
+        </nav>
+        <button class="mobile-toggle" onclick="document.getElementById('navLinks').classList.toggle('open')" aria-label="Menu">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="page-hero"><h1>💪 Workout Generator</h1><p>Get a custom workout plan based on your goals, equipment, and available time</p></div>
+
+  <div class="container"><div class="config-section">
+    <div class="config-card"><h2>🎯 Fitness Goal</h2><div class="option-grid" id="goalOptions">
+      <button class="option-btn" data-val="strength" onclick="selectOption(this,'goal')">Build Strength</button>
+      <button class="option-btn" data-val="muscle" onclick="selectOption(this,'goal')">Build Muscle</button>
+      <button class="option-btn" data-val="cardio" onclick="selectOption(this,'goal')">Improve Cardio</button>
+      <button class="option-btn" data-val="weight_loss" onclick="selectOption(this,'goal')">Lose Weight</button>
+      <button class="option-btn" data-val="flexibility" onclick="selectOption(this,'goal')">Flexibility</button>
+      <button class="option-btn" data-val="general" onclick="selectOption(this,'goal')">General Fitness</button>
+    </div></div>
+    <div class="config-card"><h2>🏋️ Equipment Available</h2><div class="option-grid" id="equipOptions">
+      <button class="option-btn" data-val="none" onclick="selectOption(this,'equip')">No Equipment</button>
+      <button class="option-btn" data-val="dumbbells" onclick="selectOption(this,'equip')">Dumbbells Only</button>
+      <button class="option-btn" data-val="home" onclick="selectOption(this,'equip')">Home Gym (Bands, DB, Bench)</button>
+      <button class="option-btn" data-val="full" onclick="selectOption(this,'equip')">Full Gym</button>
+    </div></div>
+    <div class="config-card"><h2>⏱️ Available Time</h2><div class="option-grid" id="timeOptions">
+      <button class="option-btn" data-val="15" onclick="selectOption(this,'time')">15 min</button>
+      <button class="option-btn" data-val="30" onclick="selectOption(this,'time')">30 min</button>
+      <button class="option-btn" data-val="45" onclick="selectOption(this,'time')">45 min</button>
+      <button class="option-btn" data-val="60" onclick="selectOption(this,'time')">60 min</button>
+    </div></div>
+    <div class="config-card"><h2>📊 Fitness Level</h2><div class="option-grid" id="levelOptions">
+      <button class="option-btn" data-val="beginner" onclick="selectOption(this,'level')">Beginner</button>
+      <button class="option-btn" data-val="intermediate" onclick="selectOption(this,'level')">Intermediate</button>
+      <button class="option-btn" data-val="advanced" onclick="selectOption(this,'level')">Advanced</button>
+    </div></div>
+    <button class="btn" onclick="generateWorkout()">Generate My Workout</button>
+  </div>
+
+  <div class="workout-result" id="workoutResult">
+    <div class="workout-header"><h2 id="workoutTitle">Your Workout</h2><div><span class="stats" id="workoutStats"></span> <button class="print-btn" onclick="window.print()">🖨️ Print</button></div></div>
+    <div id="exerciseList"></div>
+  </div>
+
+  <div class="disclaimer"><strong>Disclaimer:</strong> This workout generator provides general exercise suggestions for informational purposes only. It is not a substitute for professional medical or fitness advice. Consult a doctor before starting any exercise program. Listen to your body and stop if you feel pain.</div>
+  </div>
+
+  <footer class="footer"><div class="container">&copy; 2026 {{ site_title }}. · <a href="/privacy.html">Privacy</a> · <a href="/about.html">About</a> · <a href="/tools/">All Tools</a></div></footer>
+  <a href="https://techlife-insights.kit.com/be266c00d5" target="_blank" rel="noopener" class="subscribe-float">📬 Subscribe</a>
+
+  <script>
+  var sel={goal:'',equip:'',time:'',level:''};
+  function selectOption(btn,key){
+    sel[key]=btn.dataset.val;
+    btn.parentElement.querySelectorAll('.option-btn').forEach(function(b){b.classList.remove('selected')});
+    btn.classList.add('selected');
+  }
+
+  var exercises={
+    bodyweight:{warmup:['Jumping Jacks','High Knees','Arm Circles','Leg Swings','Bodyweight Squats'],
+      strength:['Push-ups','Diamond Push-ups','Pike Push-ups','Bodyweight Squats','Lunges','Glute Bridges','Plank','Side Plank','Superman','Tricep Dips (chair)','Bulgarian Split Squats','Calf Raises'],
+      cardio:['Burpees','Mountain Climbers','Jump Squats','High Knees','Butt Kicks','Skaters','Tuck Jumps','Bear Crawls'],
+      flexibility:['Cat-Cow Stretch','Pigeon Pose','Standing Hamstring Stretch','Quad Stretch','Child's Pose','Seated Twist','Hip Flexor Stretch','Shoulder Stretch']},
+    dumbbells:{strength:['Dumbbell Bench Press','Dumbbell Rows','Dumbbell Shoulder Press','Goblet Squats','Romanian Deadlifts','Bicep Curls','Tricep Extensions','Lateral Raises','Dumbbell Lunges'],
+      cardio:['Dumbbell Thrusters','Renegade Rows','Dumbbell Swings','Man Makers']},
+    home:{strength:['Resistance Band Pull-aparts','Band-assisted Pull-ups','Incline Dumbbell Press','Dumbbell Flyes','Bent Over Rows','Step-ups','Band Squats','Floor Press'],
+      cardio:['Battle Rope Waves','Box Jumps','Band Sprints']},
+    full:{strength:['Barbell Bench Press','Barbell Squats','Deadlifts','Overhead Press','Pull-ups','Barbell Rows','Lat Pulldown','Leg Press','Cable Flyes','Hack Squat','T-Bar Row','Face Pulls'],
+      cardio:['Rowing Machine','Assault Bike','Stairclimber Intervals','Sled Push']}
+  };
+
+  function pick(arr,n){var a=arr.slice();var r=[];for(var i=0;i<Math.min(n,a.length);i++){var idx=Math.floor(Math.random()*a.length);r.push(a.splice(idx,1)[0]);}return r;}
+
+  function generateWorkout(){
+    if(!sel.goal||!sel.equip||!sel.time||!sel.level){alert('Please select all options');return;}
+    var mins=parseInt(sel.time);var numExercises=Math.max(3,Math.floor(mins/5));
+    var pool=exercises.bodyweight;var equipKey=sel.equip;
+    if(equipKey==='dumbbells')pool={warmup:pool.warmup,strength:pool.strength.concat(exercises.dumbbells.strength),cardio:pool.cardio.concat(exercises.dumbbells.cardio),flexibility:pool.flexibility};
+    else if(equipKey==='home')pool={warmup:pool.warmup,strength:pool.strength.concat(exercises.dumbbells.strength).concat(exercises.home.strength),cardio:pool.cardio.concat(exercises.dumbbells.cardio).concat(exercises.home.cardio),flexibility:pool.flexibility};
+    else if(equipKey==='full')pool={warmup:pool.warmup,strength:pool.strength.concat(exercises.full.strength),cardio:pool.cardio.concat(exercises.full.cardio),flexibility:pool.flexibility};
+
+    var workout=[];var warmupCount=Math.min(3,Math.ceil(numExercises*.2));var cooldownCount=2;
+    var mainCount=numExercises-warmupCount-cooldownCount;
+    var warmups=pick(pool.warmup,warmupCount);
+    var mainPool=sel.goal==='cardio'?pool.cardio:sel.goal==='flexibility'?pool.flexibility:pool.strength;
+    if(sel.goal==='weight_loss'||sel.goal==='general')mainPool=pool.strength.concat(pool.cardio);
+    var main=pick(mainPool,Math.max(mainCount,3));
+    var cooldown=pick(pool.flexibility,cooldownCount);
+
+    var sets=sel.level==='beginner'?2:sel.level==='intermediate'?3:4;
+    var reps=sel.goal==='strength'?'6-8':sel.goal==='muscle'?'8-12':sel.goal==='cardio'?'30 sec':'15-20';
+
+    warmups.forEach(function(e){workout.push({name:e,phase:'Warm-up',sets:1,reps:'30 sec',rest:'15 sec'})});
+    main.forEach(function(e){workout.push({name:e,phase:'Main',sets:sets,reps:reps,rest:sel.goal==='cardio'?'30 sec':'60 sec'})});
+    cooldown.forEach(function(e){workout.push({name:e,phase:'Cool-down',sets:1,reps:'45 sec hold',rest:'15 sec'})});
+
+    var goalNames={strength:'Strength Building',muscle:'Muscle Hypertrophy',cardio:'Cardio Conditioning',weight_loss:'Fat Burning',flexibility:'Flexibility & Mobility',general:'General Fitness'};
+    document.getElementById('workoutTitle').textContent=goalNames[sel.goal]+' Workout';
+    document.getElementById('workoutStats').textContent=mins+' min · '+workout.length+' exercises · '+sel.level;
+
+    var html='';workout.forEach(function(ex,i){
+      html+='<div class="exercise-card"><div class="exercise-num">'+(i+1)+'</div><div class="exercise-info"><h3>'+ex.name+'</h3><p>'+ex.phase+'</p><div class="exercise-detail"><span>'+ex.sets+' set'+(ex.sets>1?'s':'')+'</span><span>'+ex.reps+'</span><span>Rest: '+ex.rest+'</span></div></div></div>';
+    });
+    document.getElementById('exerciseList').innerHTML=html;
+    document.getElementById('workoutResult').style.display='block';
+    document.getElementById('workoutResult').scrollIntoView({behavior:'smooth'});
+  }
+  </script>
+</body></html>

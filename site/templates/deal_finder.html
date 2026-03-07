@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Deal Finder — Search for the Best Deals | {{ site_title }}</title>
+  <meta name="description" content="Search across Amazon, Best Buy, Walmart, Target and more to find the best deals on any product. Free deal comparison tool.">
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root { --bg:#fff; --surface:#f8f9fb; --text:#111827; --text-secondary:#6b7280; --accent:#2563eb; --accent-hover:#1d4ed8; --accent-light:#eff6ff; --border:#e5e7eb; --radius:10px; --max-width:900px; }
+    *{box-sizing:border-box;margin:0;padding:0}body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,sans-serif;font-size:16px;line-height:1.6}a{color:var(--accent);text-decoration:none}.container{max-width:var(--max-width);margin:0 auto;padding:0 24px}img{max-width:100%}
+
+    .header { position: sticky; top: 0; z-index: 50; background: #1e3a8a; }
+    .header-inner { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; }
+    .logo { display: flex; align-items: center; }
+    .logo img { height: 44px; width: auto; }
+    .nav-links { display: flex; gap: 2px; align-items: center; flex-wrap: wrap; }
+    .nav-link { padding: 6px 11px; border-radius: 6px; font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.75); transition: all 0.15s; white-space: nowrap; text-decoration: none; }
+    .nav-link:hover, .nav-link.active { color: #fff; background: rgba(255,255,255,0.12); }
+    .nav-item { position: relative; display: inline-block; }
+    .nav-item:hover .nav-dropdown { display: block; }
+    .nav-dropdown { display: none; position: absolute; top: 100%; left: 0; background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; box-shadow: 0 8px 30px rgba(0,0,0,0.12); min-width: 210px; padding: 6px 0; z-index: 100; }
+    .nav-dropdown a { display: block; padding: 8px 16px; font-size: 13px; color: #111827; font-weight: 500; transition: background 0.1s; text-decoration: none; }
+    .nav-dropdown a:hover { background: #eff6ff; color: #2563eb; }
+    .mobile-toggle { display: none; background: none; border: none; color: #fff; font-size: 22px; cursor: pointer; padding: 6px; }
+    .tool-hero{background:linear-gradient(135deg,#0f172a 0%,#1e3a8a 100%);color:#fff;padding:48px 0;text-align:center}
+    .tool-hero h1{font-size:32px;font-weight:900;margin-bottom:8px}.tool-hero p{font-size:16px;opacity:.8;max-width:500px;margin:0 auto 28px}
+    .search-box{max-width:600px;margin:0 auto;display:flex;gap:0;border-radius:50px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.3)}
+    .search-box input{flex:1;padding:16px 24px;border:none;font-size:16px;font-family:inherit;outline:none}
+    .search-box button{background:var(--accent);color:#fff;border:none;padding:16px 28px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;transition:background .2s}
+    .search-box button:hover{background:var(--accent-hover)}
+    .results{padding:40px 0}.results h2{font-size:20px;font-weight:800;margin-bottom:20px;text-align:center}
+    .retailer-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+    .retailer-card{border:1px solid var(--border);border-radius:var(--radius);padding:20px;text-align:center;transition:all .2s;text-decoration:none;color:var(--text);display:block}
+    .retailer-card:hover{border-color:var(--accent);box-shadow:0 4px 16px rgba(37,99,235,.12);transform:translateY(-2px);color:var(--text)}
+    .retailer-logo{font-size:36px;margin-bottom:8px}
+    .retailer-card h3{font-size:15px;font-weight:700;margin-bottom:4px}
+    .retailer-card p{font-size:12px;color:var(--text-secondary)}
+    .search-btn{display:inline-block;background:var(--accent);color:#fff;padding:8px 18px;border-radius:6px;font-size:13px;font-weight:600;margin-top:10px;transition:background .2s}
+    .search-btn:hover{background:var(--accent-hover);color:#fff}
+    #noQuery{display:none;text-align:center;padding:20px;color:var(--text-secondary);font-size:14px}
+    .categories{padding:32px 0}.categories h2{font-size:20px;font-weight:800;margin-bottom:20px}
+    .cat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+    .cat-pill{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px;text-align:center;cursor:pointer;transition:all .15s;font-size:13px;font-weight:600}
+    .cat-pill:hover{border-color:var(--accent);background:var(--accent-light);color:var(--accent)}
+    .cat-pill span{display:block;font-size:24px;margin-bottom:4px}
+    .tips{padding:32px 0;border-top:1px solid var(--border)}.tips h2{font-size:20px;font-weight:800;margin-bottom:16px}
+    .tip-item{padding:12px 0;border-bottom:1px solid var(--border);font-size:14px}
+    .tip-item strong{color:var(--accent)}
+    .disclaimer{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 20px;margin-top:32px;font-size:12px;color:var(--text-secondary);line-height:1.7}
+    .footer{background:#0f172a;color:rgba(255,255,255,.7);padding:32px 0;font-size:13px;text-align:center;margin-top:48px}.footer a{color:rgba(255,255,255,.6)}.footer a:hover{color:#fff}
+
+    .subscribe-float { position: fixed; bottom: 24px; right: 24px; z-index: 1000; background: #2563eb; color: #fff !important; padding: 14px 22px; border-radius: 50px; font-size: 14px; font-weight: 700; text-decoration: none !important; box-shadow: 0 4px 20px rgba(37,99,235,0.45); display: flex; align-items: center; gap: 8px; transition: all 0.2s; font-family: 'Inter', sans-serif; }
+    .subscribe-float:hover { background: #1d4ed8; transform: translateY(-2px); box-shadow: 0 6px 24px rgba(37,99,235,0.55); color: #fff !important; }
+    @media(max-width:768px){.retailer-grid{grid-template-columns:1fr 1fr}.cat-grid{grid-template-columns:1fr 1fr}.tool-hero h1{font-size:24px}
+    
+      .nav-links { display: none; }
+      .nav-links.open { display: flex; flex-direction: column; position: absolute; top: 100%; left: 0; right: 0; background: #1e3a8a; padding: 12px 24px; border-top: 1px solid rgba(255,255,255,0.1); gap: 4px; z-index: 200; }
+      .nav-links.open .nav-item { display: block; }
+      .nav-links.open .nav-dropdown { position: static; box-shadow: none; border: none; background: rgba(255,255,255,0.05); border-radius: 6px; margin: 4px 0; }
+      .nav-links.open .nav-dropdown a { color: rgba(255,255,255,0.7); }
+      .mobile-toggle { display: block; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="container">
+      <div class="header-inner">
+        <a href="/" class="logo"><img src="/assets/logo-full-dark.svg" alt="TechLife Insights" style="height:44px;width:auto;"></a>
+        <nav class="nav-links" id="navLinks">
+          <a href="/" class="nav-link" style="font-weight:700;color:#fff;">Home</a>
+          {% for nid, niche in niches.items() %}{% if niche.enabled %}
+          <div class="nav-item">
+            <a href="/{{ nid }}/" class="nav-link{% if false %} active{% endif %}">{{ niche.name }}</a>
+            {% if niche.subtopics %}<div class="nav-dropdown">{% for sub_id, sub in niche.subtopics.items() %}<a href="/{{ nid }}/{{ sub_id }}/">{{ sub.name }}</a>{% endfor %}</div>{% endif %}
+          </div>
+          {% endif %}{% endfor %}
+          <div class="nav-item">
+            <a href="/tools/" class="nav-link">🛠️ Tools</a>
+            <div class="nav-dropdown">
+              <a href="/tools/deal-finder.html">🔍 Deal Finder</a>
+              <a href="/tools/ai-tool-finder.html">🤖 AI Tool Directory</a>
+              <a href="/tools/budget-calculator.html">💰 Budget Calculator</a>
+              <a href="/tools/workout-generator.html">💪 Workout Generator</a>
+              <a href="/tools/pet-food-checker.html">🐾 Pet Food Analyzer</a>
+              <a href="/tools/smart-home.html">🏠 Smart Home Hub</a>
+              <a href="/travel/search.html">✈️ Travel Search</a>
+              <a href="/personal_finance/markets.html">📊 Market Data</a>
+            </div>
+          </div>
+        </nav>
+        <button class="mobile-toggle" onclick="document.getElementById('navLinks').classList.toggle('open')" aria-label="Menu">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="tool-hero">
+    <h1>🔍 Deal Finder</h1>
+    <p>Search across top retailers to find the best deals on any product</p>
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="What are you looking for? e.g. wireless headphones" autofocus>
+      <button onclick="searchDeals()">Search Deals</button>
+    </div>
+  </div>
+
+  <div class="container">
+    <div id="noQuery"><p>Enter a product above to search across retailers</p></div>
+    <div class="results" id="results" style="display:none">
+      <h2>Search "<span id="queryDisplay"></span>" on these retailers:</h2>
+      <div class="retailer-grid" id="retailerGrid"></div>
+    </div>
+
+    <div class="categories">
+      <h2>Popular Categories</h2>
+      <div class="cat-grid">
+        <div class="cat-pill" onclick="quickSearch('wireless headphones')"><span>🎧</span>Headphones</div>
+        <div class="cat-pill" onclick="quickSearch('laptop deals')"><span>💻</span>Laptops</div>
+        <div class="cat-pill" onclick="quickSearch('smart home devices')"><span>🏠</span>Smart Home</div>
+        <div class="cat-pill" onclick="quickSearch('fitness tracker')"><span>⌚</span>Fitness Tech</div>
+        <div class="cat-pill" onclick="quickSearch('kitchen appliances')"><span>🍳</span>Kitchen</div>
+        <div class="cat-pill" onclick="quickSearch('gaming accessories')"><span>🎮</span>Gaming</div>
+        <div class="cat-pill" onclick="quickSearch('pet supplies')"><span>🐾</span>Pet Supplies</div>
+        <div class="cat-pill" onclick="quickSearch('home office desk')"><span>🪑</span>Office</div>
+      </div>
+    </div>
+
+    <div class="tips">
+      <h2>💡 Smart Shopping Tips</h2>
+      <div class="tip-item"><strong>Compare prices</strong> across at least 3 retailers before buying — prices can vary by 20-40%.</div>
+      <div class="tip-item"><strong>Check for coupons</strong> — search "[retailer name] coupon code" before checkout.</div>
+      <div class="tip-item"><strong>Set price alerts</strong> — tools like CamelCamelCamel (Amazon) track price history.</div>
+      <div class="tip-item"><strong>Buy refurbished</strong> — certified refurbished products offer 20-50% savings with warranties.</div>
+      <div class="tip-item"><strong>Time your purchases</strong> — Black Friday, Prime Day, and end-of-season sales offer the best deals.</div>
+    </div>
+
+    <div class="disclaimer">
+      <strong>Affiliate Disclosure:</strong> Some retailer links on this page are affiliate links. When you click through and make a purchase, we may earn a small commission at no additional cost to you. This helps support our free tools and content. We are not affiliated with or endorsed by any of the retailers listed. Prices, availability, and deals are determined by the retailers and may change at any time.
+    </div>
+  </div>
+
+  <footer class="footer"><div class="container">&copy; 2026 {{ site_title }}. · <a href="/privacy.html">Privacy</a> · <a href="/about.html">About</a> · <a href="/tools/">All Tools</a></div></footer>
+  <a href="https://techlife-insights.kit.com/be266c00d5" target="_blank" rel="noopener" class="subscribe-float">📬 Subscribe</a>
+
+  <script>
+  var retailers = [
+    { name: 'Amazon', icon: '📦', color: '#FF9900', search: 'https://www.amazon.com/s?k=QUERY&tag=techlife0ac-20', desc: 'Millions of products with Prime shipping' },
+    { name: 'Best Buy', icon: '🏪', color: '#0046BE', search: 'https://www.bestbuy.com/site/searchpage.jsp?st=QUERY', desc: 'Electronics, appliances & tech deals' },
+    { name: 'Walmart', icon: '🛒', color: '#0071DC', search: 'https://www.walmart.com/search?q=QUERY', desc: 'Everyday low prices on everything' },
+    { name: 'Target', icon: '🎯', color: '#CC0000', search: 'https://www.target.com/s?searchTerm=QUERY', desc: 'Quality products at great prices' },
+    { name: 'Newegg', icon: '💾', color: '#E76F00', search: 'https://www.newegg.com/p/pl?d=QUERY', desc: 'Tech & computer hardware specialist' },
+    { name: 'eBay', icon: '🏷️', color: '#E53238', search: 'https://www.ebay.com/sch/i.html?_nkw=QUERY', desc: 'New, used & refurbished deals' },
+    { name: 'B&H Photo', icon: '📷', color: '#000', search: 'https://www.bhphotovideo.com/c/search?q=QUERY', desc: 'Camera, audio & electronics pro gear' },
+    { name: 'Costco', icon: '🏬', color: '#E31837', search: 'https://www.costco.com/CatalogSearch?dept=All&keyword=QUERY', desc: 'Bulk deals for members' },
+    { name: 'Google Shopping', icon: '🔎', color: '#4285F4', search: 'https://www.google.com/search?tbm=shop&q=QUERY', desc: 'Compare prices across all stores' }
+  ];
+
+  function searchDeals() {
+    var q = document.getElementById('searchInput').value.trim();
+    if (!q) { document.getElementById('noQuery').style.display = 'block'; document.getElementById('results').style.display = 'none'; return; }
+    document.getElementById('noQuery').style.display = 'none';
+    document.getElementById('results').style.display = 'block';
+    document.getElementById('queryDisplay').textContent = q;
+    var grid = document.getElementById('retailerGrid');
+    grid.innerHTML = '';
+    retailers.forEach(function(r) {
+      var url = r.search.replace('QUERY', encodeURIComponent(q));
+      var card = document.createElement('a');
+      card.href = url; card.target = '_blank'; card.rel = 'noopener'; card.className = 'retailer-card';
+      card.innerHTML = '<div class="retailer-logo">' + r.icon + '</div><h3>' + r.name + '</h3><p>' + r.desc + '</p><span class="search-btn">Search ' + r.name + ' →</span>';
+      grid.appendChild(card);
+    });
+  }
+
+  function quickSearch(q) {
+    document.getElementById('searchInput').value = q;
+    searchDeals();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  document.getElementById('searchInput').addEventListener('keypress', function(e) { if (e.key === 'Enter') searchDeals(); });
+  </script>
+</body></html>

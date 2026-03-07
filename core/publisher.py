@@ -106,7 +106,7 @@ def publish(article: dict, niche_id: str, niche_name: str, settings: dict, db_pa
 
     url_path = f"/{niche_id}/{slug}.html"
 
-    # Save to database with subtopic_id
+    # Save to database with subtopic_id and image_url
     word_count = article.get("word_count", 0)
     affiliate_count = article.get("affiliate_links_count", 0)
 
@@ -120,6 +120,7 @@ def publish(article: dict, niche_id: str, niche_name: str, settings: dict, db_pa
             "url": f"{site_url.rstrip('/')}{url_path}",
             "youtube_url": article.get("youtube_url", ""),
             "subtopic_id": subtopic_id,
+            "image_url": article.get("image_url", ""),
             "word_count": word_count,
             "affiliate_links_count": affiliate_count,
             "estimated_clicks": 0,
@@ -143,6 +144,7 @@ def publish(article: dict, niche_id: str, niche_name: str, settings: dict, db_pa
     _rebuild_best_of_pages(env, settings, db_path, site_url)
     _rebuild_travel_search(env, settings, site_url)
     _rebuild_market_data(env, settings, site_url)
+    _rebuild_tools_pages(env, settings, site_url)
     _rebuild_legal_pages(env, settings, site_url)
 
     return url_path
@@ -363,6 +365,45 @@ def _rebuild_market_data(env: Environment, settings: dict, site_url: str) -> Non
         logger.warning("Could not rebuild market data page: %s", exc)
 
 
+def _rebuild_tools_pages(env: Environment, settings: dict, site_url: str) -> None:
+    """Rebuild all tools pages at /tools/."""
+    tool_templates = {
+        "tools_index.html": "index.html",
+        "deal_finder.html": "deal-finder.html",
+        "ai_tool_finder.html": "ai-tool-finder.html",
+        "budget_calculator.html": "budget-calculator.html",
+        "workout_generator.html": "workout-generator.html",
+        "pet_food_checker.html": "pet-food-checker.html",
+        "smart_home.html": "smart-home.html",
+    }
+
+    tools_dir = _OUTPUT_DIR / "tools"
+    tools_dir.mkdir(parents=True, exist_ok=True)
+
+    niches = _load_niches()
+    site_title = settings.get("site", {}).get("title", "TechLife Insights")
+    tagline = settings.get("site", {}).get("tagline", "Smart Guides for Modern Living")
+
+    count = 0
+    for template_name, output_name in tool_templates.items():
+        try:
+            template = env.get_template(template_name)
+            rendered = template.render(
+                niches=niches,
+                settings=settings,
+                site_url=site_url,
+                site_title=site_title,
+                tagline=tagline,
+            )
+            (tools_dir / output_name).write_text(rendered, encoding="utf-8")
+            count += 1
+        except Exception as exc:
+            logger.debug("Could not rebuild tool page %s: %s", template_name, exc)
+
+    if count:
+        logger.info("Rebuilt %d tools pages", count)
+
+
 def rebuild_site(settings: dict, db_path: Path, site_url: str) -> None:
     """Rebuild all static site pages. Call after any content change (e.g. delete)."""
     env = Environment(
@@ -375,4 +416,5 @@ def rebuild_site(settings: dict, db_path: Path, site_url: str) -> None:
     _rebuild_best_of_pages(env, settings, db_path, site_url)
     _rebuild_travel_search(env, settings, site_url)
     _rebuild_market_data(env, settings, site_url)
+    _rebuild_tools_pages(env, settings, site_url)
     _rebuild_legal_pages(env, settings, site_url)

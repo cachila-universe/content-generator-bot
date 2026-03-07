@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Tool Directory — Find the Best AI Tools | {{ site_title }}</title>
+  <meta name="description" content="Browse 60+ AI tools organized by category. Find the perfect AI tool for writing, image generation, coding, video, and more.">
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root { --bg:#fff; --surface:#f8f9fb; --text:#111827; --text-secondary:#6b7280; --accent:#2563eb; --accent-light:#eff6ff; --border:#e5e7eb; --radius:10px; --max-width:1100px; }
+    *{box-sizing:border-box;margin:0;padding:0}body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,sans-serif;font-size:16px;line-height:1.6}a{color:var(--accent);text-decoration:none}.container{max-width:var(--max-width);margin:0 auto;padding:0 24px}
+
+    .header { position: sticky; top: 0; z-index: 50; background: #1e3a8a; }
+    .header-inner { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; }
+    .logo { display: flex; align-items: center; }
+    .logo img { height: 44px; width: auto; }
+    .nav-links { display: flex; gap: 2px; align-items: center; flex-wrap: wrap; }
+    .nav-link { padding: 6px 11px; border-radius: 6px; font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.75); transition: all 0.15s; white-space: nowrap; text-decoration: none; }
+    .nav-link:hover, .nav-link.active { color: #fff; background: rgba(255,255,255,0.12); }
+    .nav-item { position: relative; display: inline-block; }
+    .nav-item:hover .nav-dropdown { display: block; }
+    .nav-dropdown { display: none; position: absolute; top: 100%; left: 0; background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; box-shadow: 0 8px 30px rgba(0,0,0,0.12); min-width: 210px; padding: 6px 0; z-index: 100; }
+    .nav-dropdown a { display: block; padding: 8px 16px; font-size: 13px; color: #111827; font-weight: 500; transition: background 0.1s; text-decoration: none; }
+    .nav-dropdown a:hover { background: #eff6ff; color: #2563eb; }
+    .mobile-toggle { display: none; background: none; border: none; color: #fff; font-size: 22px; cursor: pointer; padding: 6px; }
+    .page-hero{background:linear-gradient(135deg,#0f172a 0%,#1e3a8a 100%);color:#fff;padding:48px 0;text-align:center}
+    .page-hero h1{font-size:32px;font-weight:900;margin-bottom:8px}.page-hero p{font-size:16px;opacity:.8;max-width:500px;margin:0 auto 20px}
+    .search-wrap{max-width:500px;margin:0 auto}.search-wrap input{width:100%;padding:14px 20px;border-radius:50px;border:none;font-size:15px;font-family:inherit;outline:none;box-shadow:0 4px 20px rgba(0,0,0,.3)}
+    .filters{display:flex;flex-wrap:wrap;gap:8px;padding:24px 0;justify-content:center;border-bottom:1px solid var(--border)}
+    .filter-btn{padding:7px 16px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--text-secondary);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s}
+    .filter-btn:hover,.filter-btn.active{border-color:var(--accent);color:var(--accent);background:var(--accent-light)}
+    .tools-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;padding:32px 0}
+    .ai-card{border:1px solid var(--border);border-radius:var(--radius);padding:20px;transition:all .2s}
+    .ai-card:hover{border-color:var(--accent);box-shadow:0 4px 16px rgba(37,99,235,.1)}
+    .ai-card h3{font-size:16px;font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:8px}
+    .ai-card .cat-tag{font-size:11px;font-weight:600;color:var(--accent);background:var(--accent-light);padding:2px 8px;border-radius:10px}
+    .ai-card p{font-size:13px;color:var(--text-secondary);margin:8px 0}
+    .ai-card .pricing{font-size:12px;font-weight:600;color:#059669}
+    .ai-card .visit-btn{display:inline-block;margin-top:10px;background:var(--accent);color:#fff;padding:6px 14px;border-radius:6px;font-size:12px;font-weight:600;transition:background .2s}
+    .ai-card .visit-btn:hover{background:var(--accent-hover);color:#fff}
+    .tool-count{text-align:center;padding:8px 0;font-size:13px;color:var(--text-secondary)}
+    .disclaimer{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 20px;margin:24px 0;font-size:12px;color:var(--text-secondary);line-height:1.7}
+    .footer{background:#0f172a;color:rgba(255,255,255,.7);padding:32px 0;font-size:13px;text-align:center;margin-top:48px}.footer a{color:rgba(255,255,255,.6)}.footer a:hover{color:#fff}
+
+    .subscribe-float { position: fixed; bottom: 24px; right: 24px; z-index: 1000; background: #2563eb; color: #fff !important; padding: 14px 22px; border-radius: 50px; font-size: 14px; font-weight: 700; text-decoration: none !important; box-shadow: 0 4px 20px rgba(37,99,235,0.45); display: flex; align-items: center; gap: 8px; transition: all 0.2s; font-family: 'Inter', sans-serif; }
+    .subscribe-float:hover { background: #1d4ed8; transform: translateY(-2px); box-shadow: 0 6px 24px rgba(37,99,235,0.55); color: #fff !important; }
+    @media(max-width:768px){.tools-grid{grid-template-columns:1fr}
+    
+      .nav-links { display: none; }
+      .nav-links.open { display: flex; flex-direction: column; position: absolute; top: 100%; left: 0; right: 0; background: #1e3a8a; padding: 12px 24px; border-top: 1px solid rgba(255,255,255,0.1); gap: 4px; z-index: 200; }
+      .nav-links.open .nav-item { display: block; }
+      .nav-links.open .nav-dropdown { position: static; box-shadow: none; border: none; background: rgba(255,255,255,0.05); border-radius: 6px; margin: 4px 0; }
+      .nav-links.open .nav-dropdown a { color: rgba(255,255,255,0.7); }
+      .mobile-toggle { display: block; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="container">
+      <div class="header-inner">
+        <a href="/" class="logo"><img src="/assets/logo-full-dark.svg" alt="TechLife Insights" style="height:44px;width:auto;"></a>
+        <nav class="nav-links" id="navLinks">
+          <a href="/" class="nav-link" style="font-weight:700;color:#fff;">Home</a>
+          {% for nid, niche in niches.items() %}{% if niche.enabled %}
+          <div class="nav-item">
+            <a href="/{{ nid }}/" class="nav-link{% if false %} active{% endif %}">{{ niche.name }}</a>
+            {% if niche.subtopics %}<div class="nav-dropdown">{% for sub_id, sub in niche.subtopics.items() %}<a href="/{{ nid }}/{{ sub_id }}/">{{ sub.name }}</a>{% endfor %}</div>{% endif %}
+          </div>
+          {% endif %}{% endfor %}
+          <div class="nav-item">
+            <a href="/tools/" class="nav-link">🛠️ Tools</a>
+            <div class="nav-dropdown">
+              <a href="/tools/deal-finder.html">🔍 Deal Finder</a>
+              <a href="/tools/ai-tool-finder.html">🤖 AI Tool Directory</a>
+              <a href="/tools/budget-calculator.html">💰 Budget Calculator</a>
+              <a href="/tools/workout-generator.html">💪 Workout Generator</a>
+              <a href="/tools/pet-food-checker.html">🐾 Pet Food Analyzer</a>
+              <a href="/tools/smart-home.html">🏠 Smart Home Hub</a>
+              <a href="/travel/search.html">✈️ Travel Search</a>
+              <a href="/personal_finance/markets.html">📊 Market Data</a>
+            </div>
+          </div>
+        </nav>
+        <button class="mobile-toggle" onclick="document.getElementById('navLinks').classList.toggle('open')" aria-label="Menu">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="page-hero">
+    <h1>🤖 AI Tool Directory</h1>
+    <p>Find the perfect AI tool for any task — over 60 tools organized by category</p>
+    <div class="search-wrap"><input type="text" id="searchInput" placeholder="Search AI tools..." oninput="filterTools()"></div>
+  </div>
+
+  <div class="container">
+    <div class="filters" id="filters"></div>
+    <div class="tool-count" id="toolCount"></div>
+    <div class="tools-grid" id="toolsGrid"></div>
+    <div class="disclaimer"><strong>Disclaimer:</strong> This directory is curated for informational purposes. We are not affiliated with these tools unless noted. Some links may be affiliate links. Pricing and features may change — always verify on the official website. Our inclusion of a tool does not constitute an endorsement.</div>
+  </div>
+
+  <footer class="footer"><div class="container">&copy; 2026 {{ site_title }}. · <a href="/privacy.html">Privacy</a> · <a href="/about.html">About</a> · <a href="/tools/">All Tools</a></div></footer>
+  <a href="https://techlife-insights.kit.com/be266c00d5" target="_blank" rel="noopener" class="subscribe-float">📬 Subscribe</a>
+
+  <script>
+  var aiTools = [
+    {name:'ChatGPT',cat:'Writing',desc:'Conversational AI for writing, analysis, coding, and creative tasks.',pricing:'Free / $20/mo',url:'https://chat.openai.com'},
+    {name:'Claude',cat:'Writing',desc:'Anthropic's AI assistant for thoughtful, nuanced writing and analysis.',pricing:'Free / $20/mo',url:'https://claude.ai'},
+    {name:'Gemini',cat:'Writing',desc:'Google's multimodal AI for text, images, and code generation.',pricing:'Free / $20/mo',url:'https://gemini.google.com'},
+    {name:'Jasper',cat:'Writing',desc:'AI writing platform for marketing copy, blogs, and social media.',pricing:'From $49/mo',url:'https://www.jasper.ai'},
+    {name:'Copy.ai',cat:'Writing',desc:'Generate marketing copy, emails, and social posts with AI.',pricing:'Free / $49/mo',url:'https://www.copy.ai'},
+    {name:'Writesonic',cat:'Writing',desc:'AI writer for SEO articles, ad copy, and product descriptions.',pricing:'Free / $16/mo',url:'https://writesonic.com'},
+    {name:'Grammarly',cat:'Writing',desc:'AI writing assistant for grammar, tone, and clarity.',pricing:'Free / $12/mo',url:'https://www.grammarly.com'},
+    {name:'QuillBot',cat:'Writing',desc:'AI paraphrasing and summarization tool for better writing.',pricing:'Free / $10/mo',url:'https://quillbot.com'},
+    {name:'Midjourney',cat:'Images',desc:'Create stunning AI art and images from text prompts.',pricing:'From $10/mo',url:'https://www.midjourney.com'},
+    {name:'DALL-E 3',cat:'Images',desc:'OpenAI's image generator — create art, photos, and designs.',pricing:'Included with ChatGPT Plus',url:'https://openai.com/dall-e-3'},
+    {name:'Stable Diffusion',cat:'Images',desc:'Open-source AI image generation — run locally or in cloud.',pricing:'Free (open source)',url:'https://stability.ai'},
+    {name:'Leonardo AI',cat:'Images',desc:'AI image generation for creative projects and game assets.',pricing:'Free / $12/mo',url:'https://leonardo.ai'},
+    {name:'Canva AI',cat:'Images',desc:'AI-powered design tool for social media, presentations, and more.',pricing:'Free / $13/mo',url:'https://www.canva.com'},
+    {name:'Adobe Firefly',cat:'Images',desc:'AI image generation integrated into Adobe Creative Cloud.',pricing:'Free / from $10/mo',url:'https://firefly.adobe.com'},
+    {name:'Runway',cat:'Video',desc:'AI video generation, editing, and visual effects platform.',pricing:'Free / $12/mo',url:'https://runwayml.com'},
+    {name:'Synthesia',cat:'Video',desc:'Create AI avatar videos for training, marketing, and education.',pricing:'From $22/mo',url:'https://www.synthesia.io'},
+    {name:'Descript',cat:'Video',desc:'AI video & podcast editor — edit video by editing text.',pricing:'Free / $24/mo',url:'https://www.descript.com'},
+    {name:'HeyGen',cat:'Video',desc:'AI spokesperson videos with realistic avatars and voices.',pricing:'Free / $24/mo',url:'https://www.heygen.com'},
+    {name:'Luma AI',cat:'Video',desc:'3D capture and AI video generation from text and images.',pricing:'Free / $10/mo',url:'https://lumalabs.ai'},
+    {name:'GitHub Copilot',cat:'Code',desc:'AI pair programmer — code suggestions right in your editor.',pricing:'Free / $10/mo',url:'https://github.com/features/copilot'},
+    {name:'Cursor',cat:'Code',desc:'AI-first code editor built for AI-assisted development.',pricing:'Free / $20/mo',url:'https://cursor.sh'},
+    {name:'Replit AI',cat:'Code',desc:'Cloud IDE with AI code generation and deployment.',pricing:'Free / $25/mo',url:'https://replit.com'},
+    {name:'Tabnine',cat:'Code',desc:'AI code completion that runs locally for privacy.',pricing:'Free / $12/mo',url:'https://www.tabnine.com'},
+    {name:'Codeium',cat:'Code',desc:'Free AI code autocomplete for 70+ programming languages.',pricing:'Free / $10/mo',url:'https://codeium.com'},
+    {name:'ElevenLabs',cat:'Voice',desc:'Realistic AI voice generation and text-to-speech.',pricing:'Free / $5/mo',url:'https://elevenlabs.io'},
+    {name:'Murf AI',cat:'Voice',desc:'AI voiceover studio for videos, presentations, and podcasts.',pricing:'Free / $26/mo',url:'https://murf.ai'},
+    {name:'Play.ht',cat:'Voice',desc:'Ultra-realistic AI voice generation with voice cloning.',pricing:'Free / $39/mo',url:'https://play.ht'},
+    {name:'Speechify',cat:'Voice',desc:'AI text-to-speech reader for documents and web pages.',pricing:'Free / $11/mo',url:'https://speechify.com'},
+    {name:'Notion AI',cat:'Productivity',desc:'AI writing and organization built into Notion workspace.',pricing:'$10/mo add-on',url:'https://www.notion.so/product/ai'},
+    {name:'Otter.ai',cat:'Productivity',desc:'AI meeting transcription and note-taking assistant.',pricing:'Free / $17/mo',url:'https://otter.ai'},
+    {name:'Reclaim AI',cat:'Productivity',desc:'AI calendar scheduling and time management.',pricing:'Free / $10/mo',url:'https://reclaim.ai'},
+    {name:'Taskade',cat:'Productivity',desc:'AI-powered project management with task automation.',pricing:'Free / $10/mo',url:'https://www.taskade.com'},
+    {name:'Zapier AI',cat:'Productivity',desc:'AI-powered automation connecting 6000+ apps.',pricing:'Free / $20/mo',url:'https://zapier.com'},
+    {name:'Perplexity',cat:'Research',desc:'AI-powered search engine with source citations.',pricing:'Free / $20/mo',url:'https://www.perplexity.ai'},
+    {name:'Consensus',cat:'Research',desc:'AI research engine that finds answers from scientific papers.',pricing:'Free / $10/mo',url:'https://consensus.app'},
+    {name:'Elicit',cat:'Research',desc:'AI research assistant for literature review and analysis.',pricing:'Free / $10/mo',url:'https://elicit.com'},
+    {name:'Scite',cat:'Research',desc:'Smart citations — see how papers have been cited.',pricing:'$20/mo',url:'https://scite.ai'},
+    {name:'SurferSEO',cat:'Marketing',desc:'AI content optimization for better search engine rankings.',pricing:'From $89/mo',url:'https://surferseo.com'},
+    {name:'Semrush AI',cat:'Marketing',desc:'AI-powered SEO toolkit for keyword research and audits.',pricing:'From $130/mo',url:'https://www.semrush.com'},
+    {name:'AdCreative AI',cat:'Marketing',desc:'Generate high-converting ad creatives with AI.',pricing:'From $29/mo',url:'https://www.adcreative.ai'},
+    {name:'Pictory',cat:'Marketing',desc:'Turn text content into short marketing videos with AI.',pricing:'From $19/mo',url:'https://pictory.ai'},
+    {name:'Opus Clip',cat:'Marketing',desc:'AI tool that turns long videos into viral short clips.',pricing:'Free / $15/mo',url:'https://www.opus.pro'},
+    {name:'Beautiful.ai',cat:'Design',desc:'AI-powered presentations that design themselves.',pricing:'From $12/mo',url:'https://www.beautiful.ai'},
+    {name:'Looka',cat:'Design',desc:'AI logo maker and brand identity generator.',pricing:'From $20 one-time',url:'https://looka.com'},
+    {name:'Khroma',cat:'Design',desc:'AI color tool that learns your color preferences.',pricing:'Free',url:'https://www.khroma.co'},
+    {name:'Uizard',cat:'Design',desc:'Turn sketches and screenshots into editable UI designs.',pricing:'Free / $12/mo',url:'https://uizard.io'},
+    {name:'Tome',cat:'Design',desc:'AI-powered storytelling and presentation creator.',pricing:'Free / $10/mo',url:'https://tome.app'},
+  ];
+
+  var categories = ['All'];
+  aiTools.forEach(function(t){ if(categories.indexOf(t.cat)===-1) categories.push(t.cat); });
+  var activeFilter = 'All';
+
+  function renderFilters(){
+    var html='';
+    categories.forEach(function(c){html+='<button class="filter-btn'+(c===activeFilter?' active':'')+'" onclick="setFilter(''+c+'')">'+c+'</button>';});
+    document.getElementById('filters').innerHTML=html;
+  }
+
+  function setFilter(cat){activeFilter=cat;renderFilters();filterTools();}
+
+  function filterTools(){
+    var q=document.getElementById('searchInput').value.toLowerCase();
+    var grid=document.getElementById('toolsGrid');
+    var filtered=aiTools.filter(function(t){
+      var matchCat=activeFilter==='All'||t.cat===activeFilter;
+      var matchQ=!q||t.name.toLowerCase().indexOf(q)!==-1||t.desc.toLowerCase().indexOf(q)!==-1||t.cat.toLowerCase().indexOf(q)!==-1;
+      return matchCat&&matchQ;
+    });
+    document.getElementById('toolCount').textContent='Showing '+filtered.length+' of '+aiTools.length+' tools';
+    grid.innerHTML='';
+    filtered.forEach(function(t){
+      var card=document.createElement('div');card.className='ai-card';
+      card.innerHTML='<h3>'+t.name+' <span class="cat-tag">'+t.cat+'</span></h3><p>'+t.desc+'</p><div class="pricing">'+t.pricing+'</div><a href="'+t.url+'" target="_blank" rel="noopener" class="visit-btn">Visit '+t.name+' →</a>';
+      grid.appendChild(card);
+    });
+  }
+
+  renderFilters();filterTools();
+  </script>
+</body></html>

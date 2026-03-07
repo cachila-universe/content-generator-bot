@@ -25,6 +25,7 @@ def init_db(db_path: Path) -> None:
             url TEXT,
             youtube_url TEXT,
             subtopic_id TEXT DEFAULT '',
+            image_url TEXT DEFAULT '',
             published_at DATETIME DEFAULT CURRENT_TIMESTAMP,
             word_count INTEGER DEFAULT 0,
             affiliate_links_count INTEGER DEFAULT 0,
@@ -106,16 +107,17 @@ def save_post(db_path: Path, post_data: dict) -> None:
     """Insert a post record into posts table."""
     try:
         conn = sqlite3.connect(str(db_path))
-        # Migrate: add subtopic_id column if missing (existing DBs)
-        try:
-            conn.execute("ALTER TABLE posts ADD COLUMN subtopic_id TEXT DEFAULT ''")
-        except sqlite3.OperationalError:
-            pass  # column already exists
+        # Migrate: add missing columns for existing DBs
+        for col, default in [("subtopic_id", "''"), ("image_url", "''")]:
+            try:
+                conn.execute(f"ALTER TABLE posts ADD COLUMN {col} TEXT DEFAULT {default}")
+            except sqlite3.OperationalError:
+                pass  # column already exists
         conn.execute(
             """INSERT OR REPLACE INTO posts
-               (niche_id, niche_name, title, slug, url, youtube_url, subtopic_id,
+               (niche_id, niche_name, title, slug, url, youtube_url, subtopic_id, image_url,
                 word_count, affiliate_links_count, estimated_clicks, estimated_income, status)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
             (
                 post_data.get("niche_id", ""),
                 post_data.get("niche_name", ""),
@@ -124,6 +126,7 @@ def save_post(db_path: Path, post_data: dict) -> None:
                 post_data.get("url", ""),
                 post_data.get("youtube_url", ""),
                 post_data.get("subtopic_id", ""),
+                post_data.get("image_url", ""),
                 post_data.get("word_count", 0),
                 post_data.get("affiliate_links_count", 0),
                 post_data.get("estimated_clicks", 0),

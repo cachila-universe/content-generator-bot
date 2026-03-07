@@ -4,117 +4,52 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>TechLife Insights — Smart Guides for Modern Living</title>
-  <meta name="description" content="Smart Guides for Modern Living. Expert guides on AI tools, personal finance, health, home tech, and travel.">
+  <meta name="description" content="Smart Guides for Modern Living. Expert guides on AI tools, personal finance, health, home tech, travel, fitness, pet care, and remote work.">
   <meta property="og:title" content="TechLife Insights">
   <meta property="og:description" content="Smart Guides for Modern Living">
   <meta property="og:type" content="website">
   <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <!-- AdSense verification (replace with your code when approved) -->
-  <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-YOUR_ID" crossorigin="anonymous"></script> -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --bg: #ffffff;
-      --surface: #f9fafb;
-      --text: #111827;
-      --text-secondary: #6b7280;
-      --accent: #2563eb;
-      --accent-hover: #1d4ed8;
-      --accent-light: #eff6ff;
-      --border: #e5e7eb;
-      --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
-      --shadow: 0 4px 12px rgba(0,0,0,0.08);
-      --radius: 8px;
-      --max-width: 1200px;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; }
-    body { background: var(--bg); color: var(--text); font-family: 'Inter', -apple-system, sans-serif; font-size: 16px; line-height: 1.6; }
-    a { color: var(--accent); text-decoration: none; transition: color 0.2s; }
-    a:hover { color: var(--accent-hover); }
-    .container { max-width: var(--max-width); margin: 0 auto; padding: 0 24px; }
+    :root { --bg:#fff; --surface:#f8f9fb; --text:#111827; --text-secondary:#6b7280; --accent:#2563eb; --accent-hover:#1d4ed8; --accent-light:#eff6ff; --border:#e5e7eb; --shadow:0 4px 12px rgba(0,0,0,0.08); --shadow-lg:0 8px 30px rgba(0,0,0,0.12); --radius:10px; --max-width:1240px; }
+    *{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,sans-serif;font-size:16px;line-height:1.6}a{color:var(--accent);text-decoration:none;transition:color .2s}a:hover{color:var(--accent-hover)}.container{max-width:var(--max-width);margin:0 auto;padding:0 24px}img{max-width:100%}
 
-    /* Header */
-    .header { position: sticky; top: 0; z-index: 50; background: #1e3a8a; border-bottom: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(8px); }
-    .header-inner { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; }
-    .logo { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 18px; color: #fff; text-decoration: none; }
-    .logo-icon { width: 28px; height: 28px; border-radius: 6px; background: var(--accent); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800; }
-    .nav-links { display: flex; gap: 4px; flex-wrap: wrap; }
-    .nav-link { padding: 6px 12px; border-radius: 6px; font-size: 14px; font-weight: 500; color: rgba(255,255,255,0.75); transition: all 0.15s; }
-    .nav-link:hover { color: #fff; background: rgba(255,255,255,0.12); }
-    .subscribe-link { padding: 6px 14px; border-radius: 6px; font-size: 13px; font-weight: 600; color: #fff; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); transition: all 0.15s; display: flex; align-items: center; gap: 5px; }
-    .subscribe-link:hover { background: rgba(255,255,255,0.25); color: #fff; }
-
-    /* Dropdown Nav */
-    .nav-item { position: relative; }
+    .header { position: sticky; top: 0; z-index: 50; background: #1e3a8a; }
+    .header-inner { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; }
+    .logo { display: flex; align-items: center; }
+    .logo img { height: 44px; width: auto; }
+    .nav-links { display: flex; gap: 2px; align-items: center; flex-wrap: wrap; }
+    .nav-link { padding: 6px 11px; border-radius: 6px; font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.75); transition: all 0.15s; white-space: nowrap; text-decoration: none; }
+    .nav-link:hover, .nav-link.active { color: #fff; background: rgba(255,255,255,0.12); }
+    .nav-item { position: relative; display: inline-block; }
     .nav-item:hover .nav-dropdown { display: block; }
-    .nav-dropdown { display: none; position: absolute; top: 100%; left: 0; background: #fff; border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.12); min-width: 200px; padding: 8px 0; z-index: 100; }
-    .nav-dropdown a { display: block; padding: 8px 16px; font-size: 13px; color: var(--text); font-weight: 500; transition: background 0.1s; }
-    .nav-dropdown a:hover { background: var(--accent-light); color: var(--accent); }
+    .nav-dropdown { display: none; position: absolute; top: 100%; left: 0; background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; box-shadow: 0 8px 30px rgba(0,0,0,0.12); min-width: 210px; padding: 6px 0; z-index: 100; }
+    .nav-dropdown a { display: block; padding: 8px 16px; font-size: 13px; color: #111827; font-weight: 500; transition: background 0.1s; text-decoration: none; }
+    .nav-dropdown a:hover { background: #eff6ff; color: #2563eb; }
+    .mobile-toggle { display: none; background: none; border: none; color: #fff; font-size: 22px; cursor: pointer; padding: 6px; }
+    .hero-featured{padding:32px 0 0}.hero-card{display:grid;grid-template-columns:1.3fr 1fr;gap:32px;align-items:center;text-decoration:none;color:var(--text);border-radius:var(--radius);overflow:hidden}.hero-card:hover{color:var(--text)}.hero-card:hover .hero-title{color:var(--accent)}.hero-img{border-radius:var(--radius);overflow:hidden;aspect-ratio:16/9}.hero-img img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s}.hero-card:hover .hero-img img{transform:scale(1.03)}.hero-content{padding:8px 0}.hero-badge{display:inline-block;background:var(--accent);color:#fff;padding:4px 12px;border-radius:4px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:14px}.hero-title{font-size:32px;font-weight:800;line-height:1.2;letter-spacing:-.02em;margin-bottom:14px;transition:color .2s}.hero-meta{font-size:13px;color:var(--text-secondary);display:flex;gap:8px}
+    .section{padding:40px 0}.section-heading{font-size:22px;font-weight:800;margin-bottom:24px;padding-bottom:10px;border-bottom:3px solid var(--text);display:inline-block;letter-spacing:-.01em}
+    .articles-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}.article-card{display:flex;flex-direction:column;text-decoration:none;color:var(--text);border-radius:var(--radius);overflow:hidden;transition:transform .2s,box-shadow .2s;border:1px solid var(--border)}.article-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg);color:var(--text)}.article-card:hover .card-title{color:var(--accent)}.card-img{aspect-ratio:16/10;overflow:hidden;background:var(--surface)}.card-img img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .35s}.article-card:hover .card-img img{transform:scale(1.05)}.card-body{padding:16px 18px 18px;flex:1;display:flex;flex-direction:column}.card-badge{display:inline-block;font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px}.card-title{font-size:16px;font-weight:700;line-height:1.35;margin-bottom:10px;transition:color .2s;flex:1}.card-meta{font-size:12px;color:var(--text-secondary);display:flex;gap:6px;margin-top:auto}
+    .trending-bar{background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:14px 0;margin:0}.trending-inner{display:flex;align-items:center;gap:20px;overflow-x:auto}.trending-label{font-size:12px;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:.08em;white-space:nowrap}.trending-inner a{font-size:13px;color:var(--text);font-weight:500;white-space:nowrap}.trending-inner a:hover{color:var(--accent)}
+    .tools-section{background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}.tools-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}.tool-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:24px 20px;text-decoration:none;color:var(--text);transition:all .2s;text-align:center}.tool-card:hover{border-color:var(--accent);box-shadow:var(--shadow);transform:translateY(-3px);color:var(--text)}.tool-icon{font-size:32px;margin-bottom:10px}.tool-card h3{font-size:15px;font-weight:700;margin-bottom:6px}.tool-card p{font-size:13px;color:var(--text-secondary);line-height:1.5}
+    .niche-section{border-top:1px solid var(--border)}.niche-row{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}.niche-row .article-card{border:none;border-bottom:1px solid var(--border);border-radius:0}.niche-row .article-card:hover{transform:none;box-shadow:none}.section-header-row{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:20px}.see-all{font-size:13px;font-weight:600;color:var(--accent)}.see-all:hover{text-decoration:underline}
+    .bestof-cta{background:linear-gradient(135deg,#1e3a8a 0%,#2563eb 100%);border-radius:14px;padding:36px 40px;text-align:center;color:#fff;margin:8px 0 40px}.bestof-cta h3{font-size:20px;font-weight:800;margin-bottom:8px}.bestof-cta p{font-size:14px;opacity:.85;margin-bottom:20px}.bestof-pills{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}.bestof-pills a{background:rgba(255,255,255,.15);color:#fff;padding:7px 16px;border-radius:8px;font-size:13px;font-weight:600;border:1px solid rgba(255,255,255,.2);transition:all .15s}.bestof-pills a:hover{background:rgba(255,255,255,.3);color:#fff}
+    .footer{background:#0f172a;color:rgba(255,255,255,.7);padding:48px 0 32px;font-size:14px}.footer a{color:rgba(255,255,255,.7)}.footer a:hover{color:#fff}.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;margin-bottom:36px}.footer-brand{font-size:14px;line-height:1.7}.footer-brand strong{color:#fff;font-size:17px;display:block;margin-bottom:8px}.footer-col h4{color:#fff;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:14px}.footer-col ul{list-style:none}.footer-col li{margin-bottom:8px}.footer-col li a{font-size:14px}.footer-bottom{border-top:1px solid rgba(255,255,255,.1);padding-top:24px;display:flex;justify-content:space-between;align-items:center;font-size:12px;color:rgba(255,255,255,.45)}
+    .empty-state{text-align:center;padding:100px 24px}.empty-state h2{font-size:28px;font-weight:800;margin-bottom:10px}.empty-state p{font-size:16px;color:var(--text-secondary);max-width:480px;margin:0 auto}
 
-    /* Hero */
-    .hero { padding: 64px 0 48px; text-align: center; }
-    .hero h1 { font-size: 40px; font-weight: 800; line-height: 1.2; margin-bottom: 12px; letter-spacing: -0.02em; }
-    .hero p { font-size: 18px; color: var(--text-secondary); max-width: 540px; margin: 0 auto; }
-
-    /* Ad Slot */
-    .ad-slot { background: var(--surface); border: 1px dashed var(--border); border-radius: var(--radius); padding: 20px; text-align: center; color: var(--text-secondary); font-size: 12px; margin: 32px auto; max-width: 728px; min-height: 90px; display: flex; align-items: center; justify-content: center; }
-
-    /* Niche Cards */
-    .section { padding: 48px 0; }
-    .section-header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 24px; }
-    .section-title { font-size: 24px; font-weight: 700; }
-    .section-subtitle { font-size: 14px; color: var(--text-secondary); }
-    .niches-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; }
-    .niche-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; transition: all 0.25s; text-decoration: none; color: var(--text); display: block; }
-    .niche-card:hover { border-color: var(--accent); box-shadow: var(--shadow); transform: translateY(-2px); color: var(--text); }
-    .niche-icon { font-size: 28px; margin-bottom: 10px; }
-    .niche-name { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
-    .niche-count { font-size: 13px; color: var(--text-secondary); }
-
-    /* Posts Grid */
-    .posts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 20px; }
-    .post-card { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; transition: all 0.25s; display: flex; flex-direction: column; }
-    .post-card:hover { border-color: var(--accent); box-shadow: var(--shadow); transform: translateY(-3px); }
-    .post-card-body { padding: 20px; flex: 1; display: flex; flex-direction: column; }
-    .post-category { font-size: 12px; font-weight: 600; color: var(--accent); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 8px; }
-    .post-title { font-size: 17px; font-weight: 600; line-height: 1.4; margin-bottom: 8px; color: var(--text); }
-    .post-meta { font-size: 13px; color: var(--text-secondary); margin-top: auto; padding-top: 12px; display: flex; justify-content: space-between; align-items: center; }
-    .post-link { display: block; text-decoration: none; color: inherit; }
-    .post-link:hover { color: inherit; }
-    .post-link:hover .post-title { color: var(--accent); }
-
-    /* Niche Tabs */
-    .niche-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 24px; }
-    .niche-tab { padding: 6px 14px; border-radius: 20px; border: 1px solid var(--border); background: transparent; color: var(--text-secondary); cursor: pointer; font-size: 13px; font-weight: 500; font-family: inherit; transition: all 0.15s; }
-    .niche-tab:hover, .niche-tab.active { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
-
-    /* Empty State */
-    .empty-state { text-align: center; padding: 80px 24px; color: var(--text-secondary); }
-    .empty-state h2 { font-size: 24px; color: var(--text); margin-bottom: 8px; }
-
-    /* Footer */
-    .footer { background: var(--surface); border-top: 1px solid var(--border); padding: 40px 0; margin-top: 64px; }
-    .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 32px; margin-bottom: 32px; }
-    .footer-brand { font-size: 14px; color: var(--text-secondary); line-height: 1.7; }
-    .footer-brand strong { font-size: 16px; color: var(--text); display: block; margin-bottom: 8px; }
-    .footer-col h4 { font-size: 14px; font-weight: 600; margin-bottom: 12px; color: var(--text); }
-    .footer-col ul { list-style: none; }
-    .footer-col li { margin-bottom: 6px; }
-    .footer-col a { font-size: 14px; color: var(--text-secondary); }
-    .footer-col a:hover { color: var(--accent); }
-    .footer-bottom { border-top: 1px solid var(--border); padding-top: 24px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--text-secondary); }
-    .footer-disclosure { font-size: 12px; max-width: 600px; }
-
-    @media (max-width: 768px) {
-      .hero h1 { font-size: 28px; }
-      .hero p { font-size: 16px; }
-      .posts-grid { grid-template-columns: 1fr; }
-      .footer-grid { grid-template-columns: 1fr 1fr; }
-      .footer-bottom { flex-direction: column; gap: 8px; text-align: center; }
+    .subscribe-float { position: fixed; bottom: 24px; right: 24px; z-index: 1000; background: #2563eb; color: #fff !important; padding: 14px 22px; border-radius: 50px; font-size: 14px; font-weight: 700; text-decoration: none !important; box-shadow: 0 4px 20px rgba(37,99,235,0.45); display: flex; align-items: center; gap: 8px; transition: all 0.2s; font-family: 'Inter', sans-serif; }
+    .subscribe-float:hover { background: #1d4ed8; transform: translateY(-2px); box-shadow: 0 6px 24px rgba(37,99,235,0.55); color: #fff !important; }
+    @media(max-width:1024px){.articles-grid{grid-template-columns:repeat(2,1fr)}.tools-grid{grid-template-columns:repeat(2,1fr)}.niche-row{grid-template-columns:repeat(2,1fr)}.footer-grid{grid-template-columns:1fr 1fr}}
+    @media(max-width:768px){.hero-card{grid-template-columns:1fr}.hero-title{font-size:24px}.articles-grid,.niche-row{grid-template-columns:1fr}.tools-grid{grid-template-columns:1fr 1fr}.footer-grid{grid-template-columns:1fr}.footer-bottom{flex-direction:column;gap:8px;text-align:center}
+    
       .nav-links { display: none; }
+      .nav-links.open { display: flex; flex-direction: column; position: absolute; top: 100%; left: 0; right: 0; background: #1e3a8a; padding: 12px 24px; border-top: 1px solid rgba(255,255,255,0.1); gap: 4px; z-index: 200; }
+      .nav-links.open .nav-item { display: block; }
+      .nav-links.open .nav-dropdown { position: static; box-shadow: none; border: none; background: rgba(255,255,255,0.05); border-radius: 6px; margin: 4px 0; }
+      .nav-links.open .nav-dropdown a { color: rgba(255,255,255,0.7); }
+      .mobile-toggle { display: block; }
     }
   </style>
 </head>
@@ -124,1002 +59,103 @@
   <header class="header">
     <div class="container">
       <div class="header-inner">
-        <a href="/" class="logo">
-          <img src="/assets/logo-full-dark.svg" alt="TechLife Insights" style="height:48px;width:auto;">
-        </a>
-        <nav class="nav-links">
-          <a href="/" class="nav-link">Home</a>
+        <a href="/" class="logo"><img src="/assets/logo-full-dark.svg" alt="TechLife Insights" style="height:44px;width:auto;"></a>
+        <nav class="nav-links" id="navLinks">
+          <a href="/" class="nav-link" style="font-weight:700;color:#fff;">Home</a>
           
-            
-            <div class="nav-item">
-              <a href="/ai_tools/" class="nav-link">AI Tools &amp; SaaS</a>
-              
-              <div class="nav-dropdown">
-                
-                <a href="/ai_tools/ai_apps/">AI Apps &amp; Software</a>
-                
-                <a href="/ai_tools/ai_news/">AI News</a>
-                
-                <a href="/ai_tools/ai_automation/">AI Automation</a>
-                
-                <a href="/ai_tools/ai_for_business/">AI for Business</a>
-                
-                <a href="/ai_tools/ai_creative/">AI Creative Tools</a>
-                
-                <a href="/ai_tools/ai_coding/">AI for Developers</a>
-                
-              </div>
-              
+          <div class="nav-item">
+            <a href="/ai_tools/" class="nav-link">AI Tools &amp; SaaS</a>
+            <div class="nav-dropdown"><a href="/ai_tools/ai_apps/">AI Apps &amp; Software</a><a href="/ai_tools/ai_news/">AI News</a><a href="/ai_tools/ai_automation/">AI Automation</a><a href="/ai_tools/ai_for_business/">AI for Business</a><a href="/ai_tools/ai_creative/">AI Creative Tools</a><a href="/ai_tools/ai_coding/">AI for Developers</a></div>
+          </div>
+          
+          <div class="nav-item">
+            <a href="/personal_finance/" class="nav-link">Personal Finance &amp; Investing</a>
+            <div class="nav-dropdown"><a href="/personal_finance/investing/">Investing</a><a href="/personal_finance/stocks/">Stocks</a><a href="/personal_finance/crypto/">Crypto</a><a href="/personal_finance/budgeting/">Budgeting &amp; Saving</a><a href="/personal_finance/market_news/">Market News</a><a href="/personal_finance/retirement/">Retirement</a><a href="/personal_finance/credit/">Credit &amp; Loans</a><a href="/personal_finance/real_estate/">Real Estate</a></div>
+          </div>
+          
+          <div class="nav-item">
+            <a href="/health_biohacking/" class="nav-link">Health &amp; Biohacking</a>
+            <div class="nav-dropdown"><a href="/health_biohacking/supplements/">Supplements &amp; Vitamins</a><a href="/health_biohacking/biohacking/">Biohacking</a><a href="/health_biohacking/nutrition/">Nutrition &amp; Diet</a><a href="/health_biohacking/sleep/">Sleep Optimization</a><a href="/health_biohacking/mental_health/">Mental Health</a><a href="/health_biohacking/longevity/">Longevity &amp; Anti-Aging</a></div>
+          </div>
+          
+          <div class="nav-item">
+            <a href="/home_tech/" class="nav-link">Home Tech &amp; Smart Devices</a>
+            <div class="nav-dropdown"><a href="/home_tech/smart_home/">Smart Home</a><a href="/home_tech/security/">Home Security</a><a href="/home_tech/appliances/">Smart Appliances</a><a href="/home_tech/entertainment/">Home Entertainment</a><a href="/home_tech/networking/">Wi-Fi &amp; Networking</a><a href="/home_tech/energy/">Energy &amp; Solar</a><a href="/home_tech/product_reviews/">Product Reviews</a></div>
+          </div>
+          
+          <div class="nav-item">
+            <a href="/travel/" class="nav-link">Travel</a>
+            <div class="nav-dropdown"><a href="/travel/tips/">Travel Tips &amp; Advice</a><a href="/travel/destinations/">Destinations</a><a href="/travel/flights/">Flights &amp; Airports</a><a href="/travel/hotels/">Hotels &amp; Accommodation</a><a href="/travel/car_rental/">Car Rental &amp; Transport</a><a href="/travel/travel_gear/">Travel Gear &amp; Products</a><a href="/travel/digital_nomad/">Digital Nomad</a><a href="/travel/travel_insurance/">Travel Insurance</a><a href="/travel/food_culture/">Food &amp; Culture</a></div>
+          </div>
+          
+          <div class="nav-item">
+            <a href="/pet_care/" class="nav-link">Pet Care &amp; Products</a>
+            <div class="nav-dropdown"><a href="/pet_care/dogs/">Dogs</a><a href="/pet_care/cats/">Cats</a><a href="/pet_care/pet_food/">Pet Food &amp; Nutrition</a><a href="/pet_care/pet_products/">Pet Products &amp; Gear</a><a href="/pet_care/pet_health/">Pet Health</a><a href="/pet_care/fish_aquarium/">Fish &amp; Aquarium</a><a href="/pet_care/exotic_pets/">Exotic &amp; Small Pets</a></div>
+          </div>
+          
+          <div class="nav-item">
+            <a href="/fitness_wellness/" class="nav-link">Fitness &amp; Wellness</a>
+            <div class="nav-dropdown"><a href="/fitness_wellness/workouts/">Workouts &amp; Training</a><a href="/fitness_wellness/equipment/">Gym Equipment &amp; Gear</a><a href="/fitness_wellness/nutrition/">Sports Nutrition</a><a href="/fitness_wellness/running/">Running &amp; Cardio</a><a href="/fitness_wellness/yoga_flexibility/">Yoga &amp; Flexibility</a><a href="/fitness_wellness/wearables/">Fitness Wearables</a><a href="/fitness_wellness/product_reviews/">Product Reviews</a></div>
+          </div>
+          
+          <div class="nav-item">
+            <a href="/remote_work/" class="nav-link">Remote Work &amp; Productivity</a>
+            <div class="nav-dropdown"><a href="/remote_work/office_setup/">Office Setup</a><a href="/remote_work/productivity_apps/">Productivity Apps</a><a href="/remote_work/remote_jobs/">Remote Jobs</a><a href="/remote_work/equipment/">Equipment &amp; Gear</a><a href="/remote_work/tips/">Tips &amp; Guides</a><a href="/remote_work/coworking/">Coworking &amp; Spaces</a></div>
+          </div>
+          
+          <div class="nav-item">
+            <a href="/tools/" class="nav-link">🛠️ Tools</a>
+            <div class="nav-dropdown">
+              <a href="/tools/deal-finder.html">🔍 Deal Finder</a>
+              <a href="/tools/ai-tool-finder.html">🤖 AI Tool Directory</a>
+              <a href="/tools/budget-calculator.html">💰 Budget Calculator</a>
+              <a href="/tools/workout-generator.html">💪 Workout Generator</a>
+              <a href="/tools/pet-food-checker.html">🐾 Pet Food Analyzer</a>
+              <a href="/tools/smart-home.html">🏠 Smart Home Hub</a>
+              <a href="/travel/search.html">✈️ Travel Search</a>
+              <a href="/personal_finance/markets.html">📊 Market Data</a>
             </div>
-            
-          
-            
-            <div class="nav-item">
-              <a href="/personal_finance/" class="nav-link">Personal Finance &amp; Investing</a>
-              
-              <div class="nav-dropdown">
-                
-                <a href="/personal_finance/investing/">Investing</a>
-                
-                <a href="/personal_finance/stocks/">Stocks</a>
-                
-                <a href="/personal_finance/crypto/">Crypto</a>
-                
-                <a href="/personal_finance/budgeting/">Budgeting &amp; Saving</a>
-                
-                <a href="/personal_finance/market_news/">Market News</a>
-                
-                <a href="/personal_finance/retirement/">Retirement</a>
-                
-                <a href="/personal_finance/credit/">Credit &amp; Loans</a>
-                
-                <a href="/personal_finance/real_estate/">Real Estate</a>
-                
-              </div>
-              
-            </div>
-            
-          
-            
-            <div class="nav-item">
-              <a href="/health_biohacking/" class="nav-link">Health &amp; Biohacking</a>
-              
-              <div class="nav-dropdown">
-                
-                <a href="/health_biohacking/supplements/">Supplements &amp; Vitamins</a>
-                
-                <a href="/health_biohacking/biohacking/">Biohacking</a>
-                
-                <a href="/health_biohacking/nutrition/">Nutrition &amp; Diet</a>
-                
-                <a href="/health_biohacking/sleep/">Sleep Optimization</a>
-                
-                <a href="/health_biohacking/mental_health/">Mental Health</a>
-                
-                <a href="/health_biohacking/longevity/">Longevity &amp; Anti-Aging</a>
-                
-              </div>
-              
-            </div>
-            
-          
-            
-            <div class="nav-item">
-              <a href="/home_tech/" class="nav-link">Home Tech &amp; Smart Devices</a>
-              
-              <div class="nav-dropdown">
-                
-                <a href="/home_tech/smart_home/">Smart Home</a>
-                
-                <a href="/home_tech/security/">Home Security</a>
-                
-                <a href="/home_tech/appliances/">Smart Appliances</a>
-                
-                <a href="/home_tech/entertainment/">Home Entertainment</a>
-                
-                <a href="/home_tech/networking/">Wi-Fi &amp; Networking</a>
-                
-                <a href="/home_tech/energy/">Energy &amp; Solar</a>
-                
-                <a href="/home_tech/product_reviews/">Product Reviews</a>
-                
-              </div>
-              
-            </div>
-            
-          
-            
-            <div class="nav-item">
-              <a href="/travel/" class="nav-link">Travel</a>
-              
-              <div class="nav-dropdown">
-                
-                <a href="/travel/tips/">Travel Tips &amp; Advice</a>
-                
-                <a href="/travel/destinations/">Destinations</a>
-                
-                <a href="/travel/flights/">Flights &amp; Airports</a>
-                
-                <a href="/travel/hotels/">Hotels &amp; Accommodation</a>
-                
-                <a href="/travel/car_rental/">Car Rental &amp; Transport</a>
-                
-                <a href="/travel/travel_gear/">Travel Gear &amp; Products</a>
-                
-                <a href="/travel/digital_nomad/">Digital Nomad</a>
-                
-                <a href="/travel/travel_insurance/">Travel Insurance</a>
-                
-                <a href="/travel/food_culture/">Food &amp; Culture</a>
-                
-              </div>
-              
-            </div>
-            
-          
-            
-            <div class="nav-item">
-              <a href="/pet_care/" class="nav-link">Pet Care &amp; Products</a>
-              
-              <div class="nav-dropdown">
-                
-                <a href="/pet_care/dogs/">Dogs</a>
-                
-                <a href="/pet_care/cats/">Cats</a>
-                
-                <a href="/pet_care/pet_food/">Pet Food &amp; Nutrition</a>
-                
-                <a href="/pet_care/pet_products/">Pet Products &amp; Gear</a>
-                
-                <a href="/pet_care/pet_health/">Pet Health</a>
-                
-                <a href="/pet_care/fish_aquarium/">Fish &amp; Aquarium</a>
-                
-                <a href="/pet_care/exotic_pets/">Exotic &amp; Small Pets</a>
-                
-              </div>
-              
-            </div>
-            
-          
-            
-            <div class="nav-item">
-              <a href="/fitness_wellness/" class="nav-link">Fitness &amp; Wellness</a>
-              
-              <div class="nav-dropdown">
-                
-                <a href="/fitness_wellness/workouts/">Workouts &amp; Training</a>
-                
-                <a href="/fitness_wellness/equipment/">Gym Equipment &amp; Gear</a>
-                
-                <a href="/fitness_wellness/nutrition/">Sports Nutrition</a>
-                
-                <a href="/fitness_wellness/running/">Running &amp; Cardio</a>
-                
-                <a href="/fitness_wellness/yoga_flexibility/">Yoga &amp; Flexibility</a>
-                
-                <a href="/fitness_wellness/wearables/">Fitness Wearables</a>
-                
-                <a href="/fitness_wellness/product_reviews/">Product Reviews</a>
-                
-              </div>
-              
-            </div>
-            
-          
-            
-            <div class="nav-item">
-              <a href="/remote_work/" class="nav-link">Remote Work &amp; Productivity</a>
-              
-              <div class="nav-dropdown">
-                
-                <a href="/remote_work/office_setup/">Office Setup</a>
-                
-                <a href="/remote_work/productivity_apps/">Productivity Apps</a>
-                
-                <a href="/remote_work/remote_jobs/">Remote Jobs</a>
-                
-                <a href="/remote_work/equipment/">Equipment &amp; Gear</a>
-                
-                <a href="/remote_work/tips/">Tips &amp; Guides</a>
-                
-                <a href="/remote_work/coworking/">Coworking &amp; Spaces</a>
-                
-              </div>
-              
-            </div>
-            
-          
-          <a href="https://techlife-insights.kit.com/be266c00d5" target="_blank" rel="noopener" class="subscribe-link">📬 Subscribe</a>
+          </div>
         </nav>
+        <button class="mobile-toggle" onclick="document.getElementById('navLinks').classList.toggle('open')" aria-label="Menu">☰</button>
       </div>
     </div>
   </header>
+  <section class="empty-state"><h2>🚀 Fresh Content Coming Soon</h2><p>We're putting the finishing touches on expert guides across AI, finance, health, tech and more. Subscribe to get notified!</p></section>
 
-  <!-- Hero -->
-  <section class="hero">
-    <div class="container">
-      <h1>TechLife Insights</h1>
-      <p>Smart Guides for Modern Living</p>
+  <!-- Tools -->
+  <section class="section tools-section"><div class="container">
+    <h2 class="section-heading">Tools &amp; Resources</h2>
+    <div class="tools-grid">
+      <a href="/tools/deal-finder.html" class="tool-card"><div class="tool-icon">🔍</div><h3>Deal Finder</h3><p>Search across top retailers for the best product deals</p></a>
+      <a href="/tools/ai-tool-finder.html" class="tool-card"><div class="tool-icon">🤖</div><h3>AI Tool Directory</h3><p>Find the perfect AI tool for any task</p></a>
+      <a href="/tools/budget-calculator.html" class="tool-card"><div class="tool-icon">💰</div><h3>Budget Calculator</h3><p>Plan your monthly budget and savings goals</p></a>
+      <a href="/tools/workout-generator.html" class="tool-card"><div class="tool-icon">💪</div><h3>Workout Generator</h3><p>Custom workout plans for your goals</p></a>
+      <a href="/tools/pet-food-checker.html" class="tool-card"><div class="tool-icon">🐾</div><h3>Pet Food Analyzer</h3><p>Check your pet's food ingredient quality</p></a>
+      <a href="/tools/smart-home.html" class="tool-card"><div class="tool-icon">🏠</div><h3>Smart Home Hub</h3><p>Device compatibility checker</p></a>
+      <a href="/travel/search.html" class="tool-card"><div class="tool-icon">✈️</div><h3>Travel Search</h3><p>Compare flights, hotels &amp; car rentals</p></a>
+      <a href="/personal_finance/markets.html" class="tool-card"><div class="tool-icon">📊</div><h3>Market Data</h3><p>Live stock, crypto &amp; commodity data</p></a>
     </div>
-  </section>
+  </div></section>
 
-  <!-- Ad Slot (for future AdSense) -->
-  <div class="container">
-    <div class="ad-slot">Ad Space — Google AdSense</div>
-  </div>
-
-  <!-- Categories -->
-  <section class="section">
-    <div class="container">
-      <div class="section-header">
-        <h2 class="section-title">Explore Topics</h2>
-      </div>
-      <div class="niches-grid">
-        
-        
-          
-          <a href="/ai_tools/" class="niche-card">
-            <div class="niche-icon">🤖</div>
-            <div class="niche-name">AI Tools &amp; SaaS</div>
-            <div class="niche-count">
-              
-              
-                
-              
-                
-              
-                
-              
-                
-              
-                
-              
-                
-              
-                
-              
-                
-              
-              1 article
-            </div>
-            
-            <div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:4px;">
-              
-              
-              <span style="font-size:11px;padding:2px 8px;background:var(--accent-light);color:var(--accent);border-radius:10px;font-weight:500;">AI Apps &amp; Software</span>
-              
-              
-              
-              <span style="font-size:11px;padding:2px 8px;background:var(--accent-light);color:var(--accent);border-radius:10px;font-weight:500;">AI News</span>
-              
-              
-              
-              <span style="font-size:11px;padding:2px 8px;background:var(--accent-light);color:var(--accent);border-radius:10px;font-weight:500;">AI Automation</span>
-              
-              
-              
-              <span style="font-size:11px;padding:2px 8px;background:var(--accent-light);color:var(--accent);border-radius:10px;font-weight:500;">AI for Business</span>
-              
-              
-              
-              
-              
-              
-              
-              <span style="font-size:11px;padding:2px 8px;color:var(--text-secondary);">+2 more</span>
-              
-            </div>
-            
-          </a>
-          
-        
-          
-          <a href="/personal_finance/" class="niche-card">
-            <div class="niche-icon">💰</div>
-            <div class="niche-name">Personal Finance &amp; Investing</div>
-            <div class="niche-count">
-              
-              
-                
-              
-                
-              
-                
-              
-                
-              
-                
-              
-                
-              
-                
-              
-                
-              
-              1 article
-            </div>
-            
-            <div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:4px;">
-              
-              
-              <span style="font-size:11px;padding:2px 8px;background:var(--accent-light);color:var(--accent);border-radius:10px;font-weight:500;">Investing</span>
-              
-              
-              
-              <span style="font-size:11px;padding:2px 8px;background:var(--accent-light);color:var(--accent);border-radius:10px;font-weight:500;">Stocks</span>
-              
-              
-              
-              <span style="font-size:11px;padding:2px 8px;background:var(--accent-light);color:var(--accent);border-radius:10px;font-weight:500;">Crypto</span>
-              
-              
-              
-              <span style="font-size:11px;padding:2px 8px;background:var(--accent-light);color:var(--accent);border-radius:10px;font-weight:500;">Budgeting &amp; Saving</span>
-              
-              
-              
-              
-              
-              
-              
-              
-              
-              
-              
-              <span style="font-size:11px;padding:2px 8px;color:var(--text-secondary);">+4 more</span>
-              
-            </div>
-            
-          </a>
-          
-        
-          
-          <a href="/health_biohacking/" class="niche-card">
-            <div class="niche-icon">💪</div>
-            <div class="niche-name">Health &amp; Biohacking</div>
-            <div class="niche-count">
-              
-              
-                
-              
-                
-              
-                
-              
-                
-              
-                
-              
-                
-              
-                
-              
-                
-              
-              1 article
-            </div>
-            
-            <div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:4px;">
-              
-              
-              <span style="font-size:11px;padding:2px 8px;background:var(--accent-light);color:var(--accent);border-radius:10px;font-weight:500;">Supplements &amp; Vitamins</span>
-              
-              
-              
-              <span style="font-size:11px;padding:2px 8px;background:var(--accent-light);color:var(--accent);border-radius:10px;font-weight:500;">Biohacking</span>
-              
-              
-              
-              <span style="font-size:11px;padding:2px 8px;background:var(--accent-light);color:var(--accent);border-radius:10px;font-weight:500;">Nutrition &amp; Diet</span>
-              
-              
-              
-              <span style="font-size:11px;padding:2px 8px;background:var(--accent-light);color:var(--accent);border-radius:10px;font-weight:500;">Sleep Optimization</span>
-              
-              
-              
-              
-              
-              
-              
-              <span style="font-size:11px;padding:2px 8px;color:var(--text-secondary);">+2 more</span>
-              
-            </div>
-            
-          </a>
-          
-        
-          
-          <a href="/home_tech/" class="niche-card">
-            <div class="niche-icon">🏠</div>
-            <div class="niche-name">Home Tech &amp; Smart Devices</div>
-            <div class="niche-count">
-              
-              
-                
-              
-                
-              
-                
-              
-                
-              
-                
-              
-                
-              
-                
-              
-                
-              
-              1 article
-            </div>
-            
-            <div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:4px;">
-              
-              
-              <span style="font-size:11px;padding:2px 8px;background:var(--accent-light);color:var(--accent);border-radius:10px;font-weight:500;">Smart Home</span>
-              
-              
-              
-              <span style="font-size:11px;padding:2px 8px;background:var(--accent-light);color:var(--accent);border-radius:10px;font-weight:500;">Home Security</span>
-              
-              
-              
-              <span style="font-size:11px;padding:2px 8px;background:var(--accent-light);color:var(--accent);border-radius:10px;font-weight:500;">Smart Appliances</span>
-              
-              
-              
-              <span style="font-size:11px;padding:2px 8px;background:var(--accent-light);color:var(--accent);border-radius:10px;font-weight:500;">Home Entertainment</span>
-              
-              
-              
-              
-              
-              
-              
-              
-              
-              <span style="font-size:11px;padding:2px 8px;color:var(--text-secondary);">+3 more</span>
-              
-            </div>
-            
-          </a>
-          
-        
-          
-          <a href="/travel/" class="niche-card">
-            <div class="niche-icon">✈️</div>
-            <div class="niche-name">Travel</div>
-            <div class="niche-count">
-              
-              
-                
-              
-                
-              
-                
-              
-                
-              
-                
-              
-                
-              
-                
-              
-                
-              
-              1 article
-            </div>
-            
-            <div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:4px;">
-              
-              
-              <span style="font-size:11px;padding:2px 8px;background:var(--accent-light);color:var(--accent);border-radius:10px;font-weight:500;">Travel Tips &amp; Advice</span>
-              
-              
-              
-              <span style="font-size:11px;padding:2px 8px;background:var(--accent-light);color:var(--accent);border-radius:10px;font-weight:500;">Destinations</span>
-              
-              
-              
-              <span style="font-size:11px;padding:2px 8px;background:var(--accent-light);color:var(--accent);border-radius:10px;font-weight:500;">Flights &amp; Airports</span>
-              
-              
-              
-              <span style="font-size:11px;padding:2px 8px;background:var(--accent-light);color:var(--accent);border-radius:10px;font-weight:500;">Hotels &amp; Accommodation</span>
-              
-              
-              
-              
-              
-              
-              
-              
-              
-              
-              
-              
-              
-              <span style="font-size:11px;padding:2px 8px;color:var(--text-secondary);">+5 more</span>
-              
-            </div>
-            
-          </a>
-          
-        
-          
-          <a href="/pet_care/" class="niche-card">
-            <div class="niche-icon">🐾</div>
-            <div class="niche-name">Pet Care &amp; Products</div>
-            <div class="niche-count">
-              
-              
-                
-              
-                
-              
-                
-              
-                
-              
-                
-              
-                
-              
-                
-              
-                
-              
-              1 article
-            </div>
-            
-            <div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:4px;">
-              
-              
-              <span style="font-size:11px;padding:2px 8px;background:var(--accent-light);color:var(--accent);border-radius:10px;font-weight:500;">Dogs</span>
-              
-              
-              
-              <span style="font-size:11px;padding:2px 8px;background:var(--accent-light);color:var(--accent);border-radius:10px;font-weight:500;">Cats</span>
-              
-              
-              
-              <span style="font-size:11px;padding:2px 8px;background:var(--accent-light);color:var(--accent);border-radius:10px;font-weight:500;">Pet Food &amp; Nutrition</span>
-              
-              
-              
-              <span style="font-size:11px;padding:2px 8px;background:var(--accent-light);color:var(--accent);border-radius:10px;font-weight:500;">Pet Products &amp; Gear</span>
-              
-              
-              
-              
-              
-              
-              
-              
-              
-              <span style="font-size:11px;padding:2px 8px;color:var(--text-secondary);">+3 more</span>
-              
-            </div>
-            
-          </a>
-          
-        
-          
-          <a href="/fitness_wellness/" class="niche-card">
-            <div class="niche-icon">🏋️</div>
-            <div class="niche-name">Fitness &amp; Wellness</div>
-            <div class="niche-count">
-              
-              
-                
-              
-                
-              
-                
-              
-                
-              
-                
-              
-                
-              
-                
-              
-                
-              
-              1 article
-            </div>
-            
-            <div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:4px;">
-              
-              
-              <span style="font-size:11px;padding:2px 8px;background:var(--accent-light);color:var(--accent);border-radius:10px;font-weight:500;">Workouts &amp; Training</span>
-              
-              
-              
-              <span style="font-size:11px;padding:2px 8px;background:var(--accent-light);color:var(--accent);border-radius:10px;font-weight:500;">Gym Equipment &amp; Gear</span>
-              
-              
-              
-              <span style="font-size:11px;padding:2px 8px;background:var(--accent-light);color:var(--accent);border-radius:10px;font-weight:500;">Sports Nutrition</span>
-              
-              
-              
-              <span style="font-size:11px;padding:2px 8px;background:var(--accent-light);color:var(--accent);border-radius:10px;font-weight:500;">Running &amp; Cardio</span>
-              
-              
-              
-              
-              
-              
-              
-              
-              
-              <span style="font-size:11px;padding:2px 8px;color:var(--text-secondary);">+3 more</span>
-              
-            </div>
-            
-          </a>
-          
-        
-          
-          <a href="/remote_work/" class="niche-card">
-            <div class="niche-icon">💻</div>
-            <div class="niche-name">Remote Work &amp; Productivity</div>
-            <div class="niche-count">
-              
-              
-                
-              
-                
-              
-                
-              
-                
-              
-                
-              
-                
-              
-                
-              
-                
-              
-              1 article
-            </div>
-            
-            <div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:4px;">
-              
-              
-              <span style="font-size:11px;padding:2px 8px;background:var(--accent-light);color:var(--accent);border-radius:10px;font-weight:500;">Office Setup</span>
-              
-              
-              
-              <span style="font-size:11px;padding:2px 8px;background:var(--accent-light);color:var(--accent);border-radius:10px;font-weight:500;">Productivity Apps</span>
-              
-              
-              
-              <span style="font-size:11px;padding:2px 8px;background:var(--accent-light);color:var(--accent);border-radius:10px;font-weight:500;">Remote Jobs</span>
-              
-              
-              
-              <span style="font-size:11px;padding:2px 8px;background:var(--accent-light);color:var(--accent);border-radius:10px;font-weight:500;">Equipment &amp; Gear</span>
-              
-              
-              
-              
-              
-              
-              
-              <span style="font-size:11px;padding:2px 8px;color:var(--text-secondary);">+2 more</span>
-              
-            </div>
-            
-          </a>
-          
-        
-      </div>
-    </div>
-  </section>
-
-  <!-- Latest Posts -->
-  <section class="section">
-    <div class="container">
-      <div class="section-header">
-        <h2 class="section-title">Latest Articles</h2>
-        <span class="section-subtitle">8 articles published</span>
-      </div>
-
-      <!-- Niche filter tabs -->
-      
-      <div class="niche-tabs">
-        <button class="niche-tab active" onclick="filterByNiche('ALL', this)">All</button>
-        
-        
-          
-            
-            <button class="niche-tab" onclick="filterByNiche('remote_work', this)">Remote Work &amp; Productivity</button>
-          
-        
-          
-            
-            <button class="niche-tab" onclick="filterByNiche('fitness_wellness', this)">Fitness &amp; Wellness</button>
-          
-        
-          
-            
-            <button class="niche-tab" onclick="filterByNiche('pet_care', this)">Pet Care &amp; Products</button>
-          
-        
-          
-            
-            <button class="niche-tab" onclick="filterByNiche('travel', this)">Travel</button>
-          
-        
-          
-            
-            <button class="niche-tab" onclick="filterByNiche('home_tech', this)">Home Tech &amp; Smart Devices</button>
-          
-        
-          
-            
-            <button class="niche-tab" onclick="filterByNiche('health_biohacking', this)">Health &amp; Biohacking</button>
-          
-        
-          
-            
-            <button class="niche-tab" onclick="filterByNiche('personal_finance', this)">Personal Finance &amp; Investing</button>
-          
-        
-          
-            
-            <button class="niche-tab" onclick="filterByNiche('ai_tools', this)">AI Tools &amp; SaaS</button>
-          
-        
-      </div>
-      
-
-      
-      <div class="posts-grid" id="postsGrid">
-        
-        <div class="post-card-wrapper" data-niche="remote_work">
-          <a href="https://tech-life-insights.com/remote_work/the-ultimate-guide-to-the-best-home-office-setup-2026-maximize-your-work-from.html" class="post-link">
-            <div class="post-card">
-              <div class="post-card-body">
-                <span class="post-category">Remote Work &amp; Productivity</span>
-                <h3 class="post-title">The Ultimate Guide to the Best Home Office Setup 2026: Maximize Your Work from Home Productivity</h3>
-                <div class="post-meta">
-                  <span>2026-03-07</span>
-                  <span>1207 words</span>
-                </div>
-              </div>
-            </div>
-          </a>
-        </div>
-        
-        <div class="post-card-wrapper" data-niche="fitness_wellness">
-          <a href="https://tech-life-insights.com/fitness_wellness/the-ultimate-guide-to-best-home-gym-equipment-for-2026-elevate-your-fitness.html" class="post-link">
-            <div class="post-card">
-              <div class="post-card-body">
-                <span class="post-category">Fitness &amp; Wellness</span>
-                <h3 class="post-title">The Ultimate Guide to Best Home Gym Equipment for 2026: Elevate Your Fitness Routine</h3>
-                <div class="post-meta">
-                  <span>2026-03-07</span>
-                  <span>1122 words</span>
-                </div>
-              </div>
-            </div>
-          </a>
-        </div>
-        
-        <div class="post-card-wrapper" data-niche="pet_care">
-          <a href="https://tech-life-insights.com/pet_care/top-dog-food-picks-for-2026-ensuring-optimal-nutrition-for-your-canine-companion.html" class="post-link">
-            <div class="post-card">
-              <div class="post-card-body">
-                <span class="post-category">Pet Care &amp; Products</span>
-                <h3 class="post-title">Top Dog Food Picks for 2026: Ensuring Optimal Nutrition for Your Canine Companion</h3>
-                <div class="post-meta">
-                  <span>2026-03-07</span>
-                  <span>1121 words</span>
-                </div>
-              </div>
-            </div>
-          </a>
-        </div>
-        
-        <div class="post-card-wrapper" data-niche="travel">
-          <a href="https://tech-life-insights.com/travel/exploring-the-world-in-2026-top-travel-destinations-and-tips.html" class="post-link">
-            <div class="post-card">
-              <div class="post-card-body">
-                <span class="post-category">Travel</span>
-                <h3 class="post-title">Exploring the World in 2026: Top Travel Destinations and Tips</h3>
-                <div class="post-meta">
-                  <span>2026-03-07</span>
-                  <span>1094 words</span>
-                </div>
-              </div>
-            </div>
-          </a>
-        </div>
-        
-        <div class="post-card-wrapper" data-niche="home_tech">
-          <a href="https://tech-life-insights.com/home_tech/the-future-of-home-automation-best-smart-home-devices-2026.html" class="post-link">
-            <div class="post-card">
-              <div class="post-card-body">
-                <span class="post-category">Home Tech &amp; Smart Devices</span>
-                <h3 class="post-title">The Future of Home Automation: Best Smart Home Devices 2026</h3>
-                <div class="post-meta">
-                  <span>2026-03-07</span>
-                  <span>1545 words</span>
-                </div>
-              </div>
-            </div>
-          </a>
-        </div>
-        
-        <div class="post-card-wrapper" data-niche="health_biohacking">
-          <a href="https://tech-life-insights.com/health_biohacking/biohacking-tips-2026-mastering-your-peak-performance.html" class="post-link">
-            <div class="post-card">
-              <div class="post-card-body">
-                <span class="post-category">Health &amp; Biohacking</span>
-                <h3 class="post-title">Biohacking Tips 2026: Mastering Your Peak Performance</h3>
-                <div class="post-meta">
-                  <span>2026-03-07</span>
-                  <span>1114 words</span>
-                </div>
-              </div>
-            </div>
-          </a>
-        </div>
-        
-        <div class="post-card-wrapper" data-niche="personal_finance">
-          <a href="https://tech-life-insights.com/personal_finance/mastering-your-financial-future-how-to-invest-money-in-2026.html" class="post-link">
-            <div class="post-card">
-              <div class="post-card-body">
-                <span class="post-category">Personal Finance &amp; Investing</span>
-                <h3 class="post-title">Mastering Your Financial Future: How to Invest Money in 2026</h3>
-                <div class="post-meta">
-                  <span>2026-03-07</span>
-                  <span>1039 words</span>
-                </div>
-              </div>
-            </div>
-          </a>
-        </div>
-        
-        <div class="post-card-wrapper" data-niche="ai_tools">
-          <a href="https://tech-life-insights.com/ai_tools/navigating-the-future-the-top-ai-tools-for-2026.html" class="post-link">
-            <div class="post-card">
-              <div class="post-card-body">
-                <span class="post-category">AI Tools &amp; SaaS</span>
-                <h3 class="post-title">Navigating the Future: The Top AI Tools for 2026</h3>
-                <div class="post-meta">
-                  <span>2026-03-07</span>
-                  <span>891 words</span>
-                </div>
-              </div>
-            </div>
-          </a>
-        </div>
-        
-      </div>
-      
-    </div>
-  </section>
+  <!-- Per-niche sections -->
 
   <!-- Best-of CTA -->
-  <div class="container">
-    <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:28px 32px;text-align:center;margin:24px 0;">
-      <div style="font-family:'Inter',sans-serif;font-size:16px;font-weight:700;color:var(--text);margin-bottom:8px;">🏆 Explore Our Top Picks</div>
-      <div style="font-family:'Inter',sans-serif;font-size:14px;color:var(--text-secondary);margin-bottom:16px;">Curated best-of lists across every topic we cover.</div>
-      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
-        
-        
-        <a href="/ai_tools/best-of.html" style="background:var(--accent-light);color:var(--accent);text-decoration:none;padding:7px 16px;border-radius:8px;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;">🤖 AI Tools &amp; SaaS</a>
-        
-        <a href="/personal_finance/best-of.html" style="background:var(--accent-light);color:var(--accent);text-decoration:none;padding:7px 16px;border-radius:8px;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;">💰 Personal Finance &amp; Investing</a>
-        
-        <a href="/health_biohacking/best-of.html" style="background:var(--accent-light);color:var(--accent);text-decoration:none;padding:7px 16px;border-radius:8px;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;">💪 Health &amp; Biohacking</a>
-        
-        <a href="/home_tech/best-of.html" style="background:var(--accent-light);color:var(--accent);text-decoration:none;padding:7px 16px;border-radius:8px;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;">🏠 Home Tech &amp; Smart Devices</a>
-        
-        <a href="/travel/best-of.html" style="background:var(--accent-light);color:var(--accent);text-decoration:none;padding:7px 16px;border-radius:8px;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;">✈️ Travel</a>
-        
-        <a href="/pet_care/best-of.html" style="background:var(--accent-light);color:var(--accent);text-decoration:none;padding:7px 16px;border-radius:8px;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;">🐾 Pet Care &amp; Products</a>
-        
-        <a href="/fitness_wellness/best-of.html" style="background:var(--accent-light);color:var(--accent);text-decoration:none;padding:7px 16px;border-radius:8px;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;">🏋️ Fitness &amp; Wellness</a>
-        
-        <a href="/remote_work/best-of.html" style="background:var(--accent-light);color:var(--accent);text-decoration:none;padding:7px 16px;border-radius:8px;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;">💻 Remote Work &amp; Productivity</a>
-        
-      </div>
-    </div>
-  </div>
+  <div class="container" style="padding-top:16px"><div class="bestof-cta">
+    <h3>🏆 Explore Our Top Picks</h3><p>Curated best-of lists across every topic we cover</p>
+    <div class="bestof-pills"><a href="/ai_tools/best-of.html">🤖 AI Tools &amp; SaaS</a><a href="/personal_finance/best-of.html">💰 Personal Finance &amp; Investing</a><a href="/health_biohacking/best-of.html">🧬 Health &amp; Biohacking</a><a href="/home_tech/best-of.html">🏠 Home Tech &amp; Smart Devices</a><a href="/travel/best-of.html">✈️ Travel</a><a href="/pet_care/best-of.html">🐾 Pet Care &amp; Products</a><a href="/fitness_wellness/best-of.html">🏋️ Fitness &amp; Wellness</a><a href="/remote_work/best-of.html">💻 Remote Work &amp; Productivity</a></div>
+  </div></div>
 
   <!-- Footer -->
-  <footer class="footer">
-    <div class="container">
-      <div class="footer-grid">
-        <div class="footer-brand">
-          <strong>TechLife Insights</strong>
-          Smart Guides for Modern Living. We publish expert guides, reviews, and insights to help you make smarter decisions.
-        </div>
-        <div class="footer-col">
-          <h4>Categories</h4>
-          <ul>
-            
-              
-              <li><a href="/ai_tools/">AI Tools &amp; SaaS</a></li>
-              
-            
-              
-              <li><a href="/personal_finance/">Personal Finance &amp; Investing</a></li>
-              
-            
-              
-              <li><a href="/health_biohacking/">Health &amp; Biohacking</a></li>
-              
-            
-              
-              <li><a href="/home_tech/">Home Tech &amp; Smart Devices</a></li>
-              
-            
-              
-              <li><a href="/travel/">Travel</a></li>
-              
-            
-              
-              <li><a href="/pet_care/">Pet Care &amp; Products</a></li>
-              
-            
-              
-              <li><a href="/fitness_wellness/">Fitness &amp; Wellness</a></li>
-              
-            
-              
-              <li><a href="/remote_work/">Remote Work &amp; Productivity</a></li>
-              
-            
-          </ul>
-        </div>
-        <div class="footer-col">
-          <h4>Legal</h4>
-          <ul>
-            <li><a href="/privacy.html">Privacy Policy</a></li>
-            <li><a href="/about.html">About</a></li>
-            <li><a href="/contact.html">Contact</a></li>
-            <li><a href="/disclaimer.html">Disclaimer</a></li>
-          </ul>
-        </div>
-        <div class="footer-col">
-          <h4>Follow Us</h4>
-          <ul>
-            <li><a href="https://www.youtube.com/channel/UCV0XW2sQNv2TWqtz3wFAxhA" target="_blank" rel="noopener">▶ YouTube</a></li>
-            <li><a href="https://www.instagram.com/techlife_insights/" target="_blank" rel="noopener">📸 Instagram</a></li>
-            <li><a href="https://www.tiktok.com/@techlife_insights" target="_blank" rel="noopener">🎵 TikTok</a></li>
-            <li><a href="https://x.com/techlifeinsight" target="_blank" rel="noopener">🐦 Twitter</a></li>
-          </ul>
-        </div>
-      </div>
-      <div class="footer-bottom">
-        <span>&copy; 2026 TechLife Insights. All rights reserved.</span>
-        <span class="footer-disclosure"><strong>Disclosure:</strong> Some links are affiliate links. We may earn a commission at no extra cost to you.</span>
-      </div>
+  <footer class="footer"><div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand"><strong>TechLife Insights</strong>Smart Guides for Modern Living. Expert guides, reviews, and insights to help you make smarter decisions.</div>
+      <div class="footer-col"><h4>Topics</h4><ul><li><a href="/ai_tools/">AI Tools &amp; SaaS</a></li><li><a href="/personal_finance/">Personal Finance &amp; Investing</a></li><li><a href="/health_biohacking/">Health &amp; Biohacking</a></li><li><a href="/home_tech/">Home Tech &amp; Smart Devices</a></li><li><a href="/travel/">Travel</a></li><li><a href="/pet_care/">Pet Care &amp; Products</a></li><li><a href="/fitness_wellness/">Fitness &amp; Wellness</a></li><li><a href="/remote_work/">Remote Work &amp; Productivity</a></li></ul></div>
+      <div class="footer-col"><h4>Tools</h4><ul><li><a href="/tools/deal-finder.html">Deal Finder</a></li><li><a href="/tools/ai-tool-finder.html">AI Tool Directory</a></li><li><a href="/tools/budget-calculator.html">Budget Calculator</a></li><li><a href="/travel/search.html">Travel Search</a></li><li><a href="/personal_finance/markets.html">Market Data</a></li></ul></div>
+      <div class="footer-col"><h4>Company</h4><ul><li><a href="/about.html">About</a></li><li><a href="/contact.html">Contact</a></li><li><a href="/privacy.html">Privacy</a></li><li><a href="/disclaimer.html">Disclaimer</a></li></ul><h4 style="margin-top:20px">Follow Us</h4><ul><li><a href="https://www.youtube.com/channel/UCV0XW2sQNv2TWqtz3wFAxhA" target="_blank" rel="noopener">▶ YouTube</a></li><li><a href="https://www.instagram.com/techlife_insights/" target="_blank" rel="noopener">📸 Instagram</a></li><li><a href="https://www.tiktok.com/@techlife_insights" target="_blank" rel="noopener">🎵 TikTok</a></li><li><a href="https://x.com/techlifeinsight" target="_blank" rel="noopener">𝕏 Twitter</a></li></ul></div>
     </div>
-  </footer>
+    <div class="footer-bottom"><span>&copy; 2026 TechLife Insights. All rights reserved.</span><span><strong>Disclosure:</strong> Some links are affiliate links. We may earn a commission at no extra cost to you.</span></div>
+  </div></footer>
 
-  <script>
-  function filterByNiche(niche, btn) {
-    document.querySelectorAll('.niche-tab').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    document.querySelectorAll('.post-card-wrapper').forEach(card => {
-      card.style.display = (niche === 'ALL' || card.dataset.niche === niche) ? '' : 'none';
-    });
-  }
-  </script>
-
-</body>
-</html>
+  <a href="https://techlife-insights.kit.com/be266c00d5" target="_blank" rel="noopener" class="subscribe-float">📬 Subscribe</a>
+</body></html>

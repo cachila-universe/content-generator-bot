@@ -4,117 +4,52 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{{ site_title }} — {{ tagline }}</title>
-  <meta name="description" content="{{ tagline }}. Expert guides on AI tools, personal finance, health, home tech, and travel.">
+  <meta name="description" content="{{ tagline }}. Expert guides on AI tools, personal finance, health, home tech, travel, fitness, pet care, and remote work.">
   <meta property="og:title" content="{{ site_title }}">
   <meta property="og:description" content="{{ tagline }}">
   <meta property="og:type" content="website">
   <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <!-- AdSense verification (replace with your code when approved) -->
-  <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-YOUR_ID" crossorigin="anonymous"></script> -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --bg: #ffffff;
-      --surface: #f9fafb;
-      --text: #111827;
-      --text-secondary: #6b7280;
-      --accent: #2563eb;
-      --accent-hover: #1d4ed8;
-      --accent-light: #eff6ff;
-      --border: #e5e7eb;
-      --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
-      --shadow: 0 4px 12px rgba(0,0,0,0.08);
-      --radius: 8px;
-      --max-width: 1200px;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; }
-    body { background: var(--bg); color: var(--text); font-family: 'Inter', -apple-system, sans-serif; font-size: 16px; line-height: 1.6; }
-    a { color: var(--accent); text-decoration: none; transition: color 0.2s; }
-    a:hover { color: var(--accent-hover); }
-    .container { max-width: var(--max-width); margin: 0 auto; padding: 0 24px; }
+    :root { --bg:#fff; --surface:#f8f9fb; --text:#111827; --text-secondary:#6b7280; --accent:#2563eb; --accent-hover:#1d4ed8; --accent-light:#eff6ff; --border:#e5e7eb; --shadow:0 4px 12px rgba(0,0,0,0.08); --shadow-lg:0 8px 30px rgba(0,0,0,0.12); --radius:10px; --max-width:1240px; }
+    *{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,sans-serif;font-size:16px;line-height:1.6}a{color:var(--accent);text-decoration:none;transition:color .2s}a:hover{color:var(--accent-hover)}.container{max-width:var(--max-width);margin:0 auto;padding:0 24px}img{max-width:100%}
 
-    /* Header */
-    .header { position: sticky; top: 0; z-index: 50; background: #1e3a8a; border-bottom: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(8px); }
-    .header-inner { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; }
-    .logo { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 18px; color: #fff; text-decoration: none; }
-    .logo-icon { width: 28px; height: 28px; border-radius: 6px; background: var(--accent); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800; }
-    .nav-links { display: flex; gap: 4px; flex-wrap: wrap; }
-    .nav-link { padding: 6px 12px; border-radius: 6px; font-size: 14px; font-weight: 500; color: rgba(255,255,255,0.75); transition: all 0.15s; }
-    .nav-link:hover { color: #fff; background: rgba(255,255,255,0.12); }
-    .subscribe-link { padding: 6px 14px; border-radius: 6px; font-size: 13px; font-weight: 600; color: #fff; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); transition: all 0.15s; display: flex; align-items: center; gap: 5px; }
-    .subscribe-link:hover { background: rgba(255,255,255,0.25); color: #fff; }
-
-    /* Dropdown Nav */
-    .nav-item { position: relative; }
+    .header { position: sticky; top: 0; z-index: 50; background: #1e3a8a; }
+    .header-inner { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; }
+    .logo { display: flex; align-items: center; }
+    .logo img { height: 44px; width: auto; }
+    .nav-links { display: flex; gap: 2px; align-items: center; flex-wrap: wrap; }
+    .nav-link { padding: 6px 11px; border-radius: 6px; font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.75); transition: all 0.15s; white-space: nowrap; text-decoration: none; }
+    .nav-link:hover, .nav-link.active { color: #fff; background: rgba(255,255,255,0.12); }
+    .nav-item { position: relative; display: inline-block; }
     .nav-item:hover .nav-dropdown { display: block; }
-    .nav-dropdown { display: none; position: absolute; top: 100%; left: 0; background: #fff; border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.12); min-width: 200px; padding: 8px 0; z-index: 100; }
-    .nav-dropdown a { display: block; padding: 8px 16px; font-size: 13px; color: var(--text); font-weight: 500; transition: background 0.1s; }
-    .nav-dropdown a:hover { background: var(--accent-light); color: var(--accent); }
+    .nav-dropdown { display: none; position: absolute; top: 100%; left: 0; background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; box-shadow: 0 8px 30px rgba(0,0,0,0.12); min-width: 210px; padding: 6px 0; z-index: 100; }
+    .nav-dropdown a { display: block; padding: 8px 16px; font-size: 13px; color: #111827; font-weight: 500; transition: background 0.1s; text-decoration: none; }
+    .nav-dropdown a:hover { background: #eff6ff; color: #2563eb; }
+    .mobile-toggle { display: none; background: none; border: none; color: #fff; font-size: 22px; cursor: pointer; padding: 6px; }
+    .hero-featured{padding:32px 0 0}.hero-card{display:grid;grid-template-columns:1.3fr 1fr;gap:32px;align-items:center;text-decoration:none;color:var(--text);border-radius:var(--radius);overflow:hidden}.hero-card:hover{color:var(--text)}.hero-card:hover .hero-title{color:var(--accent)}.hero-img{border-radius:var(--radius);overflow:hidden;aspect-ratio:16/9}.hero-img img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s}.hero-card:hover .hero-img img{transform:scale(1.03)}.hero-content{padding:8px 0}.hero-badge{display:inline-block;background:var(--accent);color:#fff;padding:4px 12px;border-radius:4px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:14px}.hero-title{font-size:32px;font-weight:800;line-height:1.2;letter-spacing:-.02em;margin-bottom:14px;transition:color .2s}.hero-meta{font-size:13px;color:var(--text-secondary);display:flex;gap:8px}
+    .section{padding:40px 0}.section-heading{font-size:22px;font-weight:800;margin-bottom:24px;padding-bottom:10px;border-bottom:3px solid var(--text);display:inline-block;letter-spacing:-.01em}
+    .articles-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}.article-card{display:flex;flex-direction:column;text-decoration:none;color:var(--text);border-radius:var(--radius);overflow:hidden;transition:transform .2s,box-shadow .2s;border:1px solid var(--border)}.article-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg);color:var(--text)}.article-card:hover .card-title{color:var(--accent)}.card-img{aspect-ratio:16/10;overflow:hidden;background:var(--surface)}.card-img img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .35s}.article-card:hover .card-img img{transform:scale(1.05)}.card-body{padding:16px 18px 18px;flex:1;display:flex;flex-direction:column}.card-badge{display:inline-block;font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px}.card-title{font-size:16px;font-weight:700;line-height:1.35;margin-bottom:10px;transition:color .2s;flex:1}.card-meta{font-size:12px;color:var(--text-secondary);display:flex;gap:6px;margin-top:auto}
+    .trending-bar{background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:14px 0;margin:0}.trending-inner{display:flex;align-items:center;gap:20px;overflow-x:auto}.trending-label{font-size:12px;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:.08em;white-space:nowrap}.trending-inner a{font-size:13px;color:var(--text);font-weight:500;white-space:nowrap}.trending-inner a:hover{color:var(--accent)}
+    .tools-section{background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}.tools-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}.tool-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:24px 20px;text-decoration:none;color:var(--text);transition:all .2s;text-align:center}.tool-card:hover{border-color:var(--accent);box-shadow:var(--shadow);transform:translateY(-3px);color:var(--text)}.tool-icon{font-size:32px;margin-bottom:10px}.tool-card h3{font-size:15px;font-weight:700;margin-bottom:6px}.tool-card p{font-size:13px;color:var(--text-secondary);line-height:1.5}
+    .niche-section{border-top:1px solid var(--border)}.niche-row{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}.niche-row .article-card{border:none;border-bottom:1px solid var(--border);border-radius:0}.niche-row .article-card:hover{transform:none;box-shadow:none}.section-header-row{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:20px}.see-all{font-size:13px;font-weight:600;color:var(--accent)}.see-all:hover{text-decoration:underline}
+    .bestof-cta{background:linear-gradient(135deg,#1e3a8a 0%,#2563eb 100%);border-radius:14px;padding:36px 40px;text-align:center;color:#fff;margin:8px 0 40px}.bestof-cta h3{font-size:20px;font-weight:800;margin-bottom:8px}.bestof-cta p{font-size:14px;opacity:.85;margin-bottom:20px}.bestof-pills{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}.bestof-pills a{background:rgba(255,255,255,.15);color:#fff;padding:7px 16px;border-radius:8px;font-size:13px;font-weight:600;border:1px solid rgba(255,255,255,.2);transition:all .15s}.bestof-pills a:hover{background:rgba(255,255,255,.3);color:#fff}
+    .footer{background:#0f172a;color:rgba(255,255,255,.7);padding:48px 0 32px;font-size:14px}.footer a{color:rgba(255,255,255,.7)}.footer a:hover{color:#fff}.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;margin-bottom:36px}.footer-brand{font-size:14px;line-height:1.7}.footer-brand strong{color:#fff;font-size:17px;display:block;margin-bottom:8px}.footer-col h4{color:#fff;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:14px}.footer-col ul{list-style:none}.footer-col li{margin-bottom:8px}.footer-col li a{font-size:14px}.footer-bottom{border-top:1px solid rgba(255,255,255,.1);padding-top:24px;display:flex;justify-content:space-between;align-items:center;font-size:12px;color:rgba(255,255,255,.45)}
+    .empty-state{text-align:center;padding:100px 24px}.empty-state h2{font-size:28px;font-weight:800;margin-bottom:10px}.empty-state p{font-size:16px;color:var(--text-secondary);max-width:480px;margin:0 auto}
 
-    /* Hero */
-    .hero { padding: 64px 0 48px; text-align: center; }
-    .hero h1 { font-size: 40px; font-weight: 800; line-height: 1.2; margin-bottom: 12px; letter-spacing: -0.02em; }
-    .hero p { font-size: 18px; color: var(--text-secondary); max-width: 540px; margin: 0 auto; }
-
-    /* Ad Slot */
-    .ad-slot { background: var(--surface); border: 1px dashed var(--border); border-radius: var(--radius); padding: 20px; text-align: center; color: var(--text-secondary); font-size: 12px; margin: 32px auto; max-width: 728px; min-height: 90px; display: flex; align-items: center; justify-content: center; }
-
-    /* Niche Cards */
-    .section { padding: 48px 0; }
-    .section-header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 24px; }
-    .section-title { font-size: 24px; font-weight: 700; }
-    .section-subtitle { font-size: 14px; color: var(--text-secondary); }
-    .niches-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; }
-    .niche-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; transition: all 0.25s; text-decoration: none; color: var(--text); display: block; }
-    .niche-card:hover { border-color: var(--accent); box-shadow: var(--shadow); transform: translateY(-2px); color: var(--text); }
-    .niche-icon { font-size: 28px; margin-bottom: 10px; }
-    .niche-name { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
-    .niche-count { font-size: 13px; color: var(--text-secondary); }
-
-    /* Posts Grid */
-    .posts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 20px; }
-    .post-card { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; transition: all 0.25s; display: flex; flex-direction: column; }
-    .post-card:hover { border-color: var(--accent); box-shadow: var(--shadow); transform: translateY(-3px); }
-    .post-card-body { padding: 20px; flex: 1; display: flex; flex-direction: column; }
-    .post-category { font-size: 12px; font-weight: 600; color: var(--accent); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 8px; }
-    .post-title { font-size: 17px; font-weight: 600; line-height: 1.4; margin-bottom: 8px; color: var(--text); }
-    .post-meta { font-size: 13px; color: var(--text-secondary); margin-top: auto; padding-top: 12px; display: flex; justify-content: space-between; align-items: center; }
-    .post-link { display: block; text-decoration: none; color: inherit; }
-    .post-link:hover { color: inherit; }
-    .post-link:hover .post-title { color: var(--accent); }
-
-    /* Niche Tabs */
-    .niche-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 24px; }
-    .niche-tab { padding: 6px 14px; border-radius: 20px; border: 1px solid var(--border); background: transparent; color: var(--text-secondary); cursor: pointer; font-size: 13px; font-weight: 500; font-family: inherit; transition: all 0.15s; }
-    .niche-tab:hover, .niche-tab.active { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
-
-    /* Empty State */
-    .empty-state { text-align: center; padding: 80px 24px; color: var(--text-secondary); }
-    .empty-state h2 { font-size: 24px; color: var(--text); margin-bottom: 8px; }
-
-    /* Footer */
-    .footer { background: var(--surface); border-top: 1px solid var(--border); padding: 40px 0; margin-top: 64px; }
-    .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 32px; margin-bottom: 32px; }
-    .footer-brand { font-size: 14px; color: var(--text-secondary); line-height: 1.7; }
-    .footer-brand strong { font-size: 16px; color: var(--text); display: block; margin-bottom: 8px; }
-    .footer-col h4 { font-size: 14px; font-weight: 600; margin-bottom: 12px; color: var(--text); }
-    .footer-col ul { list-style: none; }
-    .footer-col li { margin-bottom: 6px; }
-    .footer-col a { font-size: 14px; color: var(--text-secondary); }
-    .footer-col a:hover { color: var(--accent); }
-    .footer-bottom { border-top: 1px solid var(--border); padding-top: 24px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--text-secondary); }
-    .footer-disclosure { font-size: 12px; max-width: 600px; }
-
-    @media (max-width: 768px) {
-      .hero h1 { font-size: 28px; }
-      .hero p { font-size: 16px; }
-      .posts-grid { grid-template-columns: 1fr; }
-      .footer-grid { grid-template-columns: 1fr 1fr; }
-      .footer-bottom { flex-direction: column; gap: 8px; text-align: center; }
+    .subscribe-float { position: fixed; bottom: 24px; right: 24px; z-index: 1000; background: #2563eb; color: #fff !important; padding: 14px 22px; border-radius: 50px; font-size: 14px; font-weight: 700; text-decoration: none !important; box-shadow: 0 4px 20px rgba(37,99,235,0.45); display: flex; align-items: center; gap: 8px; transition: all 0.2s; font-family: 'Inter', sans-serif; }
+    .subscribe-float:hover { background: #1d4ed8; transform: translateY(-2px); box-shadow: 0 6px 24px rgba(37,99,235,0.55); color: #fff !important; }
+    @media(max-width:1024px){.articles-grid{grid-template-columns:repeat(2,1fr)}.tools-grid{grid-template-columns:repeat(2,1fr)}.niche-row{grid-template-columns:repeat(2,1fr)}.footer-grid{grid-template-columns:1fr 1fr}}
+    @media(max-width:768px){.hero-card{grid-template-columns:1fr}.hero-title{font-size:24px}.articles-grid,.niche-row{grid-template-columns:1fr}.tools-grid{grid-template-columns:1fr 1fr}.footer-grid{grid-template-columns:1fr}.footer-bottom{flex-direction:column;gap:8px;text-align:center}
+    
       .nav-links { display: none; }
+      .nav-links.open { display: flex; flex-direction: column; position: absolute; top: 100%; left: 0; right: 0; background: #1e3a8a; padding: 12px 24px; border-top: 1px solid rgba(255,255,255,0.1); gap: 4px; z-index: 200; }
+      .nav-links.open .nav-item { display: block; }
+      .nav-links.open .nav-dropdown { position: static; box-shadow: none; border: none; background: rgba(255,255,255,0.05); border-radius: 6px; margin: 4px 0; }
+      .nav-links.open .nav-dropdown a { color: rgba(255,255,255,0.7); }
+      .mobile-toggle { display: block; }
     }
   </style>
 </head>
@@ -124,200 +59,117 @@
   <header class="header">
     <div class="container">
       <div class="header-inner">
-        <a href="/" class="logo">
-          <img src="/assets/logo-full-dark.svg" alt="TechLife Insights" style="height:48px;width:auto;">
-        </a>
-        <nav class="nav-links">
-          <a href="/" class="nav-link">Home</a>
-          {% for niche_id, niche in niches.items() %}
-            {% if niche.enabled %}
-            <div class="nav-item">
-              <a href="/{{ niche_id }}/" class="nav-link">{{ niche.name }}</a>
-              {% if niche.subtopics %}
-              <div class="nav-dropdown">
-                {% for sub_id, sub in niche.subtopics.items() %}
-                <a href="/{{ niche_id }}/{{ sub_id }}/">{{ sub.name }}</a>
-                {% endfor %}
-              </div>
-              {% endif %}
+        <a href="/" class="logo"><img src="/assets/logo-full-dark.svg" alt="TechLife Insights" style="height:44px;width:auto;"></a>
+        <nav class="nav-links" id="navLinks">
+          <a href="/" class="nav-link" style="font-weight:700;color:#fff;">Home</a>
+          {% for nid, niche in niches.items() %}{% if niche.enabled %}
+          <div class="nav-item">
+            <a href="/{{ nid }}/" class="nav-link{% if false %} active{% endif %}">{{ niche.name }}</a>
+            {% if niche.subtopics %}<div class="nav-dropdown">{% for sub_id, sub in niche.subtopics.items() %}<a href="/{{ nid }}/{{ sub_id }}/">{{ sub.name }}</a>{% endfor %}</div>{% endif %}
+          </div>
+          {% endif %}{% endfor %}
+          <div class="nav-item">
+            <a href="/tools/" class="nav-link">🛠️ Tools</a>
+            <div class="nav-dropdown">
+              <a href="/tools/deal-finder.html">🔍 Deal Finder</a>
+              <a href="/tools/ai-tool-finder.html">🤖 AI Tool Directory</a>
+              <a href="/tools/budget-calculator.html">💰 Budget Calculator</a>
+              <a href="/tools/workout-generator.html">💪 Workout Generator</a>
+              <a href="/tools/pet-food-checker.html">🐾 Pet Food Analyzer</a>
+              <a href="/tools/smart-home.html">🏠 Smart Home Hub</a>
+              <a href="/travel/search.html">✈️ Travel Search</a>
+              <a href="/personal_finance/markets.html">📊 Market Data</a>
             </div>
-            {% endif %}
-          {% endfor %}
-          <a href="https://techlife-insights.kit.com/be266c00d5" target="_blank" rel="noopener" class="subscribe-link">📬 Subscribe</a>
+          </div>
         </nav>
+        <button class="mobile-toggle" onclick="document.getElementById('navLinks').classList.toggle('open')" aria-label="Menu">☰</button>
       </div>
     </div>
   </header>
 
+  {%- if posts|length > 0 %}
+  <div class="trending-bar"><div class="container"><div class="trending-inner"><span class="trending-label">📈 Trending</span>{% for post in posts[:5] %}<a href="{{ post.url }}">{{ post.title | truncate(50) }}</a>{% endfor %}</div></div></div>
+
   <!-- Hero -->
-  <section class="hero">
-    <div class="container">
-      <h1>{{ site_title }}</h1>
-      <p>{{ tagline }}</p>
-    </div>
-  </section>
-
-  <!-- Ad Slot (for future AdSense) -->
-  <div class="container">
-    <div class="ad-slot">Ad Space — Google AdSense</div>
-  </div>
-
-  <!-- Categories -->
-  <section class="section">
-    <div class="container">
-      <div class="section-header">
-        <h2 class="section-title">Explore Topics</h2>
+  <section class="hero-featured"><div class="container">
+    {% set featured = posts[0] %}
+    <a href="{{ featured.url }}" class="hero-card">
+      <div class="hero-img"><img src="{{ featured.image_url if featured.image_url else 'https://picsum.photos/seed/' ~ featured.slug ~ '/1200/630' }}" alt="{{ featured.title }}"></div>
+      <div class="hero-content">
+        <span class="hero-badge">{{ featured.niche_name }}</span>
+        <h1 class="hero-title">{{ featured.title }}</h1>
+        <div class="hero-meta"><span>{{ featured.published_at[:10] if featured.published_at else '' }}</span><span>·</span>{% set rm = ((featured.word_count or 0) / 200) | int %}<span>{{ rm if rm > 0 else 1 }} min read</span></div>
       </div>
-      <div class="niches-grid">
-        {% set icons = {'ai_tools': '🤖', 'personal_finance': '💰', 'health_biohacking': '💪', 'home_tech': '🏠', 'travel': '✈️', 'pet_care': '🐾', 'fitness_wellness': '🏋️', 'remote_work': '💻'} %}
-        {% for niche_id, niche in niches.items() %}
-          {% if niche.enabled %}
-          <a href="/{{ niche_id }}/" class="niche-card">
-            <div class="niche-icon">{{ icons.get(niche_id, '📌') }}</div>
-            <div class="niche-name">{{ niche.name }}</div>
-            <div class="niche-count">
-              {% set ns = namespace(count=0) %}
-              {% for post in posts %}
-                {% if post.niche_id == niche_id %}{% set ns.count = ns.count + 1 %}{% endif %}
-              {% endfor %}
-              {{ ns.count }} article{{ 's' if ns.count != 1 else '' }}
-            </div>
-            {% if niche.subtopics %}
-            <div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:4px;">
-              {% for sub_id, sub in niche.subtopics.items() %}
-              {% if loop.index <= 4 %}
-              <span style="font-size:11px;padding:2px 8px;background:var(--accent-light);color:var(--accent);border-radius:10px;font-weight:500;">{{ sub.name }}</span>
-              {% endif %}
-              {% endfor %}
-              {% if niche.subtopics|length > 4 %}
-              <span style="font-size:11px;padding:2px 8px;color:var(--text-secondary);">+{{ niche.subtopics|length - 4 }} more</span>
-              {% endif %}
-            </div>
-            {% endif %}
-          </a>
-          {% endif %}
-        {% endfor %}
-      </div>
-    </div>
-  </section>
+    </a>
+  </div></section>
 
-  <!-- Latest Posts -->
-  <section class="section">
-    <div class="container">
-      <div class="section-header">
-        <h2 class="section-title">Latest Articles</h2>
-        <span class="section-subtitle">{{ posts|length }} article{{ 's' if posts|length != 1 else '' }} published</span>
-      </div>
-
-      <!-- Niche filter tabs -->
-      {% if posts|length > 0 %}
-      <div class="niche-tabs">
-        <button class="niche-tab active" onclick="filterByNiche('ALL', this)">All</button>
-        {% set seen_niches = [] %}
-        {% for post in posts %}
-          {% if post.niche_id not in seen_niches %}
-            {% if seen_niches.append(post.niche_id) %}{% endif %}
-            <button class="niche-tab" onclick="filterByNiche('{{ post.niche_id }}', this)">{{ post.niche_name }}</button>
-          {% endif %}
-        {% endfor %}
-      </div>
-      {% endif %}
-
-      {% if posts|length > 0 %}
-      <div class="posts-grid" id="postsGrid">
-        {% for post in posts %}
-        <div class="post-card-wrapper" data-niche="{{ post.niche_id }}">
-          <a href="{{ post.url }}" class="post-link">
-            <div class="post-card">
-              <div class="post-card-body">
-                <span class="post-category">{{ post.niche_name }}</span>
-                <h3 class="post-title">{{ post.title }}</h3>
-                <div class="post-meta">
-                  <span>{{ post.published_at[:10] if post.published_at else '' }}</span>
-                  <span>{{ post.word_count }} words</span>
-                </div>
-              </div>
-            </div>
-          </a>
+  {%- if posts|length > 1 %}
+  <section class="section"><div class="container">
+    <h2 class="section-heading">Latest</h2>
+    <div class="articles-grid">
+      {% for post in posts[1:] %}
+      <a href="{{ post.url }}" class="article-card">
+        <div class="card-img"><img src="{{ post.image_url if post.image_url else 'https://picsum.photos/seed/' ~ post.slug ~ '/600/380' }}" alt="{{ post.title }}" loading="lazy"></div>
+        <div class="card-body">
+          <span class="card-badge">{{ post.niche_name }}</span>
+          <h3 class="card-title">{{ post.title }}</h3>
+          <div class="card-meta"><span>{{ post.published_at[:10] if post.published_at else '' }}</span><span>·</span>{% set rm = ((post.word_count or 0) / 200) | int %}<span>{{ rm if rm > 0 else 1 }} min read</span></div>
         </div>
-        {% endfor %}
-      </div>
-      {% else %}
-      <div class="empty-state">
-        <h2>🚀 Fresh Content Coming Soon</h2>
-        <p>We're putting the finishing touches on our first articles. Subscribe or check back soon — new expert guides drop daily!</p>
-      </div>
-      {% endif %}
+      </a>
+      {% endfor %}
     </div>
-  </section>
+  </div></section>
+  {%- endif %}
+
+  {%- else %}
+  <section class="empty-state"><h2>🚀 Fresh Content Coming Soon</h2><p>We're putting the finishing touches on expert guides across AI, finance, health, tech and more. Subscribe to get notified!</p></section>
+  {%- endif %}
+
+  <!-- Tools -->
+  <section class="section tools-section"><div class="container">
+    <h2 class="section-heading">Tools &amp; Resources</h2>
+    <div class="tools-grid">
+      <a href="/tools/deal-finder.html" class="tool-card"><div class="tool-icon">🔍</div><h3>Deal Finder</h3><p>Search across top retailers for the best product deals</p></a>
+      <a href="/tools/ai-tool-finder.html" class="tool-card"><div class="tool-icon">🤖</div><h3>AI Tool Directory</h3><p>Find the perfect AI tool for any task</p></a>
+      <a href="/tools/budget-calculator.html" class="tool-card"><div class="tool-icon">💰</div><h3>Budget Calculator</h3><p>Plan your monthly budget and savings goals</p></a>
+      <a href="/tools/workout-generator.html" class="tool-card"><div class="tool-icon">💪</div><h3>Workout Generator</h3><p>Custom workout plans for your goals</p></a>
+      <a href="/tools/pet-food-checker.html" class="tool-card"><div class="tool-icon">🐾</div><h3>Pet Food Analyzer</h3><p>Check your pet's food ingredient quality</p></a>
+      <a href="/tools/smart-home.html" class="tool-card"><div class="tool-icon">🏠</div><h3>Smart Home Hub</h3><p>Device compatibility checker</p></a>
+      <a href="/travel/search.html" class="tool-card"><div class="tool-icon">✈️</div><h3>Travel Search</h3><p>Compare flights, hotels &amp; car rentals</p></a>
+      <a href="/personal_finance/markets.html" class="tool-card"><div class="tool-icon">📊</div><h3>Market Data</h3><p>Live stock, crypto &amp; commodity data</p></a>
+    </div>
+  </div></section>
+
+  <!-- Per-niche sections -->
+  {%- if posts|length > 0 %}
+  {% set icons = {'ai_tools':'🤖','personal_finance':'💰','health_biohacking':'🧬','home_tech':'🏠','travel':'✈️','pet_care':'🐾','fitness_wellness':'🏋️','remote_work':'💻'} %}
+  {% set seen = [] %}
+  {% for post in posts %}{% if post.niche_id not in seen and seen.append(post.niche_id) is none %}
+  {% set niche_posts = [] %}{% for p in posts if p.niche_id == post.niche_id %}{% if niche_posts.append(p) is none %}{% endif %}{% endfor %}
+  {% if niche_posts|length > 0 %}
+  <section class="section niche-section"><div class="container">
+    <div class="section-header-row"><h2 class="section-heading">{{ icons.get(post.niche_id,'📌') }} {{ post.niche_name }}</h2><a href="/{{ post.niche_id }}/" class="see-all">See all →</a></div>
+    <div class="niche-row">{% for p in niche_posts[:3] %}<a href="{{ p.url }}" class="article-card"><div class="card-img"><img src="{{ p.image_url if p.image_url else 'https://picsum.photos/seed/' ~ p.slug ~ '/600/380' }}" alt="{{ p.title }}" loading="lazy"></div><div class="card-body"><h3 class="card-title">{{ p.title }}</h3><div class="card-meta"><span>{{ p.published_at[:10] if p.published_at else '' }}</span><span>·</span>{% set rm = ((p.word_count or 0) / 200) | int %}<span>{{ rm if rm > 0 else 1 }} min read</span></div></div></a>{% endfor %}</div>
+  </div></section>
+  {% endif %}{% endif %}{% endfor %}
+  {%- endif %}
 
   <!-- Best-of CTA -->
-  <div class="container">
-    <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:28px 32px;text-align:center;margin:24px 0;">
-      <div style="font-family:'Inter',sans-serif;font-size:16px;font-weight:700;color:var(--text);margin-bottom:8px;">🏆 Explore Our Top Picks</div>
-      <div style="font-family:'Inter',sans-serif;font-size:14px;color:var(--text-secondary);margin-bottom:16px;">Curated best-of lists across every topic we cover.</div>
-      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
-        {% set icons = {'ai_tools':'🤖','personal_finance':'💰','health_biohacking':'💪','home_tech':'🏠','travel':'✈️','pet_care':'🐾','fitness_wellness':'🏋️','remote_work':'💻'} %}
-        {% for nid, niche in niches.items() %}{% if niche.enabled %}
-        <a href="/{{ nid }}/best-of.html" style="background:var(--accent-light);color:var(--accent);text-decoration:none;padding:7px 16px;border-radius:8px;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;">{{ icons.get(nid,'📌') }} {{ niche.name }}</a>
-        {% endif %}{% endfor %}
-      </div>
-    </div>
-  </div>
+  <div class="container" style="padding-top:16px"><div class="bestof-cta">
+    <h3>🏆 Explore Our Top Picks</h3><p>Curated best-of lists across every topic we cover</p>
+    <div class="bestof-pills">{% set icons = {'ai_tools':'🤖','personal_finance':'💰','health_biohacking':'🧬','home_tech':'🏠','travel':'✈️','pet_care':'🐾','fitness_wellness':'🏋️','remote_work':'💻'} %}{% for nid, niche in niches.items() %}{% if niche.enabled %}<a href="/{{ nid }}/best-of.html">{{ icons.get(nid,'📌') }} {{ niche.name }}</a>{% endif %}{% endfor %}</div>
+  </div></div>
 
   <!-- Footer -->
-  <footer class="footer">
-    <div class="container">
-      <div class="footer-grid">
-        <div class="footer-brand">
-          <strong>{{ site_title }}</strong>
-          {{ tagline }}. We publish expert guides, reviews, and insights to help you make smarter decisions.
-        </div>
-        <div class="footer-col">
-          <h4>Categories</h4>
-          <ul>
-            {% for niche_id, niche in niches.items() %}
-              {% if niche.enabled %}
-              <li><a href="/{{ niche_id }}/">{{ niche.name }}</a></li>
-              {% endif %}
-            {% endfor %}
-          </ul>
-        </div>
-        <div class="footer-col">
-          <h4>Legal</h4>
-          <ul>
-            <li><a href="/privacy.html">Privacy Policy</a></li>
-            <li><a href="/about.html">About</a></li>
-            <li><a href="/contact.html">Contact</a></li>
-            <li><a href="/disclaimer.html">Disclaimer</a></li>
-          </ul>
-        </div>
-        <div class="footer-col">
-          <h4>Follow Us</h4>
-          <ul>
-            <li><a href="https://www.youtube.com/channel/UCV0XW2sQNv2TWqtz3wFAxhA" target="_blank" rel="noopener">▶ YouTube</a></li>
-            <li><a href="https://www.instagram.com/techlife_insights/" target="_blank" rel="noopener">📸 Instagram</a></li>
-            <li><a href="https://www.tiktok.com/@techlife_insights" target="_blank" rel="noopener">🎵 TikTok</a></li>
-            <li><a href="https://x.com/techlifeinsight" target="_blank" rel="noopener">🐦 Twitter</a></li>
-          </ul>
-        </div>
-      </div>
-      <div class="footer-bottom">
-        <span>&copy; 2026 {{ site_title }}. All rights reserved.</span>
-        <span class="footer-disclosure"><strong>Disclosure:</strong> Some links are affiliate links. We may earn a commission at no extra cost to you.</span>
-      </div>
+  <footer class="footer"><div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand"><strong>{{ site_title }}</strong>{{ tagline }}. Expert guides, reviews, and insights to help you make smarter decisions.</div>
+      <div class="footer-col"><h4>Topics</h4><ul>{% for nid, niche in niches.items() %}{% if niche.enabled %}<li><a href="/{{ nid }}/">{{ niche.name }}</a></li>{% endif %}{% endfor %}</ul></div>
+      <div class="footer-col"><h4>Tools</h4><ul><li><a href="/tools/deal-finder.html">Deal Finder</a></li><li><a href="/tools/ai-tool-finder.html">AI Tool Directory</a></li><li><a href="/tools/budget-calculator.html">Budget Calculator</a></li><li><a href="/travel/search.html">Travel Search</a></li><li><a href="/personal_finance/markets.html">Market Data</a></li></ul></div>
+      <div class="footer-col"><h4>Company</h4><ul><li><a href="/about.html">About</a></li><li><a href="/contact.html">Contact</a></li><li><a href="/privacy.html">Privacy</a></li><li><a href="/disclaimer.html">Disclaimer</a></li></ul><h4 style="margin-top:20px">Follow Us</h4><ul><li><a href="https://www.youtube.com/channel/UCV0XW2sQNv2TWqtz3wFAxhA" target="_blank" rel="noopener">▶ YouTube</a></li><li><a href="https://www.instagram.com/techlife_insights/" target="_blank" rel="noopener">📸 Instagram</a></li><li><a href="https://www.tiktok.com/@techlife_insights" target="_blank" rel="noopener">🎵 TikTok</a></li><li><a href="https://x.com/techlifeinsight" target="_blank" rel="noopener">𝕏 Twitter</a></li></ul></div>
     </div>
-  </footer>
+    <div class="footer-bottom"><span>&copy; 2026 {{ site_title }}. All rights reserved.</span><span><strong>Disclosure:</strong> Some links are affiliate links. We may earn a commission at no extra cost to you.</span></div>
+  </div></footer>
 
-  <script>
-  function filterByNiche(niche, btn) {
-    document.querySelectorAll('.niche-tab').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    document.querySelectorAll('.post-card-wrapper').forEach(card => {
-      card.style.display = (niche === 'ALL' || card.dataset.niche === niche) ? '' : 'none';
-    });
-  }
-  </script>
-
-</body>
-</html>
+  <a href="https://techlife-insights.kit.com/be266c00d5" target="_blank" rel="noopener" class="subscribe-float">📬 Subscribe</a>
+</body></html>
