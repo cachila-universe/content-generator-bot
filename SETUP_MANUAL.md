@@ -37,29 +37,13 @@ Any
 
 macOS Ventura+
 
-Python
-
-3.10
-
-3.12
-
-RAM
-
-8 GB
-
-16 GB (for Ollama AI models)
-
-Disk Space
-
-10 GB
-
-20 GB (AI models ~4 GB each)
-
-Internet
-
-Required
-
-Required
+| Requirement | Minimum | Recommended |
+|---|---|---|
+| macOS / Linux / Windows WSL | Any | macOS Ventura+ |
+| Python | 3.10 | 3.12 |
+| RAM | 8 GB | 16 GB (for Ollama AI models) |
+| Disk Space | 10 GB | 20 GB (AI models ~4 GB each) |
+| Internet | Required | Required |
 
 ---
 
@@ -70,19 +54,34 @@ Required
 **macOS (Homebrew):**
 
 ```bash
-# Install Homebrew if not installed/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"# Install Python 3.12brew install python@3.12# Install ffmpeg (needed for video generation)brew install ffmpeg# Verify installationpython3 --version   # Should show 3.10+ffmpeg -version     # Should show ffmpeg info
+# Install Homebrew if not installed
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+# Install Python 3.12
+brew install python@3.12
+
+# Install ffmpeg (needed for video generation)
+brew install ffmpeg
+
+# Verify installation
+python3 --version   # Should show 3.10+
+ffmpeg -version     # Should show ffmpeg info
 ```
 
 **Ubuntu / Debian:**
 
 ```bash
-sudo apt update && sudo apt upgrade -ysudo apt install python3.12 python3.12-venv python3-pip ffmpeg -y
+sudo apt update && sudo apt upgrade -y
+sudo apt install python3.12 python3.12-venv python3-pip ffmpeg -y
 ```
 
 **Windows (via WSL):**
 
 ```powershell
-# Install WSL first (run in PowerShell as Admin)wsl --install -d Ubuntu# Then follow Ubuntu instructions inside WSL
+# Install WSL first (run in PowerShell as Admin)
+wsl --install -d Ubuntu
+
+# Then follow Ubuntu instructions inside WSL
 ```
 
 ---
@@ -90,7 +89,28 @@ sudo apt update && sudo apt upgrade -ysudo apt install python3.12 python3.12-ven
 ## 3. Clone & Install the Project
 
 ```bash
-# Navigate to where you want the projectcd ~/Documents/Github/Projects# Clone the repository (or if you already have it, skip this)# git clone https://github.com/YOUR_USERNAME/content-generator-bot.git# Enter the projectcd content-generator-bot# Create a Python virtual environmentpython3 -m venv venv# Activate itsource venv/bin/activate   # macOS/Linux# venvScriptsactivate     # Windows# Install all Python dependenciespip install --upgrade pippip install -r requirements.txt# Verify installationpython -c "import flask; import ollama; print('✅ All dependencies installed')"
+# Navigate to where you want the project
+cd ~/Documents/Github/Projects
+
+# Clone the repository (or if you already have it, skip this)
+# git clone https://github.com/cachila-universe/content-generator-bot.git
+
+# Enter the project
+cd content-generator-bot
+
+# Create a Python virtual environment
+python3 -m venv contentgenerator
+
+# Activate it
+source contentgenerator/bin/activate   # macOS/Linux
+# .\contentgenerator\Scripts\Activate   # Windows
+
+# Install all Python dependencies
+pip install --upgrade pip
+pip install -r requirements.txt
+
+# Verify installation
+python -c "import flask; import ollama; print('✅ All dependencies installed')"
 ```
 
 ---
@@ -102,7 +122,11 @@ Ollama runs AI models locally on your machine. **No API keys needed. No cloud co
 ### Install Ollama
 
 ```bash
-# macOS / Linux — one commandcurl -fsSL https://ollama.com/install.sh | sh# Or on macOS via Homebrew:brew install ollama
+# macOS / Linux — one command
+curl -fsSL https://ollama.com/install.sh | sh
+
+# Or on macOS via Homebrew:
+brew install ollama
 ```
 
 For Windows: Download from [https://ollama.com/download](https://ollama.com/download)
@@ -110,7 +134,15 @@ For Windows: Download from [https://ollama.com/download](https://ollama.com/down
 ### Start Ollama & Download the Mistral Model
 
 ```bash
-# Start Ollama (runs in background)ollama serve &# Download the Mistral 7B model (used for content generation)# This downloads ~4 GB on first runollama pull mistral# Verify it worksollama run mistral "Say hello in one sentence"
+# Start Ollama (runs in background)
+ollama serve &
+
+# Download the Mistral 7B model (used for content generation)
+# This downloads ~4 GB on first run
+ollama pull mistral
+
+# Verify it works
+ollama run mistral "Say hello in one sentence"
 ```
 
 **Alternative models** (if you want better quality and have more RAM):
@@ -140,7 +172,21 @@ cp .env.example .env
 Edit `.env` with your credentials:
 
 ```ini
-# ── Required ──────────────────────────────────────────# DashboardDASHBOARD_SECRET_KEY=your-random-secret-key-here-change-me# ── YouTube (Optional — only if using YouTube Shorts) ──YOUTUBE_CLIENT_SECRETS_FILE=client_secrets.jsonYOUTUBE_API_SCOPES=https://www.googleapis.com/auth/youtube.upload# ── Pinterest (Optional — only if using Pinterest) ────PINTEREST_ACCESS_TOKEN=your_pinterest_tokenPINTEREST_BOARD_ID=your_board_id# ── Site ──────────────────────────────────────────────SITE_URL=https://tech-life-insights.com
+# ── Required ──────────────────────────────────────────
+
+# Dashboard
+DASHBOARD_SECRET_KEY=your-random-secret-key-here-change-me
+
+# ── YouTube (Optional — only if using YouTube Shorts) ──
+YOUTUBE_CLIENT_SECRETS_FILE=client_secrets.json
+YOUTUBE_API_SCOPES=https://www.googleapis.com/auth/youtube.upload
+
+# ── Pinterest (Optional — only if using Pinterest) ────
+PINTEREST_ACCESS_TOKEN=your_pinterest_token
+PINTEREST_BOARD_ID=your_board_id
+
+# ── Site ──────────────────────────────────────────────
+SITE_URL=https://tech-life-insights.com
 ```
 
 Generate a secret key:
@@ -158,7 +204,23 @@ python3 -c "import secrets; print(secrets.token_hex(32))"
 Key settings to review:
 
 ```yaml
-site:  title: "TechLife Insights"                 # Your site name  tagline: "Smart Guides for Modern Living"video:  format: "shorts"                           # "shorts" for YouTube Shorts (recommended)platforms:  blog: true                                 # Generate blog articles  youtube_shorts: true                       # Generate YouTube Shorts  pinterest: true                            # Generate Pinterest pinsscheduler:  timezone: "America/New_York"               # Change to YOUR timezone  max_posts_per_day: 3                       # Anti-spam: max posts per day  cooldown_hours: 20                         # Hours between posts per niche  randomize_minutes: 15                      # ±15 min jitter on schedule
+site:
+  title: "TechLife Insights"                 # Your site name
+  tagline: "Smart Guides for Modern Living"
+
+video:
+  format: "shorts"                           # "shorts" for YouTube Shorts (recommended)
+
+platforms:
+  blog: true                                 # Generate blog articles
+  youtube_shorts: true                       # Generate YouTube Shorts
+  pinterest: true                            # Generate Pinterest pins
+
+scheduler:
+  timezone: "America/New_York"               # Change to YOUR timezone
+  max_posts_per_day: 3                       # Anti-spam: max posts per day
+  cooldown_hours: 20                         # Hours between posts per niche
+  randomize_minutes: 15                      # ±15 min jitter on schedule
 ```
 
 ### `config/niches.yaml`
@@ -172,7 +234,23 @@ Each niche has:
 **To add a new niche**, copy an existing block and modify it:
 
 ```yaml
-niches:  my_new_niche:    name: "My New Niche"    enabled: true    seed_keywords:      - "keyword 1"      - "keyword 2"    affiliate_programs:      - name: "Program Name"        url: "https://example.com?aff=YOUR_ID"        keywords: ["keyword", "another keyword"]    post_schedule_hour: 10    post_schedule_minute: 0    video_schedule_hour: 12    video_schedule_minute: 0    pinterest_schedule_hour: 14    pinterest_schedule_minute: 0
+niches:
+  my_new_niche:
+    name: "My New Niche"
+    enabled: true
+    seed_keywords:
+      - "keyword 1"
+      - "keyword 2"
+    affiliate_programs:
+      - name: "Program Name"
+        url: "https://example.com?aff=YOUR_ID"
+        keywords: ["keyword", "another keyword"]
+    post_schedule_hour: 10
+    post_schedule_minute: 0
+    video_schedule_hour: 12
+    video_schedule_minute: 0
+    pinterest_schedule_hour: 14
+    pinterest_schedule_minute: 0
 ```
 
 ---
@@ -180,7 +258,14 @@ niches:  my_new_niche:    name: "My New Niche"    enabled: true    seed_keywords
 ## 7. Run the Dashboard Locally
 
 ```bash
-# Make sure your venv is activatedsource venv/bin/activate# Start the dashboardpython scripts/start_dashboard.py# Or manually:python -m dashboard.app
+# Make sure your venv is activated
+source contentgenerator/bin/activate
+
+# Start the dashboard
+python scripts/start_dashboard.py
+
+# Or manually:
+python -m dashboard.app
 ```
 
 Open your browser: **[http://localhost:5000](http://localhost:5000)**
@@ -196,27 +281,13 @@ You'll see:
 
 ### Dashboard Controls
 
-Action
-
-How
-
-Start Bot
-
-Click **▶ Start** in top bar
-
-Stop Bot
-
-Click **⏹ Stop** in top bar
-
-Toggle a niche
-
-Niches page → flip the toggle switch
-
-Toggle a platform
-
-Settings page → flip platform switches
-
-Manual trigger
+| Action | How |
+|---|---|
+| Start Bot | Click **▶ Start** in top bar |
+| Stop Bot | Click **⏹ Stop** in top bar |
+| Toggle a niche | Niches page → flip the toggle switch |
+| Toggle a platform | Settings page → flip platform switches |
+| Manual trigger | Overview → Arm Trigger → Select niche → Fire |
 
 Overview → Arm Trigger → Select niche → Fire
 
@@ -307,7 +378,8 @@ Your project ID is visible in Google Cloud Console's top bar (looks like `conten
 ### Step 4: First Authentication
 
 ```bash
-source contentgenerator/bin/activatepython -c "from core.youtube_uploader import authenticate; authenticate()"
+source contentgenerator/bin/activate
+python -c "from core.youtube_uploader import authenticate; authenticate()"
 ```
 
 This opens your browser for OAuth. Sign in with the **same email you added as a test user** and click **Allow**. A token is saved to `data/youtube_token.json` automatically.
@@ -347,7 +419,8 @@ curl -X GET "https://api.pinterest.com/v5/boards"   -H "Authorization: Bearer YO
 ### Step 4: Update `.env`
 
 ```ini
-PINTEREST_ACCESS_TOKEN=your_token_herePINTEREST_BOARD_ID=your_board_id_here
+PINTEREST_ACCESS_TOKEN=your_token_here
+PINTEREST_BOARD_ID=your_board_id_here
 ```
 
 ---
@@ -695,33 +768,14 @@ Most DNS is auto-configured, but you can customize:
 
 **Apply for AdSense AFTER you have:**
 
-Requirement
-
-Target
-
-Published articles
-
-**15–20 minimum**
-
-Unique content
-
-All AI-generated + affiliate disclosures
-
-Active site age
-
-**2–4 weeks** after first content
-
-Custom domain
-
-Must be on your own domain (not github.io)
-
-Essential pages
-
-Privacy Policy, About, Contact, Disclaimer
-
-SSL certificate
-
-HTTPS enabled (free via Cloudflare)
+| Requirement | Target |
+|---|---|
+| Published articles | **15–20 minimum** |
+| Unique content | All AI-generated + affiliate disclosures |
+| Active site age | **2–4 weeks** after first content |
+| Custom domain | Must be on your own domain (not github.io) |
+| Essential pages | Privacy Policy, About, Contact, Disclaimer |
+| SSL certificate | HTTPS enabled (free via Cloudflare) |
 
 ### Step 1: Create Essential Pages
 
@@ -749,44 +803,66 @@ Once approved, replace the `<!-- Google AdSense -->` comment blocks in your temp
 In `site/templates/post.html`, replace:
 
 ```html
-<div class="ad-slot">  <span>Advertisement</span></div>
+<div class="ad-slot">
+  <span>Advertisement</span>
+</div>
 ```
 
 With your actual AdSense code:
 
 ```html
-<div class="ad-slot">  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-YOUR_ID" crossorigin="anonymous"></script>  <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-YOUR_ID" data-ad-slot="YOUR_SLOT_ID" data-ad-format="auto"></ins>  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script></div>
+<div class="ad-slot">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-YOUR_ID"
+    crossorigin="anonymous"></script>
+  <ins class="adsbygoogle"
+    style="display:block"
+    data-ad-client="ca-pub-YOUR_ID"
+    data-ad-slot="YOUR_SLOT_ID"
+    data-ad-format="auto"></ins>
+  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+</div>
 ```
 
 ### Common Rejection Reasons & Fixes
 
-Reason
-
-Fix
-
-"Insufficient content"
-
-Publish more articles (aim for 20+)
-
-"Valuable inventory"
-
-Make content longer, more detailed
-
-"Navigational issues"
-
-Add proper nav links, sitemap
-
-"Under construction"
-
-Remove placeholder text, fill all pages
+| Reason | Fix |
+|---|---|
+| "Insufficient content" | Publish more articles (aim for 20+) |
+| "Valuable inventory" | Make content longer, more detailed |
+| "Navigational issues" | Add proper nav links, sitemap |
+| "Under construction" | Remove placeholder text, fill all pages |
 
 ---
 
 ## 13. Going Live Checklist
 
-```
-□ Python 3.10+ installed□ Virtual environment created and activated□ pip install -r requirements.txt successful□ Ollama installed and mistral model downloaded□ .env file created with your secrets□ config/niches.yaml — affiliate IDs replaced□ config/settings.yaml — timezone set correctly□ Dashboard runs at localhost:5000□ Bot can generate a test article (python scripts/test_run.py)□ Domain purchased (tech-life-insights.com)□ Hosting set up (Cloudflare Pages / GitHub Pages)□ DNS configured, HTTPS working□ YouTube API credentials (if using Shorts)□ Pinterest API credentials (if using pins)□ Privacy Policy / About / Contact pages created□ 15+ articles published□ AdSense applied (after 2-4 weeks of content)□ Ad unit codes inserted into templates
-```
+### Development Setup
+- [ ] Python 3.10+ installed
+- [ ] Virtual environment created and activated
+- [ ] `pip install -r requirements.txt` successful
+- [ ] Ollama installed and mistral model downloaded
+- [ ] `.env` file created with your secrets
+- [ ] `config/niches.yaml` — affiliate IDs replaced
+- [ ] `config/settings.yaml` — timezone set correctly
+
+### Bot Verification
+- [ ] Dashboard runs at `localhost:5002`
+- [ ] Bot can generate a test article (`python scripts/test_run.py`)
+
+### Domain & Hosting
+- [ ] Domain purchased (`tech-life-insights.com`)
+- [ ] Hosting set up (Cloudflare Pages)
+- [ ] DNS configured, HTTPS working
+
+### Platforms (Optional)
+- [ ] YouTube API credentials (if using Shorts)
+- [ ] Pinterest API credentials (if using pins)
+
+### Content & Monetization
+- [ ] Privacy Policy / About / Contact pages created
+- [ ] 15+ articles published
+- [ ] AdSense applied (after 2-4 weeks of content)
+- [ ] Ad unit codes inserted into templates
 
 ---
 
@@ -795,19 +871,26 @@ Remove placeholder text, fill all pages
 ### "Ollama connection refused"
 
 ```bash
-# Start Ollama if not runningollama serve# Check it's runningcurl http://localhost:11434/api/tags
+# Start Ollama if not running
+ollama serve
+
+# Check it's running
+curl http://localhost:11434/api/tags
 ```
 
 ### "ModuleNotFoundError"
 
 ```bash
-# Make sure venv is activatedsource venv/bin/activatepip install -r requirements.txt
+# Make sure venv is activated
+source contentgenerator/bin/activate
+pip install -r requirements.txt
 ```
 
 ### "ffmpeg not found" (video generation)
 
 ```bash
-brew install ffmpeg   # macOSsudo apt install ffmpeg  # Ubuntu
+brew install ffmpeg      # macOS
+sudo apt install ffmpeg  # Ubuntu
 ```
 
 ### "YouTube upload fails"
@@ -818,7 +901,11 @@ brew install ffmpeg   # macOSsudo apt install ffmpeg  # Ubuntu
 ### "Dashboard won't start"
 
 ```bash
-# Check if port 5000 is in uselsof -i :5000# Kill the process or use a different portDASHBOARD_PORT=5001 python scripts/start_dashboard.py
+# Check if port 5002 is in use
+lsof -i :5002
+
+# Kill the process or use a different port
+DASHBOARD_PORT=5003 python scripts/start_dashboard.py
 ```
 
 ### "Bot not generating content"
@@ -833,7 +920,19 @@ brew install ffmpeg   # macOSsudo apt install ffmpeg  # Ubuntu
 ## Quick Start (TL;DR)
 
 ```bash
-# 1. Install Ollamacurl -fsSL https://ollama.com/install.sh | shollama pull mistral# 2. Set up the projectcd content-generator-botpython3 -m venv contentgenerator && source contentgenerator/bin/activatepip install -r requirements.txtcp .env.example .env  # then edit with your secrets# 3. Run itpython scripts/start_dashboard.py# Open http://localhost:5000 → Click "Start"
+# 1. Install Ollama
+curl -fsSL https://ollama.com/install.sh | sh
+ollama pull mistral
+
+# 2. Set up the project
+cd content-generator-bot
+python3 -m venv contentgenerator && source contentgenerator/bin/activate
+pip install -r requirements.txt
+cp .env.example .env  # then edit with your secrets
+
+# 3. Run it
+python scripts/start_dashboard.py
+# Open http://localhost:5002 → Click "Start"
 ```
 
 That's it. The bot handles the rest. 🤖

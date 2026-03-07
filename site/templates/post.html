@@ -14,8 +14,8 @@
       --surface: #f8f9fb;
       --text: #18181b;
       --text-muted: #71717a;
-      --accent: #6366f1;
-      --accent-light: #eef2ff;
+      --accent: #2563eb;
+      --accent-light: #eff6ff;
       --green: #059669;
       --green-bg: #ecfdf5;
       --amber: #92400e;
@@ -55,7 +55,7 @@
     }
     .nav-logo-mark {
       width: 28px; height: 28px; border-radius: 6px;
-      background: linear-gradient(135deg, var(--accent), #a78bfa);
+      background: var(--accent);
       display: flex; align-items: center; justify-content: center;
       font-size: 14px; color: #fff;
     }
@@ -66,7 +66,7 @@
       color: var(--text-muted); text-decoration: none;
       transition: all 0.15s;
     }
-    .nav-link:hover { color: var(--text); background: var(--surface); text-decoration: none; }
+    .nav-link:hover, .nav-link.active { color: var(--accent); background: var(--accent-light); text-decoration: none; }
 
     /* ── FTC Banner ──────────────────────────────── */
     .ftc-banner {
@@ -212,12 +212,19 @@
   <!-- Navigation -->
   <nav class="nav">
     <div class="nav-inner">
-      <a href="{{ site_url }}/" class="nav-logo">
-        <span class="nav-logo-mark">⚡</span>
+      <a href="/" class="nav-logo">
+        <span class="nav-logo-mark">T</span>
         <span>{{ settings.site.title if settings and settings.site else 'TechLife Insights' }}</span>
       </a>
       <div class="nav-links">
-        <a href="{{ site_url }}/" class="nav-link">Home</a>
+        <a href="/" class="nav-link">Home</a>
+        {% if niches %}
+          {% for nid, niche in niches.items() %}
+            {% if niche.enabled %}
+            <a href="/{{ nid }}/" class="nav-link{% if nid == niche_id %} active{% endif %}">{{ niche.name }}</a>
+            {% endif %}
+          {% endfor %}
+        {% endif %}
       </div>
     </div>
   </nav>
@@ -277,8 +284,17 @@
       when you purchase through our links. This does not affect our editorial independence or your purchase price.
       We only recommend products we believe in.
     </div>
+    {% if niches %}
+    <div style="margin-top: 16px; display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
+      {% for nid, niche in niches.items() %}
+        {% if niche.enabled %}
+        <a href="/{{ nid }}/" class="nav-link" style="font-size: 13px;">{{ niche.name }}</a>
+        {% endif %}
+      {% endfor %}
+    </div>
+    {% endif %}
     <p style="margin-top: 16px;">
-      &copy; {{ published_at[:4] if published_at else '2025' }}
+      &copy; 2026
       {{ settings.site.title if settings and settings.site else 'TechLife Insights' }}. All rights reserved.
     </p>
   </footer>

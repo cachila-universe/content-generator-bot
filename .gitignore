@@ -1,0 +1,27 @@
+# Secrets & credentials
+client_secrets.json
+config/settings.yaml
+data/youtube_token.json
+data/*.json
+.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+*.db
+
+# Virtual environments
+venv/
+contentgenerator/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/

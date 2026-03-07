@@ -5,6 +5,8 @@ from pathlib import Path
 from jinja2 import Environment, FileSystemLoader
 from datetime import datetime, timezone
 
+import yaml
+
 from core import analytics_tracker
 
 logger = logging.getLogger(__name__)
@@ -13,6 +15,18 @@ logger = logging.getLogger(__name__)
 _PROJECT_ROOT = Path(__file__).parent.parent
 _TEMPLATES_DIR = _PROJECT_ROOT / "site" / "templates"
 _OUTPUT_DIR = _PROJECT_ROOT / "site" / "output"
+_NICHES_PATH = _PROJECT_ROOT / "config" / "niches.yaml"
+
+
+def _load_niches() -> dict:
+    """Load niche configuration from config/niches.yaml."""
+    try:
+        with open(_NICHES_PATH, "r", encoding="utf-8") as f:
+            data = yaml.safe_load(f) or {}
+        return data.get("niches", {})
+    except Exception as exc:
+        logger.warning("Could not load niches.yaml: %s", exc)
+        return {}
 
 
 def publish(article: dict, niche_id: str, niche_name: str, settings: dict, db_path: Path) -> str:
@@ -47,6 +61,7 @@ def publish(article: dict, niche_id: str, niche_name: str, settings: dict, db_pa
         niche_name=niche_name,
         site_url=site_url,
         settings=settings,
+        niches=_load_niches(),
         published_at=article.get("published_at", datetime.now(timezone.utc).isoformat()),
     )
 
@@ -94,8 +109,9 @@ def publish(article: dict, niche_id: str, niche_name: str, settings: dict, db_pa
         niche_id=niche_id,
     )
 
-    # Rebuild homepage
+    # Rebuild homepage and niche index pages
     _rebuild_index(env, settings, db_path, site_url)
+    _rebuild_niche_indexes(env, settings, db_path, site_url)
 
     return url_path
 
@@ -104,11 +120,13 @@ def _rebuild_index(env: Environment, settings: dict, db_path: Path, site_url: st
     """Rebuild the site homepage index.html."""
     try:
         all_posts = analytics_tracker.get_all_posts(db_path)
+        niches = _load_niches()
         template = env.get_template("index.html")
         rendered = template.render(
             posts=all_posts,
             settings=settings,
             site_url=site_url,
+            niches=niches,
             site_title=settings.get("site", {}).get("title", "TechLife Insights"),
             tagline=settings.get("site", {}).get("tagline", "Smart Guides for Modern Living"),
         )
@@ -117,3 +135,38 @@ def _rebuild_index(env: Environment, settings: dict, db_path: Path, site_url: st
         logger.info("Rebuilt site index.html (%d posts)", len(all_posts))
     except Exception as exc:
         logger.warning("Could not rebuild index.html: %s", exc)
+
+
+def _rebuild_niche_indexes(env: Environment, settings: dict, db_path: Path, site_url: str) -> None:
+    """Rebuild per-niche index pages (e.g. /ai_tools/index.html)."""
+    try:
+        niches = _load_niches()
+        all_posts = analytics_tracker.get_all_posts(db_path)
+        template = env.get_template("niche_index.html")
+        site_title = settings.get("site", {}).get("title", "TechLife Insights")
+        tagline = settings.get("site", {}).get("tagline", "Smart Guides for Modern Living")
+
+        for niche_id, niche_cfg in niches.items():
+            if not niche_cfg.get("enabled", False):
+                continue
+
+            niche_posts = [p for p in all_posts if p.get("niche_id") == niche_id]
+            niche_output_dir = _OUTPUT_DIR / niche_id
+            niche_output_dir.mkdir(parents=True, exist_ok=True)
+
+            rendered = template.render(
+                niche_id=niche_id,
+                niche_name=niche_cfg.get("name", niche_id),
+                posts=niche_posts,
+                niches=niches,
+                settings=settings,
+                site_url=site_url,
+                site_title=site_title,
+                tagline=tagline,
+            )
+
+            (niche_output_dir / "index.html").write_text(rendered, encoding="utf-8")
+            logger.info("Rebuilt niche index: %s (%d posts)", niche_id, len(niche_posts))
+
+    except Exception as exc:
+        logger.warning("Could not rebuild niche indexes: %s", exc)

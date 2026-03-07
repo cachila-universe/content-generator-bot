@@ -3,127 +3,323 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TechLife Insights — Smart Guides</title>
-  <meta name="description" content="Smart Guides">
+  <title>TechLife Insights — Smart Guides for Modern Living</title>
+  <meta name="description" content="Smart Guides for Modern Living. Expert guides on AI tools, personal finance, health, home tech, and travel.">
+  <meta property="og:title" content="TechLife Insights">
+  <meta property="og:description" content="Smart Guides for Modern Living">
+  <meta property="og:type" content="website">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- AdSense verification (replace with your code when approved) -->
+  <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-YOUR_ID" crossorigin="anonymous"></script> -->
   <style>
     :root {
-      --bg: #0d1117;
-      --card-bg: #161b22;
-      --text: #e6edf3;
-      --text-muted: #8b949e;
-      --accent-green: #00ff88;
-      --accent-blue: #58a6ff;
-      --border: #30363d;
+      --bg: #ffffff;
+      --surface: #f9fafb;
+      --text: #111827;
+      --text-secondary: #6b7280;
+      --accent: #2563eb;
+      --accent-hover: #1d4ed8;
+      --accent-light: #eff6ff;
+      --border: #e5e7eb;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+      --shadow: 0 4px 12px rgba(0,0,0,0.08);
+      --radius: 8px;
+      --max-width: 1200px;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; line-height: 1.6; }
-    a { color: var(--accent-blue); text-decoration: none; }
-    a:hover { text-decoration: underline; }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text); font-family: 'Inter', -apple-system, sans-serif; font-size: 16px; line-height: 1.6; }
+    a { color: var(--accent); text-decoration: none; transition: color 0.2s; }
+    a:hover { color: var(--accent-hover); }
+    .container { max-width: var(--max-width); margin: 0 auto; padding: 0 24px; }
 
     /* Header */
-    .site-header { border-bottom: 1px solid var(--border); padding: 20px 24px; display: flex; align-items: center; justify-content: space-between; }
-    .site-logo { color: var(--accent-green); font-size: 22px; font-weight: 700; text-decoration: none; }
-    .site-tagline { color: var(--text-muted); font-size: 14px; }
+    .header { position: sticky; top: 0; z-index: 50; background: rgba(255,255,255,0.97); border-bottom: 1px solid var(--border); backdrop-filter: blur(8px); }
+    .header-inner { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; }
+    .logo { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 18px; color: var(--text); text-decoration: none; }
+    .logo-icon { width: 28px; height: 28px; border-radius: 6px; background: var(--accent); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800; }
+    .nav-links { display: flex; gap: 4px; flex-wrap: wrap; }
+    .nav-link { padding: 6px 12px; border-radius: 6px; font-size: 14px; font-weight: 500; color: var(--text-secondary); transition: all 0.15s; }
+    .nav-link:hover { color: var(--text); background: var(--surface); }
 
     /* Hero */
-    .hero { text-align: center; padding: 60px 24px 48px; max-width: 700px; margin: 0 auto; }
-    .hero-title { font-size: 2.6em; font-weight: 800; background: linear-gradient(135deg, #e6edf3 0%, var(--accent-green) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 14px; }
-    .hero-sub { font-size: 1.1em; color: var(--text-muted); }
+    .hero { padding: 64px 0 48px; text-align: center; }
+    .hero h1 { font-size: 40px; font-weight: 800; line-height: 1.2; margin-bottom: 12px; letter-spacing: -0.02em; }
+    .hero p { font-size: 18px; color: var(--text-secondary); max-width: 540px; margin: 0 auto; }
 
-    /* AdSense */
-    .adsense-slot { background: var(--card-bg); border: 1px dashed var(--border); border-radius: 6px; padding: 24px; text-align: center; color: var(--text-muted); font-size: 12px; margin: 28px auto; max-width: 900px; min-height: 90px; display: flex; align-items: center; justify-content: center; }
+    /* Ad Slot */
+    .ad-slot { background: var(--surface); border: 1px dashed var(--border); border-radius: var(--radius); padding: 20px; text-align: center; color: var(--text-secondary); font-size: 12px; margin: 32px auto; max-width: 728px; min-height: 90px; display: flex; align-items: center; justify-content: center; }
 
-    /* Niche tabs */
-    .niche-tabs { display: flex; flex-wrap: wrap; gap: 8px; padding: 0 24px 24px; justify-content: center; }
-    .niche-tab { padding: 6px 16px; border-radius: 20px; border: 1px solid var(--border); background: transparent; color: var(--text-muted); cursor: pointer; font-size: 13px; font-weight: 500; transition: all 0.15s; }
-    .niche-tab:hover, .niche-tab.active { border-color: var(--accent-green); color: var(--accent-green); background: rgba(0,255,136,0.08); }
+    /* Niche Cards */
+    .section { padding: 48px 0; }
+    .section-header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 24px; }
+    .section-title { font-size: 24px; font-weight: 700; }
+    .section-subtitle { font-size: 14px; color: var(--text-secondary); }
+    .niches-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; }
+    .niche-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; transition: all 0.25s; text-decoration: none; color: var(--text); display: block; }
+    .niche-card:hover { border-color: var(--accent); box-shadow: var(--shadow); transform: translateY(-2px); color: var(--text); }
+    .niche-icon { font-size: 28px; margin-bottom: 10px; }
+    .niche-name { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+    .niche-count { font-size: 13px; color: var(--text-secondary); }
 
-    /* Posts grid */
-    .posts-section { max-width: 1100px; margin: 0 auto; padding: 0 24px 60px; }
-    .posts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
-    .post-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 20px 22px; transition: border-color 0.2s, transform 0.2s; }
-    .post-card:hover { border-color: var(--accent-blue); transform: translateY(-3px); }
-    .post-card-niche { font-size: 11px; font-weight: 700; color: var(--accent-blue); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
-    .post-card-title { font-size: 16px; font-weight: 600; color: var(--text); margin-bottom: 10px; line-height: 1.4; }
-    .post-card-meta { display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: var(--text-muted); margin-top: 14px; }
-    .post-card-income { color: var(--accent-green); font-weight: 600; }
-    .post-card-link { display: block; text-decoration: none; }
-    .post-card-link:hover .post-card-title { color: var(--accent-blue); }
+    /* Posts Grid */
+    .posts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 20px; }
+    .post-card { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; transition: all 0.25s; display: flex; flex-direction: column; }
+    .post-card:hover { border-color: var(--accent); box-shadow: var(--shadow); transform: translateY(-3px); }
+    .post-card-body { padding: 20px; flex: 1; display: flex; flex-direction: column; }
+    .post-category { font-size: 12px; font-weight: 600; color: var(--accent); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 8px; }
+    .post-title { font-size: 17px; font-weight: 600; line-height: 1.4; margin-bottom: 8px; color: var(--text); }
+    .post-meta { font-size: 13px; color: var(--text-secondary); margin-top: auto; padding-top: 12px; display: flex; justify-content: space-between; align-items: center; }
+    .post-link { display: block; text-decoration: none; color: inherit; }
+    .post-link:hover { color: inherit; }
+    .post-link:hover .post-title { color: var(--accent); }
 
-    .no-posts { text-align: center; padding: 80px 24px; color: var(--text-muted); }
-    .no-posts h2 { font-size: 24px; margin-bottom: 12px; color: var(--text); }
+    /* Niche Tabs */
+    .niche-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 24px; }
+    .niche-tab { padding: 6px 14px; border-radius: 20px; border: 1px solid var(--border); background: transparent; color: var(--text-secondary); cursor: pointer; font-size: 13px; font-weight: 500; font-family: inherit; transition: all 0.15s; }
+    .niche-tab:hover, .niche-tab.active { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+
+    /* Empty State */
+    .empty-state { text-align: center; padding: 80px 24px; color: var(--text-secondary); }
+    .empty-state h2 { font-size: 24px; color: var(--text); margin-bottom: 8px; }
 
     /* Footer */
-    .site-footer { border-top: 1px solid var(--border); padding: 28px 24px; text-align: center; color: var(--text-muted); font-size: 13px; }
+    .footer { background: var(--surface); border-top: 1px solid var(--border); padding: 40px 0; margin-top: 64px; }
+    .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 32px; margin-bottom: 32px; }
+    .footer-brand { font-size: 14px; color: var(--text-secondary); line-height: 1.7; }
+    .footer-brand strong { font-size: 16px; color: var(--text); display: block; margin-bottom: 8px; }
+    .footer-col h4 { font-size: 14px; font-weight: 600; margin-bottom: 12px; color: var(--text); }
+    .footer-col ul { list-style: none; }
+    .footer-col li { margin-bottom: 6px; }
+    .footer-col a { font-size: 14px; color: var(--text-secondary); }
+    .footer-col a:hover { color: var(--accent); }
+    .footer-bottom { border-top: 1px solid var(--border); padding-top: 24px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--text-secondary); }
+    .footer-disclosure { font-size: 12px; max-width: 600px; }
 
-    @media (max-width: 640px) {
-      .hero-title { font-size: 1.8em; }
+    @media (max-width: 768px) {
+      .hero h1 { font-size: 28px; }
+      .hero p { font-size: 16px; }
       .posts-grid { grid-template-columns: 1fr; }
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+      .footer-bottom { flex-direction: column; gap: 8px; text-align: center; }
+      .nav-links { display: none; }
     }
   </style>
 </head>
 <body>
 
   <!-- Header -->
-  <header class="site-header">
-    <a href="/" class="site-logo">🤖 TechLife Insights</a>
-    <span class="site-tagline">Smart Guides</span>
+  <header class="header">
+    <div class="container">
+      <div class="header-inner">
+        <a href="/" class="logo">
+          <div class="logo-icon">T</div>
+          <span>TechLife Insights</span>
+        </a>
+        <nav class="nav-links">
+          <a href="/" class="nav-link">Home</a>
+          
+            
+            <a href="/ai_tools/" class="nav-link">AI Tools &amp; SaaS</a>
+            
+          
+            
+            <a href="/personal_finance/" class="nav-link">Personal Finance &amp; Investing</a>
+            
+          
+            
+            <a href="/health_biohacking/" class="nav-link">Health &amp; Biohacking</a>
+            
+          
+            
+            <a href="/home_tech/" class="nav-link">Home Tech &amp; Smart Devices</a>
+            
+          
+            
+            <a href="/travel/" class="nav-link">Travel</a>
+            
+          
+        </nav>
+      </div>
+    </div>
   </header>
 
   <!-- Hero -->
-  <div class="hero">
-    <h1 class="hero-title">TechLife Insights</h1>
-    <p class="hero-sub">Smart Guides</p>
+  <section class="hero">
+    <div class="container">
+      <h1>TechLife Insights</h1>
+      <p>Smart Guides for Modern Living</p>
+    </div>
+  </section>
+
+  <!-- Ad Slot (top) -->
+  <div class="container">
+    <div class="ad-slot">
+      <!-- Google AdSense: Replace with your ad unit code when approved -->
+      <span>Advertisement</span>
+    </div>
   </div>
 
-  <!-- AdSense slot (top) -->
-  <div class="adsense-slot">
-    <!-- Google AdSense: Replace with your ad unit -->
-    <span>Advertisement</span>
-  </div>
-
-  <!-- Niche tabs -->
-  
-  
-  <div class="niche-tabs">
-    <button class="niche-tab active" onclick="filterByNiche('ALL', this)">All</button>
-    
-      
+  <!-- Categories -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Explore Topics</h2>
+      </div>
+      <div class="niches-grid">
         
-        <button class="niche-tab" onclick="filterByNiche('ai_tools', this)">AI Tools &amp; SaaS</button>
-      
-    
-  </div>
-  
-
-  <!-- Posts grid -->
-  <section class="posts-section">
-    
-    <div class="posts-grid" id="postsGrid">
-      
-      <div class="post-card-wrapper" data-niche="ai_tools">
-        <a href="http://localhost:8080/ai_tools/best-ai-tools-productivity-2025.html" class="post-card-link">
-          <div class="post-card">
-            <div class="post-card-niche">AI Tools &amp; SaaS</div>
-            <div class="post-card-title">Best AI Tools for Productivity in 2025</div>
-            <div class="post-card-meta">
-              <span>2026-03-06</span>
-              <span class="post-card-income">~$1.00/mo</span>
+        
+          
+          <a href="/ai_tools/" class="niche-card">
+            <div class="niche-icon">🤖</div>
+            <div class="niche-name">AI Tools &amp; SaaS</div>
+            <div class="niche-count">
+              
+              
+              0 articles
             </div>
-          </div>
-        </a>
+          </a>
+          
+        
+          
+          <a href="/personal_finance/" class="niche-card">
+            <div class="niche-icon">💰</div>
+            <div class="niche-name">Personal Finance &amp; Investing</div>
+            <div class="niche-count">
+              
+              
+              0 articles
+            </div>
+          </a>
+          
+        
+          
+          <a href="/health_biohacking/" class="niche-card">
+            <div class="niche-icon">💪</div>
+            <div class="niche-name">Health &amp; Biohacking</div>
+            <div class="niche-count">
+              
+              
+              0 articles
+            </div>
+          </a>
+          
+        
+          
+          <a href="/home_tech/" class="niche-card">
+            <div class="niche-icon">🏠</div>
+            <div class="niche-name">Home Tech &amp; Smart Devices</div>
+            <div class="niche-count">
+              
+              
+              0 articles
+            </div>
+          </a>
+          
+        
+          
+          <a href="/travel/" class="niche-card">
+            <div class="niche-icon">✈️</div>
+            <div class="niche-name">Travel</div>
+            <div class="niche-count">
+              
+              
+              0 articles
+            </div>
+          </a>
+          
+        
+      </div>
+    </div>
+  </section>
+
+  <!-- Latest Posts -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Latest Articles</h2>
+        <span class="section-subtitle">0 articles published</span>
+      </div>
+
+      <!-- Niche filter tabs -->
+      
+
+      
+      <div class="empty-state">
+        <h2>🚀 Content Coming Soon</h2>
+        <p>The bot is working on generating fresh articles. Check back shortly!</p>
       </div>
       
     </div>
-    
   </section>
 
+  <!-- Ad Slot (bottom) -->
+  <div class="container">
+    <div class="ad-slot">
+      <!-- Google AdSense: Replace with your ad unit code when approved -->
+      <span>Advertisement</span>
+    </div>
+  </div>
+
   <!-- Footer -->
-  <footer class="site-footer">
-    <p>&copy; 2025 TechLife Insights. Powered by AI Content Generator Bot.</p>
-    <p style="margin-top:8px;font-size:12px;">
-      <strong>Disclosure:</strong> Some links on this site are affiliate links. We may earn a commission if you make a purchase.
-    </p>
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <strong>TechLife Insights</strong>
+          Smart Guides for Modern Living. We publish expert guides, reviews, and insights to help you make smarter decisions.
+        </div>
+        <div class="footer-col">
+          <h4>Categories</h4>
+          <ul>
+            
+              
+              <li><a href="/ai_tools/">AI Tools &amp; SaaS</a></li>
+              
+            
+              
+              <li><a href="/personal_finance/">Personal Finance &amp; Investing</a></li>
+              
+            
+              
+              <li><a href="/health_biohacking/">Health &amp; Biohacking</a></li>
+              
+            
+              
+              <li><a href="/home_tech/">Home Tech &amp; Smart Devices</a></li>
+              
+            
+              
+              <li><a href="/travel/">Travel</a></li>
+              
+            
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Legal</h4>
+          <ul>
+            <li><a href="/privacy.html">Privacy Policy</a></li>
+            <li><a href="/about.html">About</a></li>
+            <li><a href="/contact.html">Contact</a></li>
+            <li><a href="/disclaimer.html">Disclaimer</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Follow Us</h4>
+          <ul>
+            <li><a href="#">YouTube</a></li>
+            <li><a href="#">Pinterest</a></li>
+            <li><a href="#">Twitter</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>&copy; 2026 TechLife Insights. All rights reserved.</span>
+        <span class="footer-disclosure"><strong>Disclosure:</strong> Some links are affiliate links. We may earn a commission at no extra cost to you.</span>
+      </div>
+    </div>
   </footer>
 
   <script>

@@ -4,197 +4,107 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{{ site_title }} — {{ tagline }}</title>
-  <meta name="description" content="{{ tagline }}">
+  <meta name="description" content="{{ tagline }}. Expert guides on AI tools, personal finance, health, home tech, and travel.">
+  <meta property="og:title" content="{{ site_title }}">
+  <meta property="og:description" content="{{ tagline }}">
+  <meta property="og:type" content="website">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- AdSense verification (replace with your code when approved) -->
+  <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-YOUR_ID" crossorigin="anonymous"></script> -->
   <style>
     :root {
-      --bg: #0a0a0b;
-      --surface: #141416;
-      --surface-2: #1c1c1f;
-      --text: #f0f0f2;
-      --text-muted: #8a8a95;
-      --accent: #6366f1;
-      --accent-glow: rgba(99, 102, 241, 0.3);
-      --green: #34d399;
-      --green-glow: rgba(52, 211, 153, 0.15);
-      --border: #27272a;
-      --radius: 12px;
+      --bg: #ffffff;
+      --surface: #f9fafb;
+      --text: #111827;
+      --text-secondary: #6b7280;
+      --accent: #2563eb;
+      --accent-hover: #1d4ed8;
+      --accent-light: #eff6ff;
+      --border: #e5e7eb;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+      --shadow: 0 4px 12px rgba(0,0,0,0.08);
+      --radius: 8px;
+      --max-width: 1200px;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background: var(--bg); color: var(--text); font-family: 'Inter', -apple-system, sans-serif; font-size: 15px; line-height: 1.7; -webkit-font-smoothing: antialiased; }
-    a { color: var(--accent); text-decoration: none; transition: color 0.15s; }
-    a:hover { color: #818cf8; }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text); font-family: 'Inter', -apple-system, sans-serif; font-size: 16px; line-height: 1.6; }
+    a { color: var(--accent); text-decoration: none; transition: color 0.2s; }
+    a:hover { color: var(--accent-hover); }
+    .container { max-width: var(--max-width); margin: 0 auto; padding: 0 24px; }
 
-    /* ── Header ──────────────────────────────────── */
-    .header {
-      position: sticky; top: 0; z-index: 50;
-      backdrop-filter: blur(16px);
-      background: rgba(10, 10, 11, 0.85);
-      border-bottom: 1px solid var(--border);
-    }
-    .header-inner {
-      max-width: 1200px; margin: 0 auto;
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 16px 24px;
-    }
-    .logo {
-      display: flex; align-items: center; gap: 10px;
-      text-decoration: none; color: var(--text);
-      font-weight: 800; font-size: 20px;
-    }
-    .logo-mark {
-      width: 32px; height: 32px; border-radius: 8px;
-      background: linear-gradient(135deg, var(--accent), #a78bfa);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 16px; color: #fff;
-    }
-    .header-right { display: flex; align-items: center; gap: 8px; }
-    .header-link {
-      padding: 8px 16px; border-radius: 8px;
-      font-size: 14px; font-weight: 500;
-      color: var(--text-muted);
-      transition: all 0.15s;
-    }
-    .header-link:hover { color: var(--text); background: var(--surface); }
+    /* Header */
+    .header { position: sticky; top: 0; z-index: 50; background: rgba(255,255,255,0.97); border-bottom: 1px solid var(--border); backdrop-filter: blur(8px); }
+    .header-inner { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; }
+    .logo { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 18px; color: var(--text); text-decoration: none; }
+    .logo-icon { width: 28px; height: 28px; border-radius: 6px; background: var(--accent); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800; }
+    .nav-links { display: flex; gap: 4px; flex-wrap: wrap; }
+    .nav-link { padding: 6px 12px; border-radius: 6px; font-size: 14px; font-weight: 500; color: var(--text-secondary); transition: all 0.15s; }
+    .nav-link:hover { color: var(--text); background: var(--surface); }
 
-    /* ── Hero ────────────────────────────────────── */
-    .hero {
-      text-align: center; padding: 80px 24px 60px;
-      max-width: 720px; margin: 0 auto;
-      position: relative;
-    }
-    .hero::before {
-      content: ''; position: absolute;
-      top: -40px; left: 50%; transform: translateX(-50%);
-      width: 400px; height: 400px;
-      background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
-      pointer-events: none; opacity: 0.5;
-    }
-    .hero-badge {
-      display: inline-flex; align-items: center; gap: 6px;
-      background: var(--green-glow); border: 1px solid rgba(52, 211, 153, 0.25);
-      border-radius: 24px; padding: 6px 16px; margin-bottom: 24px;
-      font-size: 13px; font-weight: 600; color: var(--green);
-    }
-    .hero-title {
-      font-size: 3.2em; font-weight: 800; letter-spacing: -0.03em;
-      line-height: 1.15; margin-bottom: 18px; position: relative;
-      background: linear-gradient(180deg, #ffffff 0%, #a1a1aa 100%);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-    .hero-sub {
-      font-size: 1.15em; color: var(--text-muted); max-width: 540px;
-      margin: 0 auto; line-height: 1.7;
-    }
+    /* Hero */
+    .hero { padding: 64px 0 48px; text-align: center; }
+    .hero h1 { font-size: 40px; font-weight: 800; line-height: 1.2; margin-bottom: 12px; letter-spacing: -0.02em; }
+    .hero p { font-size: 18px; color: var(--text-secondary); max-width: 540px; margin: 0 auto; }
 
-    /* ── Ad slot ─────────────────────────────────── */
-    .ad-slot {
-      max-width: 900px; margin: 0 auto 40px;
-      background: var(--surface); border: 1px dashed var(--border);
-      border-radius: var(--radius); padding: 20px; text-align: center;
-      color: var(--text-muted); font-size: 12px; min-height: 90px;
-      display: flex; align-items: center; justify-content: center;
-    }
+    /* Ad Slot */
+    .ad-slot { background: var(--surface); border: 1px dashed var(--border); border-radius: var(--radius); padding: 20px; text-align: center; color: var(--text-secondary); font-size: 12px; margin: 32px auto; max-width: 728px; min-height: 90px; display: flex; align-items: center; justify-content: center; }
 
-    /* ── Filters ─────────────────────────────────── */
-    .filters {
-      max-width: 1200px; margin: 0 auto;
-      padding: 0 24px 32px;
-      display: flex; flex-wrap: wrap; justify-content: center; gap: 8px;
-    }
-    .filter-chip {
-      padding: 8px 18px; border-radius: 24px;
-      border: 1px solid var(--border);
-      background: transparent; color: var(--text-muted);
-      font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600;
-      cursor: pointer; transition: all 0.2s;
-    }
-    .filter-chip:hover { border-color: var(--accent); color: var(--text); }
-    .filter-chip.active {
-      background: var(--accent); border-color: var(--accent);
-      color: #fff; box-shadow: 0 0 20px var(--accent-glow);
-    }
+    /* Niche Cards */
+    .section { padding: 48px 0; }
+    .section-header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 24px; }
+    .section-title { font-size: 24px; font-weight: 700; }
+    .section-subtitle { font-size: 14px; color: var(--text-secondary); }
+    .niches-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; }
+    .niche-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; transition: all 0.25s; text-decoration: none; color: var(--text); display: block; }
+    .niche-card:hover { border-color: var(--accent); box-shadow: var(--shadow); transform: translateY(-2px); color: var(--text); }
+    .niche-icon { font-size: 28px; margin-bottom: 10px; }
+    .niche-name { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+    .niche-count { font-size: 13px; color: var(--text-secondary); }
 
-    /* ── Posts ────────────────────────────────────── */
-    .posts-section { max-width: 1200px; margin: 0 auto; padding: 0 24px 80px; }
-    .posts-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-      gap: 20px;
-    }
-    .card-link { text-decoration: none; color: inherit; display: block; }
-    .card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 24px 26px;
-      transition: all 0.25s ease;
-      position: relative; overflow: hidden;
-    }
-    .card::before {
-      content: ''; position: absolute; top: 0; left: 0; right: 0;
-      height: 3px; background: linear-gradient(90deg, var(--accent), var(--green));
-      opacity: 0; transition: opacity 0.25s;
-    }
-    .card:hover {
-      border-color: var(--accent);
-      transform: translateY(-4px);
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4), 0 0 30px var(--accent-glow);
-    }
-    .card:hover::before { opacity: 1; }
+    /* Posts Grid */
+    .posts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 20px; }
+    .post-card { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; transition: all 0.25s; display: flex; flex-direction: column; }
+    .post-card:hover { border-color: var(--accent); box-shadow: var(--shadow); transform: translateY(-3px); }
+    .post-card-body { padding: 20px; flex: 1; display: flex; flex-direction: column; }
+    .post-category { font-size: 12px; font-weight: 600; color: var(--accent); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 8px; }
+    .post-title { font-size: 17px; font-weight: 600; line-height: 1.4; margin-bottom: 8px; color: var(--text); }
+    .post-meta { font-size: 13px; color: var(--text-secondary); margin-top: auto; padding-top: 12px; display: flex; justify-content: space-between; align-items: center; }
+    .post-link { display: block; text-decoration: none; color: inherit; }
+    .post-link:hover { color: inherit; }
+    .post-link:hover .post-title { color: var(--accent); }
 
-    .card-niche {
-      font-size: 11px; font-weight: 700;
-      text-transform: uppercase; letter-spacing: 0.1em;
-      color: var(--accent); margin-bottom: 10px;
-    }
-    .card-title {
-      font-size: 17px; font-weight: 700;
-      color: var(--text); line-height: 1.4;
-      margin-bottom: 14px;
-      display: -webkit-box; -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical; overflow: hidden;
-    }
-    .card-footer {
-      display: flex; justify-content: space-between; align-items: center;
-      padding-top: 14px; border-top: 1px solid var(--border);
-      font-size: 12px; color: var(--text-muted);
-    }
-    .card-income { color: var(--green); font-weight: 700; }
+    /* Niche Tabs */
+    .niche-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 24px; }
+    .niche-tab { padding: 6px 14px; border-radius: 20px; border: 1px solid var(--border); background: transparent; color: var(--text-secondary); cursor: pointer; font-size: 13px; font-weight: 500; font-family: inherit; transition: all 0.15s; }
+    .niche-tab:hover, .niche-tab.active { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
 
-    .empty-state {
-      text-align: center; padding: 100px 24px; color: var(--text-muted);
-    }
-    .empty-state h2 { font-size: 24px; margin-bottom: 12px; color: var(--text); }
+    /* Empty State */
+    .empty-state { text-align: center; padding: 80px 24px; color: var(--text-secondary); }
+    .empty-state h2 { font-size: 24px; color: var(--text); margin-bottom: 8px; }
 
-    /* ── Footer ──────────────────────────────────── */
-    .footer {
-      border-top: 1px solid var(--border);
-      padding: 40px 24px; text-align: center;
-    }
-    .footer-inner {
-      max-width: 640px; margin: 0 auto;
-      font-size: 13px; color: var(--text-muted); line-height: 1.7;
-    }
-    .footer-links {
-      display: flex; justify-content: center; gap: 24px;
-      margin-bottom: 16px;
-    }
-    .footer-links a { color: var(--text-muted); font-weight: 500; }
-    .footer-links a:hover { color: var(--text); }
-    .footer-disclosure {
-      background: var(--surface); border-radius: 8px;
-      padding: 12px 20px; margin-top: 16px;
-      font-size: 12px; display: inline-block;
-    }
+    /* Footer */
+    .footer { background: var(--surface); border-top: 1px solid var(--border); padding: 40px 0; margin-top: 64px; }
+    .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 32px; margin-bottom: 32px; }
+    .footer-brand { font-size: 14px; color: var(--text-secondary); line-height: 1.7; }
+    .footer-brand strong { font-size: 16px; color: var(--text); display: block; margin-bottom: 8px; }
+    .footer-col h4 { font-size: 14px; font-weight: 600; margin-bottom: 12px; color: var(--text); }
+    .footer-col ul { list-style: none; }
+    .footer-col li { margin-bottom: 6px; }
+    .footer-col a { font-size: 14px; color: var(--text-secondary); }
+    .footer-col a:hover { color: var(--accent); }
+    .footer-bottom { border-top: 1px solid var(--border); padding-top: 24px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--text-secondary); }
+    .footer-disclosure { font-size: 12px; max-width: 600px; }
 
-    @media (max-width: 640px) {
-      .hero-title { font-size: 2em; }
+    @media (max-width: 768px) {
+      .hero h1 { font-size: 28px; }
+      .hero p { font-size: 16px; }
       .posts-grid { grid-template-columns: 1fr; }
-      .hero { padding: 50px 20px 40px; }
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+      .footer-bottom { flex-direction: column; gap: 8px; text-align: center; }
+      .nav-links { display: none; }
     }
   </style>
 </head>
@@ -202,89 +112,173 @@
 
   <!-- Header -->
   <header class="header">
-    <div class="header-inner">
-      <a href="/" class="logo">
-        <span class="logo-mark">⚡</span>
-        <span>{{ site_title }}</span>
-      </a>
-      <div class="header-right">
-        <a href="/" class="header-link">Home</a>
+    <div class="container">
+      <div class="header-inner">
+        <a href="/" class="logo">
+          <div class="logo-icon">T</div>
+          <span>{{ site_title }}</span>
+        </a>
+        <nav class="nav-links">
+          <a href="/" class="nav-link">Home</a>
+          {% for niche_id, niche in niches.items() %}
+            {% if niche.enabled %}
+            <a href="/{{ niche_id }}/" class="nav-link">{{ niche.name }}</a>
+            {% endif %}
+          {% endfor %}
+        </nav>
       </div>
     </div>
   </header>
 
   <!-- Hero -->
   <section class="hero">
-    <div class="hero-badge">✨ AI-Curated Content, Updated Daily</div>
-    <h1 class="hero-title">{{ site_title }}</h1>
-    <p class="hero-sub">{{ tagline }}</p>
+    <div class="container">
+      <h1>{{ site_title }}</h1>
+      <p>{{ tagline }}</p>
+    </div>
   </section>
 
-  <!-- Ad slot (top) -->
-  <div class="ad-slot">
-    <!-- Google AdSense: Replace with your ad unit code -->
-    <span>Advertisement</span>
+  <!-- Ad Slot (top) -->
+  <div class="container">
+    <div class="ad-slot">
+      <!-- Google AdSense: Replace with your ad unit code when approved -->
+      <span>Advertisement</span>
+    </div>
   </div>
 
-  <!-- Niche filters -->
-  {% if posts %}
-  {% set niches_seen = [] %}
-  <div class="filters">
-    <button class="filter-chip active" onclick="filterByNiche('ALL', this)">All Topics</button>
-    {% for post in posts %}
-      {% if post.niche_id not in niches_seen %}
-        {% set _ = niches_seen.append(post.niche_id) %}
-        <button class="filter-chip" onclick="filterByNiche('{{ post.niche_id }}', this)">{{ post.niche_name }}</button>
-      {% endif %}
-    {% endfor %}
-  </div>
-  {% endif %}
-
-  <!-- Posts -->
-  <section class="posts-section">
-    {% if posts %}
-    <div class="posts-grid" id="postsGrid">
-      {% for post in posts %}
-      <div class="post-wrapper" data-niche="{{ post.niche_id }}">
-        <a href="{{ post.url or '#' }}" class="card-link">
-          <article class="card">
-            <div class="card-niche">{{ post.niche_name }}</div>
-            <h2 class="card-title">{{ post.title }}</h2>
-            <div class="card-footer">
-              <span>{{ post.published_at[:10] if post.published_at else '' }}</span>
-              <span class="card-income">~${{ "%.2f"|format(post.estimated_income) }}/mo</span>
-            </div>
-          </article>
-        </a>
+  <!-- Categories -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Explore Topics</h2>
       </div>
-      {% endfor %}
+      <div class="niches-grid">
+        {% set icons = {'ai_tools': '🤖', 'personal_finance': '💰', 'health_biohacking': '💪', 'home_tech': '🏠', 'travel': '✈️'} %}
+        {% for niche_id, niche in niches.items() %}
+          {% if niche.enabled %}
+          <a href="/{{ niche_id }}/" class="niche-card">
+            <div class="niche-icon">{{ icons.get(niche_id, '📌') }}</div>
+            <div class="niche-name">{{ niche.name }}</div>
+            <div class="niche-count">
+              {% set ns = namespace(count=0) %}
+              {% for post in posts %}
+                {% if post.niche_id == niche_id %}{% set ns.count = ns.count + 1 %}{% endif %}
+              {% endfor %}
+              {{ ns.count }} article{{ 's' if ns.count != 1 else '' }}
+            </div>
+          </a>
+          {% endif %}
+        {% endfor %}
+      </div>
     </div>
-    {% else %}
-    <div class="empty-state">
-      <h2>Content is on its way</h2>
-      <p>Fresh AI-curated articles will appear here soon.</p>
-    </div>
-    {% endif %}
   </section>
+
+  <!-- Latest Posts -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Latest Articles</h2>
+        <span class="section-subtitle">{{ posts|length }} article{{ 's' if posts|length != 1 else '' }} published</span>
+      </div>
+
+      <!-- Niche filter tabs -->
+      {% if posts|length > 0 %}
+      <div class="niche-tabs">
+        <button class="niche-tab active" onclick="filterByNiche('ALL', this)">All</button>
+        {% set seen_niches = [] %}
+        {% for post in posts %}
+          {% if post.niche_id not in seen_niches %}
+            {% if seen_niches.append(post.niche_id) %}{% endif %}
+            <button class="niche-tab" onclick="filterByNiche('{{ post.niche_id }}', this)">{{ post.niche_name }}</button>
+          {% endif %}
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      {% if posts|length > 0 %}
+      <div class="posts-grid" id="postsGrid">
+        {% for post in posts %}
+        <div class="post-card-wrapper" data-niche="{{ post.niche_id }}">
+          <a href="{{ post.url }}" class="post-link">
+            <div class="post-card">
+              <div class="post-card-body">
+                <span class="post-category">{{ post.niche_name }}</span>
+                <h3 class="post-title">{{ post.title }}</h3>
+                <div class="post-meta">
+                  <span>{{ post.published_at[:10] if post.published_at else '' }}</span>
+                  <span>{{ post.word_count }} words</span>
+                </div>
+              </div>
+            </div>
+          </a>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="empty-state">
+        <h2>🚀 Content Coming Soon</h2>
+        <p>The bot is working on generating fresh articles. Check back shortly!</p>
+      </div>
+      {% endif %}
+    </div>
+  </section>
+
+  <!-- Ad Slot (bottom) -->
+  <div class="container">
+    <div class="ad-slot">
+      <!-- Google AdSense: Replace with your ad unit code when approved -->
+      <span>Advertisement</span>
+    </div>
+  </div>
 
   <!-- Footer -->
   <footer class="footer">
-    <div class="footer-inner">
-      <div class="footer-links">
-        <a href="/">Home</a>
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <strong>{{ site_title }}</strong>
+          {{ tagline }}. We publish expert guides, reviews, and insights to help you make smarter decisions.
+        </div>
+        <div class="footer-col">
+          <h4>Categories</h4>
+          <ul>
+            {% for niche_id, niche in niches.items() %}
+              {% if niche.enabled %}
+              <li><a href="/{{ niche_id }}/">{{ niche.name }}</a></li>
+              {% endif %}
+            {% endfor %}
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Legal</h4>
+          <ul>
+            <li><a href="/privacy.html">Privacy Policy</a></li>
+            <li><a href="/about.html">About</a></li>
+            <li><a href="/contact.html">Contact</a></li>
+            <li><a href="/disclaimer.html">Disclaimer</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Follow Us</h4>
+          <ul>
+            <li><a href="#">YouTube</a></li>
+            <li><a href="#">Pinterest</a></li>
+            <li><a href="#">Twitter</a></li>
+          </ul>
+        </div>
       </div>
-      <p>&copy; 2025 {{ site_title }}. All rights reserved.</p>
-      <div class="footer-disclosure">
-        <strong>Affiliate Disclosure:</strong> Some links may earn us a commission at no extra cost to you.
+      <div class="footer-bottom">
+        <span>&copy; 2026 {{ site_title }}. All rights reserved.</span>
+        <span class="footer-disclosure"><strong>Disclosure:</strong> Some links are affiliate links. We may earn a commission at no extra cost to you.</span>
       </div>
     </div>
   </footer>
 
   <script>
   function filterByNiche(niche, btn) {
-    document.querySelectorAll('.filter-chip').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.niche-tab').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
-    document.querySelectorAll('.post-wrapper').forEach(card => {
+    document.querySelectorAll('.post-card-wrapper').forEach(card => {
       card.style.display = (niche === 'ALL' || card.dataset.niche === niche) ? '' : 'none';
     });
   }
