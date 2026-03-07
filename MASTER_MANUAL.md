@@ -2517,5 +2517,264 @@ The bot currently generates **regular videos** (landscape 1280×720). To publish
 
 ---
 
-*Manual Version 2.2 — March 2026*
+## §42 — Social Media Auto-Posting (Twitter, Instagram Reels, TikTok)
+
+The bot now supports automatic posting to **Twitter/X**, **Instagram Reels**, and **TikTok** via the `core/social_poster.py` module. Each platform is independently configurable — leave credentials blank to disable any platform.
+
+### Architecture Overview
+
+```
+Article published ──▶ Tweet article link (Twitter)
+                  ──▶ Upload Short video as tweet (Twitter)
+                  ──▶ Post as Reel (Instagram)
+                  ──▶ Post as TikTok video (TikTok)
+```
+
+All social credentials live in `config/settings.yaml` under the `social` key.
+
+---
+
+### §42.1 — Twitter/X Setup
+
+**Requirements:**
+- Twitter Developer account (free tier allows 1,500 tweets/month)
+- App with OAuth 1.0a + v2 API access
+
+**Step 1: Create a Twitter Developer App**
+
+1. Go to [developer.x.com/en/portal/dashboard](https://developer.x.com/en/portal/dashboard)
+2. Click **+ Create Project** → name it `TechLife Bot`
+3. Under the project, click **+ Add App**
+4. Choose **Production** environment
+5. Save the **API Key**, **API Secret**, **Bearer Token**
+
+**Step 2: Generate Access Tokens**
+
+1. In your app settings → **Keys and Tokens**
+2. Under **Authentication Tokens**, click **Generate** for:
+   - Access Token
+   - Access Token Secret
+3. Make sure **App permissions** = **Read and Write**
+
+**Step 3: Add Credentials to Settings**
+
+Edit `config/settings.yaml`:
+
+```yaml
+social:
+  twitter:
+    api_key: "YOUR_API_KEY"
+    api_secret: "YOUR_API_SECRET"
+    access_token: "YOUR_ACCESS_TOKEN"
+    access_token_secret: "YOUR_ACCESS_TOKEN_SECRET"
+    bearer_token: "YOUR_BEARER_TOKEN"
+```
+
+**Step 4: Test**
+
+```bash
+source contentgenerator/bin/activate
+python -c "
+import yaml
+from core.social_poster import TwitterPoster
+cfg = yaml.safe_load(open('config/settings.yaml'))
+tp = TwitterPoster(cfg['social']['twitter'])
+print('✅ Twitter connected!' if tp.enabled else '❌ Twitter not configured')
+"
+```
+
+**What gets posted to Twitter:**
+- 📝 Article links with title + niche hashtags (auto-trimmed to 280 chars)
+- 🎬 Short-form videos with captions (uploaded natively)
+
+---
+
+### §42.2 — Instagram Reels Setup
+
+**Requirements:**
+- Instagram **Business** or **Creator** account (not personal)
+- Facebook Page linked to the Instagram account
+- Facebook Developer App with `instagram_content_publish` permission
+
+**Step 1: Convert to Business Account**
+
+1. Instagram → Settings → Account → Switch to Professional Account → **Business**
+2. Link it to a Facebook Page (create one if needed)
+
+**Step 2: Create a Facebook App**
+
+1. Go to [developers.facebook.com/apps](https://developers.facebook.com/apps/)
+2. Click **Create App** → **Business** type
+3. Add the **Instagram Graph API** product
+4. Under Permissions, request: `instagram_content_publish`, `instagram_basic`, `pages_read_engagement`
+
+**Step 3: Get Long-Lived Access Token**
+
+1. In Graph API Explorer: [developers.facebook.com/tools/explorer](https://developers.facebook.com/tools/explorer/)
+2. Select your app, add permissions above
+3. Click **Generate Access Token**
+4. Exchange for a long-lived token (60 days):
+
+```bash
+curl "https://graph.facebook.com/v21.0/oauth/access_token?grant_type=fb_exchange_token&client_id=YOUR_APP_ID&client_secret=YOUR_APP_SECRET&fb_exchange_token=YOUR_SHORT_TOKEN"
+```
+
+**Step 4: Get Your Instagram User ID**
+
+```bash
+curl "https://graph.facebook.com/v21.0/me/accounts?access_token=YOUR_TOKEN"
+# Get the page ID, then:
+curl "https://graph.facebook.com/v21.0/PAGE_ID?fields=instagram_business_account&access_token=YOUR_TOKEN"
+```
+
+**Step 5: Add to Settings**
+
+```yaml
+social:
+  instagram:
+    access_token: "YOUR_LONG_LIVED_TOKEN"
+    ig_user_id: "YOUR_IG_USER_ID"
+```
+
+**Important note:** Instagram Graph API requires videos to be hosted at a **public URL**. The bot generates videos locally — you need to either:
+- Upload them to your site (`tech-life-insights.com/videos/`)
+- Use a cloud bucket (S3, Cloudflare R2, etc.)
+- The bot can use your Cloudflare Pages deploy URL once videos are pushed to git
+
+---
+
+### §42.3 — TikTok Setup
+
+**Requirements:**
+- TikTok Developer account with approved app
+- Content Posting API access (requires app review)
+
+**Step 1: Register as TikTok Developer**
+
+1. Go to [developers.tiktok.com](https://developers.tiktok.com/)
+2. Create a new app → select **Content Posting API**
+3. Submit for review (TikTok reviews take 1–5 business days)
+
+**Step 2: Get Access Token**
+
+1. Once approved, use TikTok's OAuth flow to get an access token
+2. Required scope: `video.publish`
+
+**Step 3: Add to Settings**
+
+```yaml
+social:
+  tiktok:
+    access_token: "YOUR_TIKTOK_ACCESS_TOKEN"
+```
+
+**Note:** Like Instagram, TikTok requires a **public video URL**. Same hosting solution applies.
+
+---
+
+### §42.4 — Video Hosting for Instagram & TikTok
+
+Both Instagram Reels and TikTok require a **publicly accessible video URL** (not a local file). Options:
+
+| Method | Difficulty | Cost |
+|---|---|---|
+| **Cloudflare R2** (recommended) | Medium | Free tier: 10GB storage |
+| **GitHub raw files** | Easy | Free but has bandwidth limits |
+| **Your own site** | Easy | Push to `site/output/videos/` and deploy |
+| **AWS S3** | Medium | ~$0.02/GB |
+
+**Simplest approach — push videos to your site:**
+
+```bash
+# After generating a video:
+cp data/videos/my-short.mp4 site/output/videos/
+git add site/output/videos/my-short.mp4
+git push  # Cloudflare Pages deploys automatically
+# Video URL: https://tech-life-insights.com/videos/my-short.mp4
+```
+
+---
+
+### §42.5 — Niche-Specific Hashtags
+
+Each niche has pre-configured hashtags in `core/social_poster.py`:
+
+| Niche | Hashtags |
+|---|---|
+| ai_tools | #AI #AITools #ArtificialIntelligence #Productivity #Tech |
+| personal_finance | #PersonalFinance #Money #Investing #Budget #Finance |
+| health_biohacking | #Health #Biohacking #Wellness #Longevity #HealthTech |
+| home_tech | #SmartHome #HomeTech #IoT #Gadgets #HomeAutomation |
+| travel | #Travel #TravelTips #TravelTech #DigitalNomad #Explore |
+| pet_care | #Pets #PetCare #Dogs #Cats #PetHealth |
+| fitness_wellness | #Fitness #Wellness #Workout #GymLife #HealthyLiving |
+| remote_work | #RemoteWork #WFH #Productivity #DigitalNomad #WorkFromHome |
+
+All posts also include `#TechLifeInsights` for brand recognition.
+
+---
+
+## §43 — Video Generation: Edge TTS Neural Voices & Visual Variety
+
+The video pipeline now uses **Microsoft Edge TTS** — free, high-quality neural voices that sound natural (not robotic like the old gTTS).
+
+### Voice Rotation (12 voices)
+
+Every article gets a **different voice** based on its slug hash. No two videos in a row sound the same:
+
+| Voice | Accent | Gender |
+|---|---|---|
+| en-US-GuyNeural | American | Male |
+| en-US-JennyNeural | American | Female |
+| en-US-AriaNeural | American | Female |
+| en-US-DavisNeural | American | Male |
+| en-US-TonyNeural | American | Male |
+| en-US-SaraNeural | American | Female |
+| en-GB-SoniaNeural | British | Female |
+| en-GB-RyanNeural | British | Male |
+| en-AU-NatashaNeural | Australian | Female |
+| en-AU-WilliamNeural | Australian | Male |
+| en-CA-ClaraNeural | Canadian | Female |
+| en-CA-LiamNeural | Canadian | Male |
+
+### Visual Theme Rotation (8 themes)
+
+Each video gets a different color scheme:
+
+- **Cyber Green** — dark bg + neon green accents
+- **Royal Blue** — navy bg + soft blue accents
+- **Sunset Orange** — warm dark bg + orange accents
+- **Electric Purple** — deep purple bg + violet accents
+- **Crimson Fire** — dark red bg + rose accents
+- **Teal Wave** — dark teal bg + mint accents
+- **Golden Dark** — dark gold bg + amber accents
+- **Ice Slate** — slate bg + cyan accents
+
+### Layout Rotation (4 layouts for landscape, 4 for shorts)
+
+**Landscape (YouTube):** classic, centered, left_bar, gradient_banner
+**Shorts (Reels/TikTok):** bold_center, numbered_card, side_stripe, top_gradient
+
+### Testing Video Generation
+
+```bash
+source contentgenerator/bin/activate
+PYTHONPATH=. python -c "
+from core.video_generator import generate_video
+from pathlib import Path
+
+article = {
+    'slug': 'test-video',
+    'title': 'Top 5 AI Tools for Productivity in 2025',
+    'html_content': '<p>AI tools are changing how we work.</p><h2>1. ChatGPT</h2><p>The most popular AI assistant.</p><h2>2. Notion AI</h2><p>Smart note-taking and docs.</p><h2>3. Grammarly</h2><p>AI-powered writing assistant.</p>',
+}
+
+result = generate_video(article, Path('data/test_video.mp4'))
+print(f'✅ Video created: {result}' if result else '❌ Failed')
+"
+```
+
+---
+
+*Manual Version 2.3 — March 2026*
 *For the latest updates, check the repository README.*
