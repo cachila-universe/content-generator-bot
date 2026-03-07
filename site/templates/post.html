@@ -68,6 +68,13 @@
       transition: all 0.15s;
     }
     .nav-link:hover, .nav-link.active { color: #fff; background: rgba(255,255,255,0.12); text-decoration: none; }
+    .subscribe-link { padding: 6px 14px; border-radius: 6px; font-size: 13px; font-weight: 600; color: #fff; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); transition: all 0.15s; display: flex; align-items: center; gap: 5px; text-decoration: none; }
+    .subscribe-link:hover { background: rgba(255,255,255,0.25); color: #fff; text-decoration: none; }
+    .nav-item { position: relative; display: inline-block; }
+    .nav-item:hover .nav-dropdown { display: block; }
+    .nav-dropdown { display: none; position: absolute; top: 100%; left: 0; background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.12); min-width: 200px; padding: 8px 0; z-index: 100; }
+    .nav-dropdown a { display: block; padding: 8px 16px; font-size: 13px; color: #18181b; font-weight: 500; transition: background 0.1s; text-decoration: none; }
+    .nav-dropdown a:hover { background: #eff6ff; color: #2563eb; }
 
     /* ── FTC Banner ──────────────────────────────── */
     .ftc-banner {
@@ -221,10 +228,20 @@
         {% if niches %}
           {% for nid, niche in niches.items() %}
             {% if niche.enabled %}
-            <a href="/{{ nid }}/" class="nav-link{% if nid == niche_id %} active{% endif %}">{{ niche.name }}</a>
+            <div class="nav-item">
+              <a href="/{{ nid }}/" class="nav-link{% if nid == niche_id %} active{% endif %}">{{ niche.name }}</a>
+              {% if niche.subtopics %}
+              <div class="nav-dropdown">
+                {% for sub_id, sub in niche.subtopics.items() %}
+                <a href="/{{ nid }}/{{ sub_id }}/">{{ sub.name }}</a>
+                {% endfor %}
+              </div>
+              {% endif %}
+            </div>
             {% endif %}
           {% endfor %}
         {% endif %}
+        <a href="https://techlife-insights.kit.com/be266c00d5" target="_blank" rel="noopener" class="subscribe-link">📬 Subscribe</a>
       </div>
     </div>
   </nav>
@@ -239,6 +256,10 @@
     <header class="article-header">
       <div class="article-meta">
         <span class="niche-badge">{{ niche_name }}</span>
+        {% if article.subtopic_id and niches and niches[niche_id] and niches[niche_id].subtopics and article.subtopic_id in niches[niche_id].subtopics %}
+        <span style="font-size:12px;color:var(--text-muted);">›</span>
+        <a href="/{{ niche_id }}/{{ article.subtopic_id }}/" style="font-size:12px;font-weight:600;color:var(--accent);text-decoration:none;">{{ niches[niche_id].subtopics[article.subtopic_id].name }}</a>
+        {% endif %}
         <span>{{ published_at[:10] if published_at else '' }}</span>
       </div>
       <h1 class="article-title">{{ article.title }}</h1>

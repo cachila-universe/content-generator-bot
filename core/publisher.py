@@ -1,4 +1,8 @@
-"""Static site publisher that renders Jinja2 templates and writes HTML files."""
+"""Static site publisher that renders Jinja2 templates and writes HTML files.
+
+Supports subtopic categorization, subtopic index pages, travel search,
+and market data pages.
+"""
 
 import logging
 from pathlib import Path
@@ -29,14 +33,39 @@ def _load_niches() -> dict:
         return {}
 
 
+def _classify_subtopic(article: dict, niche_id: str) -> str:
+    """Auto-classify an article into a subtopic based on title/content keywords."""
+    try:
+        from core.content_intelligence import classify_article_subtopic
+        niches = _load_niches()
+        niche_cfg = niches.get(niche_id, {})
+        return classify_article_subtopic(
+            article.get("title", ""),
+            article.get("body", article.get("content", article.get("html_content", ""))),
+            niche_id,
+            niche_cfg,
+        )
+    except Exception:
+        return ""
+
+
 def publish(article: dict, niche_id: str, niche_name: str, settings: dict, db_path: Path) -> str:
     """
     Render article to static HTML and publish to site/output/.
+
+    Auto-classifies article into a subtopic and rebuilds all site pages
+    including subtopic indexes, travel search, and market data.
 
     Returns URL path of the published article.
     """
     slug = article.get("slug", "untitled")
     site_url = settings.get("site_url", "http://localhost:8080")
+
+    # Auto-classify subtopic if not already set
+    subtopic_id = article.get("subtopic_id", "")
+    if not subtopic_id:
+        subtopic_id = _classify_subtopic(article, niche_id)
+        article["subtopic_id"] = subtopic_id
 
     # Ensure output directory exists
     niche_output_dir = _OUTPUT_DIR / niche_id
@@ -55,13 +84,14 @@ def publish(article: dict, niche_id: str, niche_name: str, settings: dict, db_pa
         logger.error("Could not load post.html template: %s", exc)
         return ""
 
+    niches = _load_niches()
     rendered = template.render(
         article=article,
         niche_id=niche_id,
         niche_name=niche_name,
         site_url=site_url,
         settings=settings,
-        niches=_load_niches(),
+        niches=niches,
         published_at=article.get("published_at", datetime.now(timezone.utc).isoformat()),
     )
 
@@ -76,7 +106,7 @@ def publish(article: dict, niche_id: str, niche_name: str, settings: dict, db_pa
 
     url_path = f"/{niche_id}/{slug}.html"
 
-    # Save to database — income is tracked via income_tracker.py, NOT estimated here
+    # Save to database with subtopic_id
     word_count = article.get("word_count", 0)
     affiliate_count = article.get("affiliate_links_count", 0)
 
@@ -89,6 +119,7 @@ def publish(article: dict, niche_id: str, niche_name: str, settings: dict, db_pa
             "slug": slug,
             "url": f"{site_url.rstrip('/')}{url_path}",
             "youtube_url": article.get("youtube_url", ""),
+            "subtopic_id": subtopic_id,
             "word_count": word_count,
             "affiliate_links_count": affiliate_count,
             "estimated_clicks": 0,
@@ -101,14 +132,17 @@ def publish(article: dict, niche_id: str, niche_name: str, settings: dict, db_pa
         db_path,
         level="SUCCESS",
         action="publish_post",
-        message=f"Published: {article.get('title', slug)}",
+        message=f"Published: {article.get('title', slug)} [subtopic={subtopic_id}]",
         niche_id=niche_id,
     )
 
-    # Rebuild homepage and niche index pages
+    # Rebuild all site pages
     _rebuild_index(env, settings, db_path, site_url)
     _rebuild_niche_indexes(env, settings, db_path, site_url)
+    _rebuild_subtopic_indexes(env, settings, db_path, site_url)
     _rebuild_best_of_pages(env, settings, db_path, site_url)
+    _rebuild_travel_search(env, settings, site_url)
+    _rebuild_market_data(env, settings, site_url)
     _rebuild_legal_pages(env, settings, site_url)
 
     return url_path
@@ -221,6 +255,114 @@ def _rebuild_legal_pages(env: Environment, settings: dict, site_url: str) -> Non
         logger.warning("Could not rebuild legal pages: %s", exc)
 
 
+def _rebuild_subtopic_indexes(env: Environment, settings: dict, db_path: Path, site_url: str) -> None:
+    """Rebuild per-subtopic index pages (e.g. /ai_tools/ai_apps/index.html)."""
+    try:
+        template = env.get_template("subtopic_index.html")
+    except Exception:
+        logger.warning("subtopic_index.html template not found, skipping subtopic indexes")
+        return
+
+    try:
+        niches = _load_niches()
+        all_posts = analytics_tracker.get_all_posts(db_path)
+        site_title = settings.get("site", {}).get("title", "TechLife Insights")
+        tagline = settings.get("site", {}).get("tagline", "Smart Guides for Modern Living")
+        count = 0
+
+        for niche_id, niche_cfg in niches.items():
+            if not niche_cfg.get("enabled", False):
+                continue
+            subtopics = niche_cfg.get("subtopics", {})
+            if not subtopics:
+                continue
+
+            niche_posts = [p for p in all_posts if p.get("niche_id") == niche_id]
+
+            for sub_id, sub_cfg in subtopics.items():
+                sub_posts = [p for p in niche_posts if p.get("subtopic_id") == sub_id]
+                sub_dir = _OUTPUT_DIR / niche_id / sub_id
+                sub_dir.mkdir(parents=True, exist_ok=True)
+
+                rendered = template.render(
+                    niche_id=niche_id,
+                    niche_name=niche_cfg.get("name", niche_id),
+                    subtopic_id=sub_id,
+                    subtopic_name=sub_cfg.get("name", sub_id),
+                    posts=sub_posts,
+                    niches=niches,
+                    subtopics=subtopics,
+                    settings=settings,
+                    site_url=site_url,
+                    site_title=site_title,
+                    tagline=tagline,
+                )
+                (sub_dir / "index.html").write_text(rendered, encoding="utf-8")
+                count += 1
+
+        logger.info("Rebuilt %d subtopic indexes", count)
+    except Exception as exc:
+        logger.warning("Could not rebuild subtopic indexes: %s", exc)
+
+
+def _rebuild_travel_search(env: Environment, settings: dict, site_url: str) -> None:
+    """Rebuild the travel search page at /travel/search.html."""
+    try:
+        template = env.get_template("travel_search.html")
+    except Exception:
+        logger.debug("travel_search.html template not found, skipping")
+        return
+
+    try:
+        niches = _load_niches()
+        site_title = settings.get("site", {}).get("title", "TechLife Insights")
+        tagline = settings.get("site", {}).get("tagline", "Smart Guides for Modern Living")
+
+        rendered = template.render(
+            niches=niches,
+            settings=settings,
+            site_url=site_url,
+            site_title=site_title,
+            tagline=tagline,
+        )
+
+        travel_dir = _OUTPUT_DIR / "travel"
+        travel_dir.mkdir(parents=True, exist_ok=True)
+        (travel_dir / "search.html").write_text(rendered, encoding="utf-8")
+        logger.info("Rebuilt travel search page")
+    except Exception as exc:
+        logger.warning("Could not rebuild travel search page: %s", exc)
+
+
+def _rebuild_market_data(env: Environment, settings: dict, site_url: str) -> None:
+    """Rebuild the market data page at /personal_finance/markets.html."""
+    try:
+        template = env.get_template("market_data.html")
+    except Exception:
+        logger.debug("market_data.html template not found, skipping")
+        return
+
+    try:
+        niches = _load_niches()
+        site_title = settings.get("site", {}).get("title", "TechLife Insights")
+        tagline = settings.get("site", {}).get("tagline", "Smart Guides for Modern Living")
+
+        rendered = template.render(
+            niches=niches,
+            settings=settings,
+            site_url=site_url,
+            site_title=site_title,
+            tagline=tagline,
+        )
+
+        finance_dir = _OUTPUT_DIR / "personal_finance"
+        finance_dir.mkdir(parents=True, exist_ok=True)
+        (finance_dir / "markets.html").write_text(rendered, encoding="utf-8")
+        logger.info("Rebuilt market data page")
+    except Exception as exc:
+        logger.warning("Could not rebuild market data page: %s", exc)
+
+
 def rebuild_site(settings: dict, db_path: Path, site_url: str) -> None:
     """Rebuild all static site pages. Call after any content change (e.g. delete)."""
     env = Environment(
@@ -229,5 +371,8 @@ def rebuild_site(settings: dict, db_path: Path, site_url: str) -> None:
     )
     _rebuild_index(env, settings, db_path, site_url)
     _rebuild_niche_indexes(env, settings, db_path, site_url)
+    _rebuild_subtopic_indexes(env, settings, db_path, site_url)
     _rebuild_best_of_pages(env, settings, db_path, site_url)
+    _rebuild_travel_search(env, settings, site_url)
+    _rebuild_market_data(env, settings, site_url)
     _rebuild_legal_pages(env, settings, site_url)

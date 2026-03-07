@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ subtopic_name }} — {{ niche_name }} | {{ site_title }}</title>
+  <meta name="description" content="Expert {{ subtopic_name | lower }} guides and articles. {{ tagline }}">
+  <meta property="og:title" content="{{ subtopic_name }} — {{ niche_name }} | {{ site_title }}">
+  <meta property="og:description" content="Expert {{ subtopic_name | lower }} guides and articles.">
+  <meta property="og:type" content="website">
+  <link rel="canonical" href="{{ site_url }}/{{ niche_id }}/{{ subtopic_id }}/">
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #ffffff; --surface: #f9fafb; --text: #111827; --text-secondary: #6b7280;
+      --accent: #2563eb; --accent-hover: #1d4ed8; --accent-light: #eff6ff;
+      --border: #e5e7eb; --shadow: 0 4px 12px rgba(0,0,0,0.08); --radius: 8px; --max-width: 1200px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text); font-family: 'Inter', -apple-system, sans-serif; font-size: 16px; line-height: 1.6; }
+    a { color: var(--accent); text-decoration: none; transition: color 0.2s; }
+    a:hover { color: var(--accent-hover); }
+    .container { max-width: var(--max-width); margin: 0 auto; padding: 0 24px; }
+
+    .header { position: sticky; top: 0; z-index: 50; background: #1e3a8a; border-bottom: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(8px); }
+    .header-inner { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; }
+    .logo { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 18px; color: #fff; text-decoration: none; }
+    .nav-links { display: flex; gap: 4px; flex-wrap: wrap; align-items: center; }
+    .nav-link { padding: 6px 12px; border-radius: 6px; font-size: 14px; font-weight: 500; color: rgba(255,255,255,0.75); transition: all 0.15s; }
+    .nav-link:hover, .nav-link.active { color: #fff; background: rgba(255,255,255,0.12); }
+    .subscribe-link { padding: 6px 14px; border-radius: 6px; font-size: 13px; font-weight: 600; color: #fff; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); transition: all 0.15s; display: flex; align-items: center; gap: 5px; text-decoration: none; }
+    .subscribe-link:hover { background: rgba(255,255,255,0.25); color: #fff; }
+    .nav-item { position: relative; display: inline-block; }
+    .nav-item:hover .nav-dropdown { display: block; }
+    .nav-dropdown { display: none; position: absolute; top: 100%; left: 0; background: #fff; border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.12); min-width: 200px; padding: 8px 0; z-index: 100; }
+    .nav-dropdown a { display: block; padding: 8px 16px; font-size: 13px; color: var(--text); font-weight: 500; transition: background 0.1s; text-decoration: none; }
+    .nav-dropdown a:hover { background: var(--accent-light); color: var(--accent); }
+
+    .breadcrumb { padding: 16px 0; font-size: 14px; color: var(--text-secondary); }
+    .breadcrumb a { color: var(--text-secondary); }
+    .breadcrumb a:hover { color: var(--accent); }
+    .breadcrumb span { margin: 0 6px; }
+
+    .page-header { padding: 32px 0 24px; border-bottom: 1px solid var(--border); margin-bottom: 24px; }
+    .page-header h1 { font-size: 32px; font-weight: 800; line-height: 1.2; margin-bottom: 8px; letter-spacing: -0.02em; }
+    .page-header p { font-size: 16px; color: var(--text-secondary); max-width: 600px; }
+
+    .subtopic-bar { display: flex; flex-wrap: wrap; gap: 6px; padding: 16px 0; border-bottom: 1px solid var(--border); margin-bottom: 24px; }
+    .subtopic-tab { padding: 6px 14px; border-radius: 20px; border: 1px solid var(--border); background: transparent; color: var(--text-secondary); font-size: 13px; font-weight: 500; font-family: inherit; transition: all 0.15s; text-decoration: none; display: inline-block; }
+    .subtopic-tab:hover, .subtopic-tab.active { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+
+    .posts-list { display: flex; flex-direction: column; gap: 16px; padding-bottom: 48px; }
+    .post-item { display: flex; gap: 20px; padding: 20px; border: 1px solid var(--border); border-radius: var(--radius); transition: all 0.25s; text-decoration: none; color: var(--text); }
+    .post-item:hover { border-color: var(--accent); box-shadow: var(--shadow); transform: translateY(-2px); color: var(--text); }
+    .post-number { flex-shrink: 0; width: 40px; height: 40px; border-radius: 50%; background: var(--surface); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; color: var(--text-secondary); }
+    .post-content { flex: 1; min-width: 0; }
+    .post-title { font-size: 17px; font-weight: 600; line-height: 1.4; margin-bottom: 6px; }
+    .post-item:hover .post-title { color: var(--accent); }
+    .post-meta { font-size: 13px; color: var(--text-secondary); display: flex; gap: 16px; flex-wrap: wrap; }
+
+    .empty-state { text-align: center; padding: 80px 24px; color: var(--text-secondary); }
+    .empty-state h2 { font-size: 24px; color: var(--text); margin-bottom: 8px; }
+
+    .footer { background: var(--surface); border-top: 1px solid var(--border); padding: 24px 0; margin-top: 48px; text-align: center; font-size: 13px; color: var(--text-secondary); }
+
+    @media (max-width: 640px) {
+      .page-header h1 { font-size: 24px; }
+      .post-item { flex-direction: column; gap: 12px; }
+      .nav-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <div class="container">
+      <div class="header-inner">
+        <a href="/" class="logo">
+          <img src="/assets/logo-full-dark.svg" alt="TechLife Insights" style="height:48px;width:auto;">
+        </a>
+        <nav class="nav-links">
+          <a href="/" class="nav-link">Home</a>
+          {% for nid, niche in niches.items() %}
+            {% if niche.enabled %}
+            <div class="nav-item">
+              <a href="/{{ nid }}/" class="nav-link{% if nid == niche_id %} active{% endif %}">{{ niche.name }}</a>
+              {% if niche.subtopics %}
+              <div class="nav-dropdown">
+                {% for sub_id, sub in niche.subtopics.items() %}
+                <a href="/{{ nid }}/{{ sub_id }}/">{{ sub.name }}</a>
+                {% endfor %}
+              </div>
+              {% endif %}
+            </div>
+            {% endif %}
+          {% endfor %}
+          <a href="https://techlife-insights.kit.com/be266c00d5" target="_blank" rel="noopener" class="subscribe-link">📬 Subscribe</a>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="breadcrumb">
+      <a href="/">Home</a><span>›</span>
+      <a href="/{{ niche_id }}/">{{ niche_name }}</a><span>›</span>
+      {{ subtopic_name }}
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="page-header">
+      {% set icons = {'ai_tools': '🤖', 'personal_finance': '💰', 'health_biohacking': '💪', 'home_tech': '🏠', 'travel': '✈️', 'pet_care': '🐾', 'fitness_wellness': '🏋️', 'remote_work': '💻'} %}
+      <div style="font-size:36px;margin-bottom:12px;">{{ icons.get(niche_id, '📌') }}</div>
+      <h1>{{ subtopic_name }}</h1>
+      <p>{{ posts|length }} article{{ 's' if posts|length != 1 else '' }} about {{ subtopic_name | lower }}</p>
+    </div>
+
+    <!-- Sibling subtopic tabs -->
+    {% set current_niche = niches.get(niche_id, {}) %}
+    {% if current_niche.subtopics %}
+    <div class="subtopic-bar">
+      <a href="/{{ niche_id }}/" class="subtopic-tab">All {{ niche_name }}</a>
+      {% for sub_id, sub in current_niche.subtopics.items() %}
+      <a href="/{{ niche_id }}/{{ sub_id }}/" class="subtopic-tab{% if sub_id == subtopic_id %} active{% endif %}">{{ sub.name }}</a>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="container">
+    {% if posts|length > 0 %}
+    <div class="posts-list">
+      {% for post in posts %}
+      <a href="{{ post.url }}" class="post-item">
+        <div class="post-number">{{ loop.index }}</div>
+        <div class="post-content">
+          <div class="post-title">{{ post.title }}</div>
+          <div class="post-meta">
+            <span>📅 {{ post.published_at[:10] if post.published_at else '' }}</span>
+            <span>📝 {{ post.word_count }} words</span>
+          </div>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <h2>🚀 Articles Coming Soon</h2>
+      <p>New {{ subtopic_name | lower }} content publishes daily — check back soon!</p>
+    </div>
+    {% endif %}
+  </div>
+
+  <footer class="footer">
+    <div class="container">
+      <span>&copy; 2026 {{ site_title }}. All rights reserved.</span>
+      <div style="margin-top: 8px; font-size: 13px;">
+        <a href="/privacy.html" style="color: var(--text-secondary); margin: 0 6px;">Privacy</a> ·
+        <a href="/about.html" style="color: var(--text-secondary); margin: 0 6px;">About</a> ·
+        <a href="/contact.html" style="color: var(--text-secondary); margin: 0 6px;">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

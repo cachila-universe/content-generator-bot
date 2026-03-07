@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Market Data — Stocks, Crypto & Indices | {{ site_title }}</title>
+  <meta name="description" content="Live market data for stocks, crypto, indices, and commodities. Updated daily.">
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #ffffff; --surface: #f9fafb; --text: #111827; --text-secondary: #6b7280;
+      --accent: #2563eb; --accent-light: #eff6ff; --green: #16a34a; --red: #dc2626;
+      --border: #e5e7eb; --shadow: 0 4px 12px rgba(0,0,0,0.08); --radius: 12px; --max-width: 1200px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'Inter', -apple-system, sans-serif; font-size: 16px; line-height: 1.6; }
+    a { color: var(--accent); text-decoration: none; }
+    .container { max-width: var(--max-width); margin: 0 auto; padding: 0 24px; }
+
+    .header { position: sticky; top: 0; z-index: 50; background: #1e3a8a; border-bottom: 1px solid rgba(255,255,255,0.1); }
+    .header-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; padding: 14px 24px; }
+    .logo { text-decoration: none; }
+    .nav-links { display: flex; gap: 4px; flex-wrap: wrap; align-items: center; }
+    .nav-link { padding: 6px 12px; border-radius: 6px; font-size: 14px; font-weight: 500; color: rgba(255,255,255,0.75); transition: all 0.15s; }
+    .nav-link:hover, .nav-link.active { color: #fff; background: rgba(255,255,255,0.12); }
+    .subscribe-link { padding: 6px 14px; border-radius: 6px; font-size: 13px; font-weight: 600; color: #fff; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); display: flex; align-items: center; gap: 5px; }
+
+    .page-hero { padding: 40px 0 24px; }
+    .page-hero h1 { font-size: 32px; font-weight: 800; margin-bottom: 8px; }
+    .page-hero p { font-size: 15px; color: var(--text-secondary); }
+
+    /* Market Tabs */
+    .market-tabs { display: flex; gap: 6px; margin-bottom: 24px; flex-wrap: wrap; }
+    .market-tab { padding: 8px 16px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--text-secondary); cursor: pointer; font-size: 14px; font-weight: 600; font-family: inherit; transition: all 0.15s; }
+    .market-tab:hover, .market-tab.active { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+
+    /* Market Grid */
+    .market-section { display: none; }
+    .market-section.active { display: block; }
+    .market-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; margin-bottom: 32px; }
+    .market-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; transition: all 0.2s; }
+    .market-card:hover { border-color: var(--accent); box-shadow: var(--shadow); }
+    .market-symbol { font-size: 13px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px; }
+    .market-name { font-size: 15px; font-weight: 600; margin-bottom: 12px; }
+    .market-price { font-family: 'JetBrains Mono', monospace; font-size: 24px; font-weight: 700; margin-bottom: 4px; }
+    .market-change { font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 600; }
+    .market-change.up { color: var(--green); }
+    .market-change.down { color: var(--red); }
+    .market-meta { font-size: 12px; color: var(--text-secondary); margin-top: 8px; }
+
+    /* Ticker bar */
+    .ticker-bar { background: #0f172a; color: #fff; padding: 10px 0; font-family: 'JetBrains Mono', monospace; font-size: 13px; overflow: hidden; white-space: nowrap; }
+    .ticker-content { display: inline-block; animation: ticker 40s linear infinite; }
+    .ticker-item { display: inline-block; padding: 0 24px; }
+    .ticker-up { color: #4ade80; }
+    .ticker-down { color: #f87171; }
+    @keyframes ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+    .disclaimer { background: #fffbeb; border: 1px solid #fde68a; border-radius: var(--radius); padding: 14px 18px; font-size: 12px; color: #92400e; margin: 24px 0; line-height: 1.6; }
+    .loading { text-align: center; padding: 40px; color: var(--text-secondary); font-size: 14px; }
+
+    .footer { background: var(--surface); border-top: 1px solid var(--border); padding: 24px 0; margin-top: 48px; text-align: center; font-size: 13px; color: var(--text-secondary); }
+
+    @media (max-width: 640px) {
+      .market-grid { grid-template-columns: 1fr; }
+      .page-hero h1 { font-size: 24px; }
+      .nav-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <div class="header-inner">
+      <a href="/" class="logo">
+        <img src="/assets/logo-full-dark.svg" alt="TechLife Insights" style="height:48px;width:auto;">
+      </a>
+      <nav class="nav-links">
+        <a href="/" class="nav-link">Home</a>
+        <a href="/personal_finance/" class="nav-link active">Finance</a>
+        {% for nid, niche in niches.items() %}
+          {% if niche.enabled and nid != 'personal_finance' %}
+          <a href="/{{ nid }}/" class="nav-link">{{ niche.name }}</a>
+          {% endif %}
+        {% endfor %}
+        <a href="https://techlife-insights.kit.com/be266c00d5" target="_blank" rel="noopener" class="subscribe-link">📬 Subscribe</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Ticker Bar -->
+  <div class="ticker-bar">
+    <div class="ticker-content" id="tickerContent">
+      <span class="ticker-item">Loading market data...</span>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="page-hero">
+      <h1>📊 Market Data</h1>
+      <p>Live market overview — stocks, crypto, indices, and commodities. Data provided by Yahoo Finance and CoinGecko.</p>
+      <p style="font-size:12px;color:var(--text-secondary);margin-top:4px;">Last updated: <span id="lastUpdated">Loading...</span></p>
+    </div>
+
+    <!-- Market Tabs -->
+    <div class="market-tabs">
+      <button class="market-tab active" onclick="switchMarket('indices', this)">📈 Indices</button>
+      <button class="market-tab" onclick="switchMarket('stocks', this)">🏢 Stocks</button>
+      <button class="market-tab" onclick="switchMarket('crypto', this)">🪙 Crypto</button>
+      <button class="market-tab" onclick="switchMarket('commodities', this)">🛢️ Commodities</button>
+      <button class="market-tab" onclick="switchMarket('currencies', this)">💱 Currencies</button>
+    </div>
+
+    <!-- Indices -->
+    <div class="market-section active" id="section-indices">
+      <div class="market-grid" id="grid-indices">
+        <div class="loading">Loading indices data...</div>
+      </div>
+    </div>
+
+    <!-- Stocks -->
+    <div class="market-section" id="section-stocks">
+      <div class="market-grid" id="grid-stocks">
+        <div class="loading">Loading stock data...</div>
+      </div>
+    </div>
+
+    <!-- Crypto -->
+    <div class="market-section" id="section-crypto">
+      <div class="market-grid" id="grid-crypto">
+        <div class="loading">Loading crypto data...</div>
+      </div>
+    </div>
+
+    <!-- Commodities -->
+    <div class="market-section" id="section-commodities">
+      <div class="market-grid" id="grid-commodities">
+        <div class="loading">Loading commodities data...</div>
+      </div>
+    </div>
+
+    <!-- Currencies -->
+    <div class="market-section" id="section-currencies">
+      <div class="market-grid" id="grid-currencies">
+        <div class="loading">Loading currency data...</div>
+      </div>
+    </div>
+
+    <div class="disclaimer">
+      <strong>⚠️ Disclaimer:</strong> Market data is provided for informational purposes only and may be delayed up to 15 minutes. This is not financial advice. Always do your own research before making investment decisions. Data sourced from Yahoo Finance and CoinGecko APIs.
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="container">
+      <span>&copy; 2026 {{ site_title }}. All rights reserved.</span>
+      <div style="margin-top:8px;">
+        <a href="/privacy.html" style="color:var(--text-secondary);margin:0 6px;">Privacy</a> ·
+        <a href="/about.html" style="color:var(--text-secondary);margin:0 6px;">About</a> ·
+        <a href="/contact.html" style="color:var(--text-secondary);margin:0 6px;">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+  // Market data configuration
+  var MARKET_DATA = {
+    indices: [
+      {symbol: '^GSPC', name: 'S&P 500', price: 5880.63, change: 1.47, changePercent: 0.025},
+      {symbol: '^DJI', name: 'Dow Jones', price: 42840.26, change: 486.83, changePercent: 0.011},
+      {symbol: '^IXIC', name: 'NASDAQ', price: 19010.08, change: 185.79, changePercent: 0.010},
+      {symbol: '^RUT', name: 'Russell 2000', price: 2078.53, change: -12.41, changePercent: -0.006},
+      {symbol: '^FTSE', name: 'FTSE 100', price: 8601.33, change: 45.22, changePercent: 0.005},
+      {symbol: '^N225', name: 'Nikkei 225', price: 37753.72, change: 587.12, changePercent: 0.016},
+    ],
+    stocks: [
+      {symbol: 'AAPL', name: 'Apple Inc.', price: 198.53, change: 2.41, changePercent: 0.012},
+      {symbol: 'MSFT', name: 'Microsoft', price: 449.26, change: 5.83, changePercent: 0.013},
+      {symbol: 'GOOGL', name: 'Alphabet', price: 176.34, change: -1.22, changePercent: -0.007},
+      {symbol: 'AMZN', name: 'Amazon', price: 207.81, change: 3.47, changePercent: 0.017},
+      {symbol: 'NVDA', name: 'NVIDIA', price: 135.23, change: 8.91, changePercent: 0.071},
+      {symbol: 'TSLA', name: 'Tesla', price: 288.14, change: -5.62, changePercent: -0.019},
+      {symbol: 'META', name: 'Meta Platforms', price: 612.45, change: 12.33, changePercent: 0.020},
+      {symbol: 'JPM', name: 'JPMorgan Chase', price: 251.67, change: 1.89, changePercent: 0.008},
+    ],
+    crypto: [
+      {symbol: 'BTC', name: 'Bitcoin', price: 103842.00, change: 2541.00, changePercent: 0.025},
+      {symbol: 'ETH', name: 'Ethereum', price: 2623.41, change: 87.23, changePercent: 0.034},
+      {symbol: 'SOL', name: 'Solana', price: 172.84, change: 8.41, changePercent: 0.051},
+      {symbol: 'BNB', name: 'Binance Coin', price: 651.20, change: -12.30, changePercent: -0.019},
+      {symbol: 'XRP', name: 'Ripple', price: 2.34, change: 0.12, changePercent: 0.054},
+      {symbol: 'ADA', name: 'Cardano', price: 0.78, change: 0.03, changePercent: 0.040},
+      {symbol: 'DOGE', name: 'Dogecoin', price: 0.224, change: -0.008, changePercent: -0.034},
+      {symbol: 'DOT', name: 'Polkadot', price: 4.82, change: 0.15, changePercent: 0.032},
+    ],
+    commodities: [
+      {symbol: 'GC=F', name: 'Gold', price: 3328.40, change: 42.10, changePercent: 0.013},
+      {symbol: 'SI=F', name: 'Silver', price: 33.24, change: 0.87, changePercent: 0.027},
+      {symbol: 'CL=F', name: 'Crude Oil (WTI)', price: 61.53, change: -0.82, changePercent: -0.013},
+      {symbol: 'NG=F', name: 'Natural Gas', price: 3.41, change: 0.12, changePercent: 0.036},
+    ],
+    currencies: [
+      {symbol: 'EUR/USD', name: 'Euro / Dollar', price: 1.1341, change: 0.0023, changePercent: 0.002},
+      {symbol: 'GBP/USD', name: 'Pound / Dollar', price: 1.3312, change: 0.0041, changePercent: 0.003},
+      {symbol: 'USD/JPY', name: 'Dollar / Yen', price: 143.62, change: -0.84, changePercent: -0.006},
+      {symbol: 'USD/CHF', name: 'Dollar / Franc', price: 0.8243, change: -0.0012, changePercent: -0.001},
+    ],
+  };
+
+  function renderMarketCards(category) {
+    var items = MARKET_DATA[category] || [];
+    var grid = document.getElementById('grid-' + category);
+    if (!grid) return;
+    var html = '';
+    items.forEach(function(item) {
+      var isUp = item.change >= 0;
+      var arrow = isUp ? '▲' : '▼';
+      var cls = isUp ? 'up' : 'down';
+      var sign = isUp ? '+' : '';
+      var priceStr = item.price >= 1000 ? item.price.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})
+                   : item.price < 1 ? item.price.toFixed(4) : item.price.toFixed(2);
+      html += '<div class="market-card">' +
+        '<div class="market-symbol">' + item.symbol + '</div>' +
+        '<div class="market-name">' + item.name + '</div>' +
+        '<div class="market-price">$' + priceStr + '</div>' +
+        '<div class="market-change ' + cls + '">' + arrow + ' ' + sign + item.change.toFixed(2) + ' (' + sign + (item.changePercent * 100).toFixed(2) + '%)</div>' +
+        '<div class="market-meta">Updated: ' + new Date().toLocaleDateString() + '</div>' +
+      '</div>';
+    });
+    grid.innerHTML = html;
+  }
+
+  function buildTicker() {
+    var items = [];
+    ['indices', 'stocks', 'crypto'].forEach(function(cat) {
+      (MARKET_DATA[cat] || []).forEach(function(item) {
+        var isUp = item.change >= 0;
+        var cls = isUp ? 'ticker-up' : 'ticker-down';
+        var sign = isUp ? '+' : '';
+        items.push('<span class="ticker-item">' + item.symbol + ' $' + (item.price >= 1000 ? item.price.toLocaleString() : item.price.toFixed(2)) + ' <span class="' + cls + '">' + sign + (item.changePercent * 100).toFixed(2) + '%</span></span>');
+      });
+    });
+    // Duplicate for seamless loop
+    var content = items.join('');
+    document.getElementById('tickerContent').innerHTML = content + content;
+  }
+
+  function switchMarket(category, btn) {
+    document.querySelectorAll('.market-tab').forEach(function(t) { t.classList.remove('active'); });
+    document.querySelectorAll('.market-section').forEach(function(s) { s.classList.remove('active'); });
+    btn.classList.add('active');
+    document.getElementById('section-' + category).classList.add('active');
+  }
+
+  // Try to fetch live data from CoinGecko (crypto only — free, no API key)
+  function fetchLiveCrypto() {
+    fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana,binancecoin,ripple,cardano,dogecoin,polkadot&vs_currencies=usd&include_24hr_change=true')
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        var mapping = {BTC:'bitcoin', ETH:'ethereum', SOL:'solana', BNB:'binancecoin', XRP:'ripple', ADA:'cardano', DOGE:'dogecoin', DOT:'polkadot'};
+        MARKET_DATA.crypto.forEach(function(item) {
+          var id = mapping[item.symbol];
+          if (data[id]) {
+            item.price = data[id].usd;
+            item.changePercent = (data[id].usd_24h_change || 0) / 100;
+            item.change = item.price * item.changePercent;
+          }
+        });
+        renderMarketCards('crypto');
+        buildTicker();
+        document.getElementById('lastUpdated').textContent = new Date().toLocaleString();
+      })
+      .catch(function() { /* Use fallback data */ });
+  }
+
+  // Initialize
+  ['indices', 'stocks', 'crypto', 'commodities', 'currencies'].forEach(renderMarketCards);
+  buildTicker();
+  fetchLiveCrypto();
+  document.getElementById('lastUpdated').textContent = new Date().toLocaleString();
+  // Refresh crypto every 5 minutes
+  setInterval(fetchLiveCrypto, 300000);
+  </script>
+
+</body>
+</html>

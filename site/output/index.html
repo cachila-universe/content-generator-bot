@@ -44,6 +44,15 @@
     .nav-links { display: flex; gap: 4px; flex-wrap: wrap; }
     .nav-link { padding: 6px 12px; border-radius: 6px; font-size: 14px; font-weight: 500; color: rgba(255,255,255,0.75); transition: all 0.15s; }
     .nav-link:hover { color: #fff; background: rgba(255,255,255,0.12); }
+    .subscribe-link { padding: 6px 14px; border-radius: 6px; font-size: 13px; font-weight: 600; color: #fff; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); transition: all 0.15s; display: flex; align-items: center; gap: 5px; }
+    .subscribe-link:hover { background: rgba(255,255,255,0.25); color: #fff; }
+
+    /* Dropdown Nav */
+    .nav-item { position: relative; }
+    .nav-item:hover .nav-dropdown { display: block; }
+    .nav-dropdown { display: none; position: absolute; top: 100%; left: 0; background: #fff; border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.12); min-width: 200px; padding: 8px 0; z-index: 100; }
+    .nav-dropdown a { display: block; padding: 8px 16px; font-size: 13px; color: var(--text); font-weight: 500; transition: background 0.1s; }
+    .nav-dropdown a:hover { background: var(--accent-light); color: var(--accent); }
 
     /* Hero */
     .hero { padding: 64px 0 48px; text-align: center; }
@@ -122,37 +131,206 @@
           <a href="/" class="nav-link">Home</a>
           
             
-            <a href="/ai_tools/" class="nav-link">AI Tools &amp; SaaS</a>
+            <div class="nav-item">
+              <a href="/ai_tools/" class="nav-link">AI Tools &amp; SaaS</a>
+              
+              <div class="nav-dropdown">
+                
+                <a href="/ai_tools/ai_apps/">AI Apps &amp; Software</a>
+                
+                <a href="/ai_tools/ai_news/">AI News</a>
+                
+                <a href="/ai_tools/ai_automation/">AI Automation</a>
+                
+                <a href="/ai_tools/ai_for_business/">AI for Business</a>
+                
+                <a href="/ai_tools/ai_creative/">AI Creative Tools</a>
+                
+                <a href="/ai_tools/ai_coding/">AI for Developers</a>
+                
+              </div>
+              
+            </div>
             
           
             
-            <a href="/personal_finance/" class="nav-link">Personal Finance &amp; Investing</a>
+            <div class="nav-item">
+              <a href="/personal_finance/" class="nav-link">Personal Finance &amp; Investing</a>
+              
+              <div class="nav-dropdown">
+                
+                <a href="/personal_finance/investing/">Investing</a>
+                
+                <a href="/personal_finance/stocks/">Stocks</a>
+                
+                <a href="/personal_finance/crypto/">Crypto</a>
+                
+                <a href="/personal_finance/budgeting/">Budgeting &amp; Saving</a>
+                
+                <a href="/personal_finance/market_news/">Market News</a>
+                
+                <a href="/personal_finance/retirement/">Retirement</a>
+                
+                <a href="/personal_finance/credit/">Credit &amp; Loans</a>
+                
+                <a href="/personal_finance/real_estate/">Real Estate</a>
+                
+              </div>
+              
+            </div>
             
           
             
-            <a href="/health_biohacking/" class="nav-link">Health &amp; Biohacking</a>
+            <div class="nav-item">
+              <a href="/health_biohacking/" class="nav-link">Health &amp; Biohacking</a>
+              
+              <div class="nav-dropdown">
+                
+                <a href="/health_biohacking/supplements/">Supplements &amp; Vitamins</a>
+                
+                <a href="/health_biohacking/biohacking/">Biohacking</a>
+                
+                <a href="/health_biohacking/nutrition/">Nutrition &amp; Diet</a>
+                
+                <a href="/health_biohacking/sleep/">Sleep Optimization</a>
+                
+                <a href="/health_biohacking/mental_health/">Mental Health</a>
+                
+                <a href="/health_biohacking/longevity/">Longevity &amp; Anti-Aging</a>
+                
+              </div>
+              
+            </div>
             
           
             
-            <a href="/home_tech/" class="nav-link">Home Tech &amp; Smart Devices</a>
+            <div class="nav-item">
+              <a href="/home_tech/" class="nav-link">Home Tech &amp; Smart Devices</a>
+              
+              <div class="nav-dropdown">
+                
+                <a href="/home_tech/smart_home/">Smart Home</a>
+                
+                <a href="/home_tech/security/">Home Security</a>
+                
+                <a href="/home_tech/appliances/">Smart Appliances</a>
+                
+                <a href="/home_tech/entertainment/">Home Entertainment</a>
+                
+                <a href="/home_tech/networking/">Wi-Fi &amp; Networking</a>
+                
+                <a href="/home_tech/energy/">Energy &amp; Solar</a>
+                
+                <a href="/home_tech/product_reviews/">Product Reviews</a>
+                
+              </div>
+              
+            </div>
             
           
             
-            <a href="/travel/" class="nav-link">Travel</a>
+            <div class="nav-item">
+              <a href="/travel/" class="nav-link">Travel</a>
+              
+              <div class="nav-dropdown">
+                
+                <a href="/travel/tips/">Travel Tips &amp; Advice</a>
+                
+                <a href="/travel/destinations/">Destinations</a>
+                
+                <a href="/travel/flights/">Flights &amp; Airports</a>
+                
+                <a href="/travel/hotels/">Hotels &amp; Accommodation</a>
+                
+                <a href="/travel/car_rental/">Car Rental &amp; Transport</a>
+                
+                <a href="/travel/travel_gear/">Travel Gear &amp; Products</a>
+                
+                <a href="/travel/digital_nomad/">Digital Nomad</a>
+                
+                <a href="/travel/travel_insurance/">Travel Insurance</a>
+                
+                <a href="/travel/food_culture/">Food &amp; Culture</a>
+                
+              </div>
+              
+            </div>
             
           
             
-            <a href="/pet_care/" class="nav-link">Pet Care &amp; Products</a>
+            <div class="nav-item">
+              <a href="/pet_care/" class="nav-link">Pet Care &amp; Products</a>
+              
+              <div class="nav-dropdown">
+                
+                <a href="/pet_care/dogs/">Dogs</a>
+                
+                <a href="/pet_care/cats/">Cats</a>
+                
+                <a href="/pet_care/pet_food/">Pet Food &amp; Nutrition</a>
+                
+                <a href="/pet_care/pet_products/">Pet Products &amp; Gear</a>
+                
+                <a href="/pet_care/pet_health/">Pet Health</a>
+                
+                <a href="/pet_care/fish_aquarium/">Fish &amp; Aquarium</a>
+                
+                <a href="/pet_care/exotic_pets/">Exotic &amp; Small Pets</a>
+                
+              </div>
+              
+            </div>
             
           
             
-            <a href="/fitness_wellness/" class="nav-link">Fitness &amp; Wellness</a>
+            <div class="nav-item">
+              <a href="/fitness_wellness/" class="nav-link">Fitness &amp; Wellness</a>
+              
+              <div class="nav-dropdown">
+                
+                <a href="/fitness_wellness/workouts/">Workouts &amp; Training</a>
+                
+                <a href="/fitness_wellness/equipment/">Gym Equipment &amp; Gear</a>
+                
+                <a href="/fitness_wellness/nutrition/">Sports Nutrition</a>
+                
+                <a href="/fitness_wellness/running/">Running &amp; Cardio</a>
+                
+                <a href="/fitness_wellness/yoga_flexibility/">Yoga &amp; Flexibility</a>
+                
+                <a href="/fitness_wellness/wearables/">Fitness Wearables</a>
+                
+                <a href="/fitness_wellness/product_reviews/">Product Reviews</a>
+                
+              </div>
+              
+            </div>
             
           
             
-            <a href="/remote_work/" class="nav-link">Remote Work &amp; Productivity</a>
+            <div class="nav-item">
+              <a href="/remote_work/" class="nav-link">Remote Work &amp; Productivity</a>
+              
+              <div class="nav-dropdown">
+                
+                <a href="/remote_work/office_setup/">Office Setup</a>
+                
+                <a href="/remote_work/productivity_apps/">Productivity Apps</a>
+                
+                <a href="/remote_work/remote_jobs/">Remote Jobs</a>
+                
+                <a href="/remote_work/equipment/">Equipment &amp; Gear</a>
+                
+                <a href="/remote_work/tips/">Tips &amp; Guides</a>
+                
+                <a href="/remote_work/coworking/">Coworking &amp; Spaces</a>
+                
+              </div>
+              
+            </div>
             
           
+          <a href="https://techlife-insights.kit.com/be266c00d5" target="_blank" rel="noopener" class="subscribe-link">📬 Subscribe</a>
         </nav>
       </div>
     </div>
@@ -166,15 +344,9 @@
     </div>
   </section>
 
-  <!-- Newsletter CTA -->
+  <!-- Ad Slot (for future AdSense) -->
   <div class="container">
-    <div style="background:linear-gradient(135deg,#eff6ff 0%,#f0fdf4 100%);border:1px solid #bfdbfe;border-radius:14px;padding:28px 32px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;margin:24px 0;">
-      <div>
-        <div style="font-family:'Inter',sans-serif;font-size:18px;font-weight:800;color:#1e40af;margin-bottom:6px;">📬 Get Our Best Guides Weekly</div>
-        <div style="font-family:'Inter',sans-serif;font-size:14px;color:#3b82f6;">Free expert tips on AI tools, personal finance, health, home tech, travel, pet care, fitness &amp; remote work — delivered to your inbox.</div>
-      </div>
-      <a href="https://techlife-insights.kit.com/be266c00d5" target="_blank" rel="noopener" style="background:#2563eb;color:#fff;text-decoration:none;padding:11px 24px;border-radius:8px;font-family:'Inter',sans-serif;font-size:14px;font-weight:700;white-space:nowrap;">Subscribe Free →</a>
-    </div>
+    <div class="ad-slot">Ad Space — Google AdSense</div>
   </div>
 
   <!-- Categories -->
@@ -211,6 +383,34 @@
               
               1 article
             </div>
+            
+            <div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:4px;">
+              
+              
+              <span style="font-size:11px;padding:2px 8px;background:var(--accent-light);color:var(--accent);border-radius:10px;font-weight:500;">AI Apps &amp; Software</span>
+              
+              
+              
+              <span style="font-size:11px;padding:2px 8px;background:var(--accent-light);color:var(--accent);border-radius:10px;font-weight:500;">AI News</span>
+              
+              
+              
+              <span style="font-size:11px;padding:2px 8px;background:var(--accent-light);color:var(--accent);border-radius:10px;font-weight:500;">AI Automation</span>
+              
+              
+              
+              <span style="font-size:11px;padding:2px 8px;background:var(--accent-light);color:var(--accent);border-radius:10px;font-weight:500;">AI for Business</span>
+              
+              
+              
+              
+              
+              
+              
+              <span style="font-size:11px;padding:2px 8px;color:var(--text-secondary);">+2 more</span>
+              
+            </div>
+            
           </a>
           
         
@@ -239,6 +439,38 @@
               
               1 article
             </div>
+            
+            <div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:4px;">
+              
+              
+              <span style="font-size:11px;padding:2px 8px;background:var(--accent-light);color:var(--accent);border-radius:10px;font-weight:500;">Investing</span>
+              
+              
+              
+              <span style="font-size:11px;padding:2px 8px;background:var(--accent-light);color:var(--accent);border-radius:10px;font-weight:500;">Stocks</span>
+              
+              
+              
+              <span style="font-size:11px;padding:2px 8px;background:var(--accent-light);color:var(--accent);border-radius:10px;font-weight:500;">Crypto</span>
+              
+              
+              
+              <span style="font-size:11px;padding:2px 8px;background:var(--accent-light);color:var(--accent);border-radius:10px;font-weight:500;">Budgeting &amp; Saving</span>
+              
+              
+              
+              
+              
+              
+              
+              
+              
+              
+              
+              <span style="font-size:11px;padding:2px 8px;color:var(--text-secondary);">+4 more</span>
+              
+            </div>
+            
           </a>
           
         
@@ -267,6 +499,34 @@
               
               1 article
             </div>
+            
+            <div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:4px;">
+              
+              
+              <span style="font-size:11px;padding:2px 8px;background:var(--accent-light);color:var(--accent);border-radius:10px;font-weight:500;">Supplements &amp; Vitamins</span>
+              
+              
+              
+              <span style="font-size:11px;padding:2px 8px;background:var(--accent-light);color:var(--accent);border-radius:10px;font-weight:500;">Biohacking</span>
+              
+              
+              
+              <span style="font-size:11px;padding:2px 8px;background:var(--accent-light);color:var(--accent);border-radius:10px;font-weight:500;">Nutrition &amp; Diet</span>
+              
+              
+              
+              <span style="font-size:11px;padding:2px 8px;background:var(--accent-light);color:var(--accent);border-radius:10px;font-weight:500;">Sleep Optimization</span>
+              
+              
+              
+              
+              
+              
+              
+              <span style="font-size:11px;padding:2px 8px;color:var(--text-secondary);">+2 more</span>
+              
+            </div>
+            
           </a>
           
         
@@ -295,6 +555,36 @@
               
               1 article
             </div>
+            
+            <div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:4px;">
+              
+              
+              <span style="font-size:11px;padding:2px 8px;background:var(--accent-light);color:var(--accent);border-radius:10px;font-weight:500;">Smart Home</span>
+              
+              
+              
+              <span style="font-size:11px;padding:2px 8px;background:var(--accent-light);color:var(--accent);border-radius:10px;font-weight:500;">Home Security</span>
+              
+              
+              
+              <span style="font-size:11px;padding:2px 8px;background:var(--accent-light);color:var(--accent);border-radius:10px;font-weight:500;">Smart Appliances</span>
+              
+              
+              
+              <span style="font-size:11px;padding:2px 8px;background:var(--accent-light);color:var(--accent);border-radius:10px;font-weight:500;">Home Entertainment</span>
+              
+              
+              
+              
+              
+              
+              
+              
+              
+              <span style="font-size:11px;padding:2px 8px;color:var(--text-secondary);">+3 more</span>
+              
+            </div>
+            
           </a>
           
         
@@ -323,6 +613,40 @@
               
               1 article
             </div>
+            
+            <div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:4px;">
+              
+              
+              <span style="font-size:11px;padding:2px 8px;background:var(--accent-light);color:var(--accent);border-radius:10px;font-weight:500;">Travel Tips &amp; Advice</span>
+              
+              
+              
+              <span style="font-size:11px;padding:2px 8px;background:var(--accent-light);color:var(--accent);border-radius:10px;font-weight:500;">Destinations</span>
+              
+              
+              
+              <span style="font-size:11px;padding:2px 8px;background:var(--accent-light);color:var(--accent);border-radius:10px;font-weight:500;">Flights &amp; Airports</span>
+              
+              
+              
+              <span style="font-size:11px;padding:2px 8px;background:var(--accent-light);color:var(--accent);border-radius:10px;font-weight:500;">Hotels &amp; Accommodation</span>
+              
+              
+              
+              
+              
+              
+              
+              
+              
+              
+              
+              
+              
+              <span style="font-size:11px;padding:2px 8px;color:var(--text-secondary);">+5 more</span>
+              
+            </div>
+            
           </a>
           
         
@@ -351,6 +675,36 @@
               
               1 article
             </div>
+            
+            <div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:4px;">
+              
+              
+              <span style="font-size:11px;padding:2px 8px;background:var(--accent-light);color:var(--accent);border-radius:10px;font-weight:500;">Dogs</span>
+              
+              
+              
+              <span style="font-size:11px;padding:2px 8px;background:var(--accent-light);color:var(--accent);border-radius:10px;font-weight:500;">Cats</span>
+              
+              
+              
+              <span style="font-size:11px;padding:2px 8px;background:var(--accent-light);color:var(--accent);border-radius:10px;font-weight:500;">Pet Food &amp; Nutrition</span>
+              
+              
+              
+              <span style="font-size:11px;padding:2px 8px;background:var(--accent-light);color:var(--accent);border-radius:10px;font-weight:500;">Pet Products &amp; Gear</span>
+              
+              
+              
+              
+              
+              
+              
+              
+              
+              <span style="font-size:11px;padding:2px 8px;color:var(--text-secondary);">+3 more</span>
+              
+            </div>
+            
           </a>
           
         
@@ -379,6 +733,36 @@
               
               1 article
             </div>
+            
+            <div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:4px;">
+              
+              
+              <span style="font-size:11px;padding:2px 8px;background:var(--accent-light);color:var(--accent);border-radius:10px;font-weight:500;">Workouts &amp; Training</span>
+              
+              
+              
+              <span style="font-size:11px;padding:2px 8px;background:var(--accent-light);color:var(--accent);border-radius:10px;font-weight:500;">Gym Equipment &amp; Gear</span>
+              
+              
+              
+              <span style="font-size:11px;padding:2px 8px;background:var(--accent-light);color:var(--accent);border-radius:10px;font-weight:500;">Sports Nutrition</span>
+              
+              
+              
+              <span style="font-size:11px;padding:2px 8px;background:var(--accent-light);color:var(--accent);border-radius:10px;font-weight:500;">Running &amp; Cardio</span>
+              
+              
+              
+              
+              
+              
+              
+              
+              
+              <span style="font-size:11px;padding:2px 8px;color:var(--text-secondary);">+3 more</span>
+              
+            </div>
+            
           </a>
           
         
@@ -407,6 +791,34 @@
               
               1 article
             </div>
+            
+            <div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:4px;">
+              
+              
+              <span style="font-size:11px;padding:2px 8px;background:var(--accent-light);color:var(--accent);border-radius:10px;font-weight:500;">Office Setup</span>
+              
+              
+              
+              <span style="font-size:11px;padding:2px 8px;background:var(--accent-light);color:var(--accent);border-radius:10px;font-weight:500;">Productivity Apps</span>
+              
+              
+              
+              <span style="font-size:11px;padding:2px 8px;background:var(--accent-light);color:var(--accent);border-radius:10px;font-weight:500;">Remote Jobs</span>
+              
+              
+              
+              <span style="font-size:11px;padding:2px 8px;background:var(--accent-light);color:var(--accent);border-radius:10px;font-weight:500;">Equipment &amp; Gear</span>
+              
+              
+              
+              
+              
+              
+              
+              <span style="font-size:11px;padding:2px 8px;color:var(--text-secondary);">+2 more</span>
+              
+            </div>
+            
           </a>
           
         

@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Destinations — Travel | TechLife Insights</title>
+  <meta name="description" content="Expert destinations guides and articles. Smart Guides for Modern Living">
+  <meta property="og:title" content="Destinations — Travel | TechLife Insights">
+  <meta property="og:description" content="Expert destinations guides and articles.">
+  <meta property="og:type" content="website">
+  <link rel="canonical" href="https://tech-life-insights.com/travel/destinations/">
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #ffffff; --surface: #f9fafb; --text: #111827; --text-secondary: #6b7280;
+      --accent: #2563eb; --accent-hover: #1d4ed8; --accent-light: #eff6ff;
+      --border: #e5e7eb; --shadow: 0 4px 12px rgba(0,0,0,0.08); --radius: 8px; --max-width: 1200px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text); font-family: 'Inter', -apple-system, sans-serif; font-size: 16px; line-height: 1.6; }
+    a { color: var(--accent); text-decoration: none; transition: color 0.2s; }
+    a:hover { color: var(--accent-hover); }
+    .container { max-width: var(--max-width); margin: 0 auto; padding: 0 24px; }
+
+    .header { position: sticky; top: 0; z-index: 50; background: #1e3a8a; border-bottom: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(8px); }
+    .header-inner { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; }
+    .logo { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 18px; color: #fff; text-decoration: none; }
+    .nav-links { display: flex; gap: 4px; flex-wrap: wrap; align-items: center; }
+    .nav-link { padding: 6px 12px; border-radius: 6px; font-size: 14px; font-weight: 500; color: rgba(255,255,255,0.75); transition: all 0.15s; }
+    .nav-link:hover, .nav-link.active { color: #fff; background: rgba(255,255,255,0.12); }
+    .subscribe-link { padding: 6px 14px; border-radius: 6px; font-size: 13px; font-weight: 600; color: #fff; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); transition: all 0.15s; display: flex; align-items: center; gap: 5px; text-decoration: none; }
+    .subscribe-link:hover { background: rgba(255,255,255,0.25); color: #fff; }
+    .nav-item { position: relative; display: inline-block; }
+    .nav-item:hover .nav-dropdown { display: block; }
+    .nav-dropdown { display: none; position: absolute; top: 100%; left: 0; background: #fff; border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.12); min-width: 200px; padding: 8px 0; z-index: 100; }
+    .nav-dropdown a { display: block; padding: 8px 16px; font-size: 13px; color: var(--text); font-weight: 500; transition: background 0.1s; text-decoration: none; }
+    .nav-dropdown a:hover { background: var(--accent-light); color: var(--accent); }
+
+    .breadcrumb { padding: 16px 0; font-size: 14px; color: var(--text-secondary); }
+    .breadcrumb a { color: var(--text-secondary); }
+    .breadcrumb a:hover { color: var(--accent); }
+    .breadcrumb span { margin: 0 6px; }
+
+    .page-header { padding: 32px 0 24px; border-bottom: 1px solid var(--border); margin-bottom: 24px; }
+    .page-header h1 { font-size: 32px; font-weight: 800; line-height: 1.2; margin-bottom: 8px; letter-spacing: -0.02em; }
+    .page-header p { font-size: 16px; color: var(--text-secondary); max-width: 600px; }
+
+    .subtopic-bar { display: flex; flex-wrap: wrap; gap: 6px; padding: 16px 0; border-bottom: 1px solid var(--border); margin-bottom: 24px; }
+    .subtopic-tab { padding: 6px 14px; border-radius: 20px; border: 1px solid var(--border); background: transparent; color: var(--text-secondary); font-size: 13px; font-weight: 500; font-family: inherit; transition: all 0.15s; text-decoration: none; display: inline-block; }
+    .subtopic-tab:hover, .subtopic-tab.active { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+
+    .posts-list { display: flex; flex-direction: column; gap: 16px; padding-bottom: 48px; }
+    .post-item { display: flex; gap: 20px; padding: 20px; border: 1px solid var(--border); border-radius: var(--radius); transition: all 0.25s; text-decoration: none; color: var(--text); }
+    .post-item:hover { border-color: var(--accent); box-shadow: var(--shadow); transform: translateY(-2px); color: var(--text); }
+    .post-number { flex-shrink: 0; width: 40px; height: 40px; border-radius: 50%; background: var(--surface); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; color: var(--text-secondary); }
+    .post-content { flex: 1; min-width: 0; }
+    .post-title { font-size: 17px; font-weight: 600; line-height: 1.4; margin-bottom: 6px; }
+    .post-item:hover .post-title { color: var(--accent); }
+    .post-meta { font-size: 13px; color: var(--text-secondary); display: flex; gap: 16px; flex-wrap: wrap; }
+
+    .empty-state { text-align: center; padding: 80px 24px; color: var(--text-secondary); }
+    .empty-state h2 { font-size: 24px; color: var(--text); margin-bottom: 8px; }
+
+    .footer { background: var(--surface); border-top: 1px solid var(--border); padding: 24px 0; margin-top: 48px; text-align: center; font-size: 13px; color: var(--text-secondary); }
+
+    @media (max-width: 640px) {
+      .page-header h1 { font-size: 24px; }
+      .post-item { flex-direction: column; gap: 12px; }
+      .nav-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <div class="container">
+      <div class="header-inner">
+        <a href="/" class="logo">
+          <img src="/assets/logo-full-dark.svg" alt="TechLife Insights" style="height:48px;width:auto;">
+        </a>
+        <nav class="nav-links">
+          <a href="/" class="nav-link">Home</a>
+          
+            
+            <div class="nav-item">
+              <a href="/ai_tools/" class="nav-link">AI Tools &amp; SaaS</a>
+              
+              <div class="nav-dropdown">
+                
+                <a href="/ai_tools/ai_apps/">AI Apps &amp; Software</a>
+                
+                <a href="/ai_tools/ai_news/">AI News</a>
+                
+                <a href="/ai_tools/ai_automation/">AI Automation</a>
+                
+                <a href="/ai_tools/ai_for_business/">AI for Business</a>
+                
+                <a href="/ai_tools/ai_creative/">AI Creative Tools</a>
+                
+                <a href="/ai_tools/ai_coding/">AI for Developers</a>
+                
+              </div>
+              
+            </div>
+            
+          
+            
+            <div class="nav-item">
+              <a href="/personal_finance/" class="nav-link">Personal Finance &amp; Investing</a>
+              
+              <div class="nav-dropdown">
+                
+                <a href="/personal_finance/investing/">Investing</a>
+                
+                <a href="/personal_finance/stocks/">Stocks</a>
+                
+                <a href="/personal_finance/crypto/">Crypto</a>
+                
+                <a href="/personal_finance/budgeting/">Budgeting &amp; Saving</a>
+                
+                <a href="/personal_finance/market_news/">Market News</a>
+                
+                <a href="/personal_finance/retirement/">Retirement</a>
+                
+                <a href="/personal_finance/credit/">Credit &amp; Loans</a>
+                
+                <a href="/personal_finance/real_estate/">Real Estate</a>
+                
+              </div>
+              
+            </div>
+            
+          
+            
+            <div class="nav-item">
+              <a href="/health_biohacking/" class="nav-link">Health &amp; Biohacking</a>
+              
+              <div class="nav-dropdown">
+                
+                <a href="/health_biohacking/supplements/">Supplements &amp; Vitamins</a>
+                
+                <a href="/health_biohacking/biohacking/">Biohacking</a>
+                
+                <a href="/health_biohacking/nutrition/">Nutrition &amp; Diet</a>
+                
+                <a href="/health_biohacking/sleep/">Sleep Optimization</a>
+                
+                <a href="/health_biohacking/mental_health/">Mental Health</a>
+                
+                <a href="/health_biohacking/longevity/">Longevity &amp; Anti-Aging</a>
+                
+              </div>
+              
+            </div>
+            
+          
+            
+            <div class="nav-item">
+              <a href="/home_tech/" class="nav-link">Home Tech &amp; Smart Devices</a>
+              
+              <div class="nav-dropdown">
+                
+                <a href="/home_tech/smart_home/">Smart Home</a>
+                
+                <a href="/home_tech/security/">Home Security</a>
+                
+                <a href="/home_tech/appliances/">Smart Appliances</a>
+                
+                <a href="/home_tech/entertainment/">Home Entertainment</a>
+                
+                <a href="/home_tech/networking/">Wi-Fi &amp; Networking</a>
+                
+                <a href="/home_tech/energy/">Energy &amp; Solar</a>
+                
+                <a href="/home_tech/product_reviews/">Product Reviews</a>
+                
+              </div>
+              
+            </div>
+            
+          
+            
+            <div class="nav-item">
+              <a href="/travel/" class="nav-link active">Travel</a>
+              
+              <div class="nav-dropdown">
+                
+                <a href="/travel/tips/">Travel Tips &amp; Advice</a>
+                
+                <a href="/travel/destinations/">Destinations</a>
+                
+                <a href="/travel/flights/">Flights &amp; Airports</a>
+                
+                <a href="/travel/hotels/">Hotels &amp; Accommodation</a>
+                
+                <a href="/travel/car_rental/">Car Rental &amp; Transport</a>
+                
+                <a href="/travel/travel_gear/">Travel Gear &amp; Products</a>
+                
+                <a href="/travel/digital_nomad/">Digital Nomad</a>
+                
+                <a href="/travel/travel_insurance/">Travel Insurance</a>
+                
+                <a href="/travel/food_culture/">Food &amp; Culture</a>
+                
+              </div>
+              
+            </div>
+            
+          
+            
+            <div class="nav-item">
+              <a href="/pet_care/" class="nav-link">Pet Care &amp; Products</a>
+              
+              <div class="nav-dropdown">
+                
+                <a href="/pet_care/dogs/">Dogs</a>
+                
+                <a href="/pet_care/cats/">Cats</a>
+                
+                <a href="/pet_care/pet_food/">Pet Food &amp; Nutrition</a>
+                
+                <a href="/pet_care/pet_products/">Pet Products &amp; Gear</a>
+                
+                <a href="/pet_care/pet_health/">Pet Health</a>
+                
+                <a href="/pet_care/fish_aquarium/">Fish &amp; Aquarium</a>
+                
+                <a href="/pet_care/exotic_pets/">Exotic &amp; Small Pets</a>
+                
+              </div>
+              
+            </div>
+            
+          
+            
+            <div class="nav-item">
+              <a href="/fitness_wellness/" class="nav-link">Fitness &amp; Wellness</a>
+              
+              <div class="nav-dropdown">
+                
+                <a href="/fitness_wellness/workouts/">Workouts &amp; Training</a>
+                
+                <a href="/fitness_wellness/equipment/">Gym Equipment &amp; Gear</a>
+                
+                <a href="/fitness_wellness/nutrition/">Sports Nutrition</a>
+                
+                <a href="/fitness_wellness/running/">Running &amp; Cardio</a>
+                
+                <a href="/fitness_wellness/yoga_flexibility/">Yoga &amp; Flexibility</a>
+                
+                <a href="/fitness_wellness/wearables/">Fitness Wearables</a>
+                
+                <a href="/fitness_wellness/product_reviews/">Product Reviews</a>
+                
+              </div>
+              
+            </div>
+            
+          
+            
+            <div class="nav-item">
+              <a href="/remote_work/" class="nav-link">Remote Work &amp; Productivity</a>
+              
+              <div class="nav-dropdown">
+                
+                <a href="/remote_work/office_setup/">Office Setup</a>
+                
+                <a href="/remote_work/productivity_apps/">Productivity Apps</a>
+                
+                <a href="/remote_work/remote_jobs/">Remote Jobs</a>
+                
+                <a href="/remote_work/equipment/">Equipment &amp; Gear</a>
+                
+                <a href="/remote_work/tips/">Tips &amp; Guides</a>
+                
+                <a href="/remote_work/coworking/">Coworking &amp; Spaces</a>
+                
+              </div>
+              
+            </div>
+            
+          
+          <a href="https://techlife-insights.kit.com/be266c00d5" target="_blank" rel="noopener" class="subscribe-link">📬 Subscribe</a>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="breadcrumb">
+      <a href="/">Home</a><span>›</span>
+      <a href="/travel/">Travel</a><span>›</span>
+      Destinations
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="page-header">
+      
+      <div style="font-size:36px;margin-bottom:12px;">✈️</div>
+      <h1>Destinations</h1>
+      <p>0 articles about destinations</p>
+    </div>
+
+    <!-- Sibling subtopic tabs -->
+    
+    
+    <div class="subtopic-bar">
+      <a href="/travel/" class="subtopic-tab">All Travel</a>
+      
+      <a href="/travel/tips/" class="subtopic-tab">Travel Tips &amp; Advice</a>
+      
+      <a href="/travel/destinations/" class="subtopic-tab active">Destinations</a>
+      
+      <a href="/travel/flights/" class="subtopic-tab">Flights &amp; Airports</a>
+      
+      <a href="/travel/hotels/" class="subtopic-tab">Hotels &amp; Accommodation</a>
+      
+      <a href="/travel/car_rental/" class="subtopic-tab">Car Rental &amp; Transport</a>
+      
+      <a href="/travel/travel_gear/" class="subtopic-tab">Travel Gear &amp; Products</a>
+      
+      <a href="/travel/digital_nomad/" class="subtopic-tab">Digital Nomad</a>
+      
+      <a href="/travel/travel_insurance/" class="subtopic-tab">Travel Insurance</a>
+      
+      <a href="/travel/food_culture/" class="subtopic-tab">Food &amp; Culture</a>
+      
+    </div>
+    
+  </div>
+
+  <div class="container">
+    
+    <div class="empty-state">
+      <h2>🚀 Articles Coming Soon</h2>
+      <p>New destinations content publishes daily — check back soon!</p>
+    </div>
+    
+  </div>
+
+  <footer class="footer">
+    <div class="container">
+      <span>&copy; 2026 TechLife Insights. All rights reserved.</span>
+      <div style="margin-top: 8px; font-size: 13px;">
+        <a href="/privacy.html" style="color: var(--text-secondary); margin: 0 6px;">Privacy</a> ·
+        <a href="/about.html" style="color: var(--text-secondary); margin: 0 6px;">About</a> ·
+        <a href="/contact.html" style="color: var(--text-secondary); margin: 0 6px;">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

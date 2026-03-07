@@ -1,0 +1,204 @@
+niches:
+  ai_tools:
+    name: "AI Tools & SaaS"
+    enabled: true
+    seed_keywords:
+      - "best AI tools 2026"
+      - "AI productivity software"
+      - "ChatGPT alternatives"
+      - "AI writing tools"
+      - "AI automation tools"
+    affiliate_programs:
+      - name: "Jasper AI"
+        url: "https://jasper.ai?aff=YOUR_ID"
+        keywords: ["Jasper", "AI writer", "content generator"]
+      - name: "Notion AI"
+        url: "https://notion.so?aff=YOUR_ID"
+        keywords: ["Notion", "Notion AI"]
+      - name: "Surfer SEO"
+        url: "https://surferseo.com?aff=YOUR_ID"
+        keywords: ["Surfer SEO", "SEO tool"]
+    post_schedule_hour: 9
+    post_schedule_minute: 0
+    video_schedule_hour: 11
+    video_schedule_minute: 0
+    pinterest_schedule_hour: 12
+    pinterest_schedule_minute: 0
+
+  personal_finance:
+    name: "Personal Finance & Investing"
+    enabled: true
+    seed_keywords:
+      - "how to invest money 2026"
+      - "best budgeting apps"
+      - "passive income ideas"
+      - "stock market for beginners"
+      - "best high yield savings account"
+    affiliate_programs:
+      - name: "Empower"
+        url: "https://empowerfinance.com?aff=YOUR_ID"
+        keywords: ["Personal Capital", "Empower", "net worth tracker"]
+      - name: "Acorns"
+        url: "https://acorns.com?aff=YOUR_ID"
+        keywords: ["Acorns", "micro investing"]
+      - name: "Rocket Money"
+        url: "https://rocketmoney.com?aff=YOUR_ID"
+        keywords: ["Rocket Money", "budget app", "bill negotiation"]
+    post_schedule_hour: 9
+    post_schedule_minute: 15
+    video_schedule_hour: 11
+    video_schedule_minute: 15
+    pinterest_schedule_hour: 12
+    pinterest_schedule_minute: 15
+
+  health_biohacking:
+    name: "Health & Biohacking"
+    enabled: true
+    seed_keywords:
+      - "biohacking tips 2026"
+      - "best supplements for energy"
+      - "intermittent fasting guide"
+      - "sleep optimization hacks"
+      - "cold plunge benefits"
+    affiliate_programs:
+      - name: "Amazon Health"
+        url: "https://amazon.com?tag=techlife0ac-20"
+        keywords: ["supplement", "vitamins", "protein powder", "collagen", "creatine"]
+      - name: "Thrive Market"
+        url: "https://thrivemarket.com?aff=YOUR_ID"
+        keywords: ["Thrive Market", "organic", "natural supplements"]
+    post_schedule_hour: 9
+    post_schedule_minute: 30
+    video_schedule_hour: 11
+    video_schedule_minute: 30
+    pinterest_schedule_hour: 12
+    pinterest_schedule_minute: 30
+
+  home_tech:
+    name: "Home Tech & Smart Devices"
+    enabled: true
+    seed_keywords:
+      - "best smart home devices 2026"
+      - "home automation guide"
+      - "best robot vacuum"
+      - "smart security cameras review"
+      - "best smart thermostat"
+    affiliate_programs:
+      - name: "Amazon Smart Home"
+        url: "https://amazon.com?tag=techlife0ac-20"
+        keywords: ["smart home", "Alexa", "Echo", "Ring", "robot vacuum", "Roomba", "Nest", "smart thermostat"]
+      - name: "Best Buy"
+        url: "https://bestbuy.com?aff=YOUR_ID"
+        keywords: ["Best Buy", "smart TV", "home theater"]
+    post_schedule_hour: 9
+    post_schedule_minute: 45
+    video_schedule_hour: 11
+    video_schedule_minute: 45
+    pinterest_schedule_hour: 12
+    pinterest_schedule_minute: 45
+
+  travel:
+    name: "Travel"
+    enabled: true
+    seed_keywords:
+      - "best travel destinations 2026"
+      - "budget travel tips"
+      - "solo travel guide"
+      - "best travel credit cards"
+      - "travel hacks for cheap flights"
+      - "digital nomad destinations"
+      - "best travel insurance"
+    affiliate_programs:
+      - name: "Booking.com"
+        url: "https://booking.com?aid=YOUR_AFF_ID"
+        keywords: ["hotel", "hotels", "accommodation", "booking", "resort"]
+      - name: "TripAdvisor"
+        url: "https://tripadvisor.com?aff=YOUR_ID"
+        keywords: ["TripAdvisor", "reviews", "attractions", "tours"]
+      - name: "SafetyWing Travel Insurance"
+        url: "https://safetywing.com?referenceID=YOUR_ID"
+        keywords: ["travel insurance", "nomad insurance", "SafetyWing"]
+      - name: "Amazon Travel Gear"
+        url: "https://amazon.com?tag=techlife0ac-20"
+        keywords: ["luggage", "travel backpack", "packing cubes", "travel pillow", "passport holder"]
+      - name: "CJ Affiliate Travel"
+        url: "https://www.cj.com/YOUR_CJ_LINK"
+        keywords: ["flight deals", "cheap flights", "airline"]
+    post_schedule_hour: 9
+    post_schedule_minute: 50
+    video_schedule_hour: 11
+    video_schedule_minute: 50
+    pinterest_schedule_hour: 12
+    pinterest_schedule_minute: 50
+
+  pet_care:
+    name: "Pet Care & Products"
+    enabled: true
+    seed_keywords:
+      - "best dog food 2026"
+      - "cat toys review"
+      - "best pet insurance 2026"
+      - "dog training tips for beginners"
+      - "best aquarium fish tank 2026"
+      - "puppy care guide"
+    affiliate_programs:
+      - name: "Amazon Pet Supplies"
+        url: "https://amazon.com?tag=techlife0ac-20"
+        keywords: ["dog food", "cat food", "pet bed", "dog toy", "cat litter", "pet carrier", "fish tank", "dog collar", "cat tree"]
+      - name: "Chewy Affiliate"
+        url: "https://chewy.com?aff=YOUR_ID"
+        keywords: ["Chewy", "Chewy.com"]
+    post_schedule_hour: 10
+    post_schedule_minute: 0
+    video_schedule_hour: 12
+    video_schedule_minute: 0
+    pinterest_schedule_hour: 13
+    pinterest_schedule_minute: 0
+
+  fitness_wellness:
+    name: "Fitness & Wellness"
+    enabled: true
+    seed_keywords:
+      - "best home gym equipment 2026"
+      - "workout routine for beginners"
+      - "best protein powder review 2026"
+      - "yoga for beginners guide"
+      - "resistance bands workout"
+      - "best running shoes 2026"
+    affiliate_programs:
+      - name: "Amazon Fitness"
+        url: "https://amazon.com?tag=techlife0ac-20"
+        keywords: ["dumbbells", "resistance bands", "yoga mat", "protein powder", "treadmill", "kettlebell", "foam roller", "pull-up bar", "jump rope"]
+      - name: "MyProtein"
+        url: "https://myprotein.com?aff=YOUR_ID"
+        keywords: ["MyProtein", "whey protein", "mass gainer"]
+    post_schedule_hour: 10
+    post_schedule_minute: 15
+    video_schedule_hour: 12
+    video_schedule_minute: 15
+    pinterest_schedule_hour: 13
+    pinterest_schedule_minute: 15
+
+  remote_work:
+    name: "Remote Work & Productivity"
+    enabled: true
+    seed_keywords:
+      - "best home office setup 2026"
+      - "work from home productivity tips"
+      - "best standing desk review"
+      - "noise cancelling headphones comparison"
+      - "best productivity apps 2026"
+      - "best ergonomic chair review"
+    affiliate_programs:
+      - name: "Amazon Office & Tech"
+        url: "https://amazon.com?tag=techlife0ac-20"
+        keywords: ["standing desk", "ergonomic chair", "monitor", "webcam", "microphone", "mechanical keyboard", "wireless mouse", "noise cancelling headphones", "desk lamp"]
+      - name: "Autonomous Affiliate"
+        url: "https://autonomous.ai?aff=YOUR_ID"
+        keywords: ["Autonomous", "SmartDesk"]
+    post_schedule_hour: 10
+    post_schedule_minute: 30
+    video_schedule_hour: 12
+    video_schedule_minute: 30
+    pinterest_schedule_hour: 13
+    pinterest_schedule_minute: 30

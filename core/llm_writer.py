@@ -5,6 +5,10 @@ The writer queries the trend_intelligence module to:
   1. Pick the best article FORMAT for the topic (listicle, how-to, review, etc.)
   2. Craft style-specific prompts that match proven high-performing patterns
   3. Record which style was used so the intelligence system can learn
+
+Subtopic-aware: When given a subtopic_id, the writer tailors the prompt with
+subtopic-specific context, keywords, and formatting guidance from the
+content_intelligence module.
 """
 
 import os
@@ -83,7 +87,7 @@ FORMAT: Beginner's Guide
 }
 
 
-def generate_article(topic: str, niche_config: dict, niche_id: str = "") -> dict | None:
+def generate_article(topic: str, niche_config: dict, niche_id: str = "", subtopic_id: str = "") -> dict | None:
     """
     Generate an SEO blog post using Ollama with intelligent style selection.
 
@@ -94,10 +98,11 @@ def generate_article(topic: str, niche_config: dict, niche_id: str = "") -> dict
         topic: The topic to write about
         niche_config: Niche configuration dict with name, keywords, etc.
         niche_id: The niche identifier (for trend intelligence lookup)
+        subtopic_id: Optional subtopic to focus the article on
 
     Returns:
         dict with keys: title, html_content, meta_description, tags, word_count,
-                        writing_style (style used)
+                        writing_style (style used), subtopic_id
         Returns None on failure.
     """
     try:
@@ -111,6 +116,38 @@ def generate_article(topic: str, niche_config: dict, niche_id: str = "") -> dict
     niche_name = niche_config.get("name", "General")
     seed_keywords = niche_config.get("seed_keywords", [])
 
+    # ── Subtopic context ──────────────────────────────────────────────────
+    subtopic_context = ""
+    subtopic_keywords = []
+    if subtopic_id:
+        subtopics = niche_config.get("subtopics", {})
+        sub_cfg = subtopics.get(subtopic_id, {})
+        if sub_cfg:
+            sub_name = sub_cfg.get("name", subtopic_id)
+            subtopic_keywords = sub_cfg.get("keywords", [])
+            subtopic_context = f"""
+SUBTOPIC FOCUS: This article belongs to the "{sub_name}" subtopic.
+- Tailor ALL content specifically to {sub_name}
+- Naturally include these subtopic keywords: {', '.join(subtopic_keywords[:5])}
+- Make the title reflect this specific subtopic angle
+- Reference specific products, tools, or data relevant to {sub_name}"""
+
+    # ── Content intelligence: adapt format to what performs best ───────────
+    intelligence_context = ""
+    try:
+        from core.content_intelligence import get_recommended_format
+        rec = get_recommended_format(niche_id, topic)
+        if rec and rec.get("format_id"):
+            intelligence_context = f"""
+CONTENT INTELLIGENCE RECOMMENDATION:
+- Recommended format: {rec.get('format_name', rec['format_id'])}
+- Reason: {rec.get('reason', 'Data-driven selection based on performance analytics')}
+- Image density: {rec.get('image_density', 'medium')}
+- Target word count: {rec.get('word_count', '1000-1400')}"""
+            logger.info("📊 Content intelligence recommends: %s", rec.get('format_name', rec['format_id']))
+    except Exception as exc:
+        logger.debug("Content intelligence unavailable: %s", exc)
+
     # ── Trend intelligence: pick optimal writing style ────────────────────
     style_info = {"style_id": "listicle", "name": "Listicle"}
     try:
@@ -123,12 +160,17 @@ def generate_article(topic: str, niche_config: dict, niche_id: str = "") -> dict
     style_id = style_info.get("style_id", "listicle")
     style_prompt = _STYLE_PROMPTS.get(style_id, _STYLE_PROMPTS["listicle"])
 
+    # Combine niche + subtopic keywords
+    all_keywords = list(dict.fromkeys(subtopic_keywords[:3] + seed_keywords[:5]))
+
     prompt = f"""Write a complete, expert blog post about: "{topic}"
 
 Niche: {niche_name}
-Naturally include these keywords: {', '.join(seed_keywords[:5])}
+Naturally include these keywords: {', '.join(all_keywords[:7])}
 
 {style_prompt}
+{subtopic_context}
+{intelligence_context}
 
 General formatting rules (apply ON TOP of the format above):
 - Start with a # H1 title (specific, compelling, optimized for clicks)
@@ -169,6 +211,7 @@ Writing style rules:
             result = _parse_response(raw_text, niche_config)
             if result:
                 result["writing_style"] = style_id
+                result["subtopic_id"] = subtopic_id
             return result
         except Exception as exc:
             logger.warning("Ollama attempt %d failed: %s", attempt + 1, exc)

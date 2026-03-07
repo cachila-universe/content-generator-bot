@@ -43,6 +43,18 @@
     .nav-links { display: flex; gap: 4px; flex-wrap: wrap; }
     .nav-link { padding: 6px 12px; border-radius: 6px; font-size: 14px; font-weight: 500; color: rgba(255,255,255,0.75); transition: all 0.15s; }
     .nav-link:hover, .nav-link.active { color: #fff; background: rgba(255,255,255,0.12); }
+    .subscribe-link { padding: 6px 14px; border-radius: 6px; font-size: 13px; font-weight: 600; color: #fff; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); transition: all 0.15s; display: flex; align-items: center; gap: 5px; text-decoration: none; }
+    .subscribe-link:hover { background: rgba(255,255,255,0.25); color: #fff; }
+    .nav-item { position: relative; display: inline-block; }
+    .nav-item:hover .nav-dropdown { display: block; }
+    .nav-dropdown { display: none; position: absolute; top: 100%; left: 0; background: #fff; border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.12); min-width: 200px; padding: 8px 0; z-index: 100; }
+    .nav-dropdown a { display: block; padding: 8px 16px; font-size: 13px; color: var(--text); font-weight: 500; transition: background 0.1s; text-decoration: none; }
+    .nav-dropdown a:hover { background: var(--accent-light); color: var(--accent); }
+
+    /* Subtopic tabs */
+    .subtopic-bar { display: flex; flex-wrap: wrap; gap: 6px; padding: 16px 0; border-bottom: 1px solid var(--border); margin-bottom: 24px; }
+    .subtopic-tab { padding: 6px 14px; border-radius: 20px; border: 1px solid var(--border); background: transparent; color: var(--text-secondary); cursor: pointer; font-size: 13px; font-weight: 500; font-family: inherit; transition: all 0.15s; text-decoration: none; display: inline-block; }
+    .subtopic-tab:hover, .subtopic-tab.active { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
 
     /* Breadcrumb */
     .breadcrumb { padding: 16px 0; font-size: 14px; color: var(--text-secondary); }
@@ -113,9 +125,19 @@
           <a href="/" class="nav-link">Home</a>
           {% for nid, niche in niches.items() %}
             {% if niche.enabled %}
-            <a href="/{{ nid }}/" class="nav-link{% if nid == niche_id %} active{% endif %}">{{ niche.name }}</a>
+            <div class="nav-item">
+              <a href="/{{ nid }}/" class="nav-link{% if nid == niche_id %} active{% endif %}">{{ niche.name }}</a>
+              {% if niche.subtopics %}
+              <div class="nav-dropdown">
+                {% for sub_id, sub in niche.subtopics.items() %}
+                <a href="/{{ nid }}/{{ sub_id }}/">{{ sub.name }}</a>
+                {% endfor %}
+              </div>
+              {% endif %}
+            </div>
             {% endif %}
           {% endfor %}
+          <a href="https://techlife-insights.kit.com/be266c00d5" target="_blank" rel="noopener" class="subscribe-link">📬 Subscribe</a>
         </nav>
       </div>
     </div>
@@ -141,6 +163,17 @@
         <span><strong>{{ posts|length }}</strong> article{{ 's' if posts|length != 1 else '' }}</span>
       </div>
     </div>
+
+    <!-- Subtopic Navigation -->
+    {% set current_niche = niches.get(niche_id, {}) %}
+    {% if current_niche.subtopics %}
+    <div class="subtopic-bar">
+      <a href="/{{ niche_id }}/" class="subtopic-tab active">All</a>
+      {% for sub_id, sub in current_niche.subtopics.items() %}
+      <a href="/{{ niche_id }}/{{ sub_id }}/" class="subtopic-tab">{{ sub.name }}</a>
+      {% endfor %}
+    </div>
+    {% endif %}
   </div>
 
   <!-- Content -->
@@ -191,11 +224,9 @@
             {% endfor %}
           </ul>
         </div>
-        <div style="background:linear-gradient(135deg,#eff6ff 0%,#f0fdf4 100%);border:1px solid #bfdbfe;border-radius:12px;padding:20px;text-align:center;">
-          <div style="font-size:22px;margin-bottom:8px;">📬</div>
-          <div style="font-family:'Inter',sans-serif;font-size:14px;font-weight:700;color:#1e40af;margin-bottom:6px;">Stay Updated</div>
-          <div style="font-family:'Inter',sans-serif;font-size:13px;color:#3b5fb5;margin-bottom:14px;">Get our best guides straight to your inbox.</div>
-          <a href="https://techlife-insights.kit.com/be266c00d5" target="_blank" rel="noopener" style="background:#2563eb;color:#fff;text-decoration:none;padding:9px 18px;border-radius:8px;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;display:inline-block;">Subscribe Free →</a>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center;">
+          <div style="font-size:16px;margin-bottom:6px;">📬</div>
+          <a href="https://techlife-insights.kit.com/be266c00d5" target="_blank" rel="noopener" style="font-family:'Inter',sans-serif;font-size:13px;font-weight:600;color:var(--accent);">Subscribe to Newsletter →</a>
         </div>
       </aside>
     </div>

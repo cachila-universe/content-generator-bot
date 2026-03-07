@@ -291,7 +291,9 @@ def job_fetch_trends(niches_config: dict) -> None:
             logger.info("Fetched %d topics for %s", len(topics), niche_id)
         except Exception as exc:
             logger.warning("Trend fetch failed for %s: %s", niche_id, exc)
-            trends_data[niche_id] = niche_cfg.get("seed_keywords", [])[:5]
+            trends_data[niche_id] = [
+                {"topic": kw, "subtopic_id": ""} for kw in niche_cfg.get("seed_keywords", [])[:5]
+            ]
 
         # Anti-spam: stagger pytrends requests
         import time
@@ -346,25 +348,35 @@ def job_generate_and_publish(
     )
 
     try:
-        # 1. Pick a non-duplicate topic
-        topic = _pick_unique_topic(niche_id, niche_cfg, db_path)
-        if not topic:
+        # 1. Pick a non-duplicate topic (returns dict with topic + subtopic_id)
+        topic_data = _pick_unique_topic(niche_id, niche_cfg, db_path)
+        if not topic_data or not topic_data.get("topic"):
             analytics_tracker.log_action(
                 db_path, "WARNING", "no_topic", "No new unique topic found, skipping", niche_id
             )
             return
 
+        topic = topic_data["topic"]
+        subtopic_id = topic_data.get("subtopic_id", "")
+
         analytics_tracker.log_action(
-            db_path, "INFO", "topic_selected", f"Topic: {topic}", niche_id
+            db_path, "INFO", "topic_selected",
+            f"Topic: {topic} (subtopic: {subtopic_id or 'general'})", niche_id
         )
 
-        # 2. Generate article (with trend-intelligent style selection)
-        article = llm_writer.generate_article(topic, niche_cfg, niche_id=niche_id)
+        # 2. Generate article (with trend-intelligent style + subtopic context)
+        article = llm_writer.generate_article(
+            topic, niche_cfg, niche_id=niche_id, subtopic_id=subtopic_id
+        )
         if not article:
             analytics_tracker.log_action(
                 db_path, "ERROR", "llm_failed", "LLM generation failed", niche_id
             )
             return
+
+        # Ensure subtopic_id is on the article
+        if not article.get("subtopic_id"):
+            article["subtopic_id"] = subtopic_id
 
         # 3. Check content isn't duplicate
         if content_guard.is_duplicate_content(db_path, article.get("html_content", "")):
@@ -409,9 +421,23 @@ def job_generate_and_publish(
         except Exception:
             pass
 
+        # 10. Record article performance for content intelligence
+        try:
+            from core.content_intelligence import record_article_performance
+            record_article_performance(
+                niche_id=niche_id,
+                subtopic_id=subtopic_id,
+                format_id=style_used,
+                word_count=article.get("word_count", 0),
+                affiliate_count=article.get("affiliate_links_count", 0),
+            )
+        except Exception:
+            pass
+
         analytics_tracker.log_action(
             db_path, "SUCCESS", "post_published",
-            f"Published '{article.get('title')}' → {url_path}", niche_id
+            f"Published '{article.get('title')}' → {url_path} [subtopic={subtopic_id or 'general'}]",
+            niche_id,
         )
 
     except Exception as exc:
@@ -820,15 +846,23 @@ def _manual_generate_and_publish(niche_id, niche_cfg, settings, db_path, site_ur
     output_dir = _PROJECT_ROOT / "site" / "output"
     niche_name = niche_cfg.get("name", niche_id)
 
-    topic = _pick_unique_topic(niche_id, niche_cfg, db_path)
-    if not topic:
+    topic_data = _pick_unique_topic(niche_id, niche_cfg, db_path)
+    if not topic_data or not topic_data.get("topic"):
         logger.warning("Manual trigger: no unique topic for %s", niche_id)
         return
 
-    article = llm_writer.generate_article(topic, niche_cfg, niche_id=niche_id)
+    topic = topic_data["topic"]
+    subtopic_id = topic_data.get("subtopic_id", "")
+
+    article = llm_writer.generate_article(
+        topic, niche_cfg, niche_id=niche_id, subtopic_id=subtopic_id
+    )
     if not article:
         logger.warning("Manual trigger: LLM failed for %s", niche_id)
         return
+
+    if not article.get("subtopic_id"):
+        article["subtopic_id"] = subtopic_id
 
     if content_guard.is_duplicate_content(db_path, article.get("html_content", "")):
         logger.warning("Manual trigger: duplicate content for %s", niche_id)
@@ -1121,17 +1155,23 @@ def run_full_pipeline(niches_config: dict, settings: dict, db_path: Path, site_u
 # ── Helpers ─────────────────────────────────────────────────────────────────
 
 
-def _pick_unique_topic(niche_id: str, niche_cfg: dict, db_path: Path) -> str:
-    """Pick a topic that hasn't been covered before (using content_guard + trend intelligence)."""
+def _pick_unique_topic(niche_id: str, niche_cfg: dict, db_path: Path) -> dict:
+    """Pick a topic that hasn't been covered before (using content_guard + trend intelligence).
+
+    Returns dict with keys 'topic' and 'subtopic_id', or empty dict on failure.
+    """
     from core import content_guard
 
-    candidates = []
+    candidates = []  # list of dicts: {"topic": str, "subtopic_id": str}
 
     # Try trend intelligence first (higher quality topics)
     try:
         from core.trend_intelligence import gather_trending_topics
         intel_topics = gather_trending_topics(niche_id, niche_cfg, force=False)
-        candidates.extend([t["topic"] for t in intel_topics])
+        for t in intel_topics:
+            topic_str = t["topic"] if isinstance(t, dict) else t
+            sub_id = t.get("subtopic_id", "") if isinstance(t, dict) else ""
+            candidates.append({"topic": topic_str, "subtopic_id": sub_id})
     except Exception:
         pass
 
@@ -1139,24 +1179,33 @@ def _pick_unique_topic(niche_id: str, niche_cfg: dict, db_path: Path) -> str:
     if _TRENDS_CACHE.exists():
         try:
             trends = json.loads(_TRENDS_CACHE.read_text())
-            candidates.extend(trends.get(niche_id, []))
+            cached = trends.get(niche_id, [])
+            for item in cached:
+                if isinstance(item, dict):
+                    candidates.append({"topic": item.get("topic", ""), "subtopic_id": item.get("subtopic_id", "")})
+                elif isinstance(item, str):
+                    candidates.append({"topic": item, "subtopic_id": ""})
         except Exception:
             pass
 
     # Add seed keywords as fallback
-    candidates.extend(niche_cfg.get("seed_keywords", []))
+    for kw in niche_cfg.get("seed_keywords", []):
+        candidates.append({"topic": kw, "subtopic_id": ""})
 
     existing_titles = _get_existing_titles(db_path)
 
-    for topic in candidates:
+    for cand in candidates:
+        topic = cand.get("topic", "")
+        if not topic:
+            continue
         if topic.lower() in {t.lower() for t in existing_titles}:
             continue
         if content_guard.is_duplicate_topic(db_path, niche_id, topic):
             continue
-        return topic
+        return cand
 
     logger.warning("All topics exhausted for niche %s", niche_id)
-    return ""
+    return {}
 
 
 def _get_existing_titles(db_path: Path) -> list:

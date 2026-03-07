@@ -44,6 +44,15 @@
     .nav-links { display: flex; gap: 4px; flex-wrap: wrap; }
     .nav-link { padding: 6px 12px; border-radius: 6px; font-size: 14px; font-weight: 500; color: rgba(255,255,255,0.75); transition: all 0.15s; }
     .nav-link:hover { color: #fff; background: rgba(255,255,255,0.12); }
+    .subscribe-link { padding: 6px 14px; border-radius: 6px; font-size: 13px; font-weight: 600; color: #fff; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); transition: all 0.15s; display: flex; align-items: center; gap: 5px; }
+    .subscribe-link:hover { background: rgba(255,255,255,0.25); color: #fff; }
+
+    /* Dropdown Nav */
+    .nav-item { position: relative; }
+    .nav-item:hover .nav-dropdown { display: block; }
+    .nav-dropdown { display: none; position: absolute; top: 100%; left: 0; background: #fff; border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.12); min-width: 200px; padding: 8px 0; z-index: 100; }
+    .nav-dropdown a { display: block; padding: 8px 16px; font-size: 13px; color: var(--text); font-weight: 500; transition: background 0.1s; }
+    .nav-dropdown a:hover { background: var(--accent-light); color: var(--accent); }
 
     /* Hero */
     .hero { padding: 64px 0 48px; text-align: center; }
@@ -122,9 +131,19 @@
           <a href="/" class="nav-link">Home</a>
           {% for niche_id, niche in niches.items() %}
             {% if niche.enabled %}
-            <a href="/{{ niche_id }}/" class="nav-link">{{ niche.name }}</a>
+            <div class="nav-item">
+              <a href="/{{ niche_id }}/" class="nav-link">{{ niche.name }}</a>
+              {% if niche.subtopics %}
+              <div class="nav-dropdown">
+                {% for sub_id, sub in niche.subtopics.items() %}
+                <a href="/{{ niche_id }}/{{ sub_id }}/">{{ sub.name }}</a>
+                {% endfor %}
+              </div>
+              {% endif %}
+            </div>
             {% endif %}
           {% endfor %}
+          <a href="https://techlife-insights.kit.com/be266c00d5" target="_blank" rel="noopener" class="subscribe-link">📬 Subscribe</a>
         </nav>
       </div>
     </div>
@@ -138,15 +157,9 @@
     </div>
   </section>
 
-  <!-- Newsletter CTA -->
+  <!-- Ad Slot (for future AdSense) -->
   <div class="container">
-    <div style="background:linear-gradient(135deg,#eff6ff 0%,#f0fdf4 100%);border:1px solid #bfdbfe;border-radius:14px;padding:28px 32px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;margin:24px 0;">
-      <div>
-        <div style="font-family:'Inter',sans-serif;font-size:18px;font-weight:800;color:#1e40af;margin-bottom:6px;">📬 Get Our Best Guides Weekly</div>
-        <div style="font-family:'Inter',sans-serif;font-size:14px;color:#3b82f6;">Free expert tips on AI tools, personal finance, health, home tech, travel, pet care, fitness &amp; remote work — delivered to your inbox.</div>
-      </div>
-      <a href="https://techlife-insights.kit.com/be266c00d5" target="_blank" rel="noopener" style="background:#2563eb;color:#fff;text-decoration:none;padding:11px 24px;border-radius:8px;font-family:'Inter',sans-serif;font-size:14px;font-weight:700;white-space:nowrap;">Subscribe Free →</a>
-    </div>
+    <div class="ad-slot">Ad Space — Google AdSense</div>
   </div>
 
   <!-- Categories -->
@@ -169,6 +182,18 @@
               {% endfor %}
               {{ ns.count }} article{{ 's' if ns.count != 1 else '' }}
             </div>
+            {% if niche.subtopics %}
+            <div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:4px;">
+              {% for sub_id, sub in niche.subtopics.items() %}
+              {% if loop.index <= 4 %}
+              <span style="font-size:11px;padding:2px 8px;background:var(--accent-light);color:var(--accent);border-radius:10px;font-weight:500;">{{ sub.name }}</span>
+              {% endif %}
+              {% endfor %}
+              {% if niche.subtopics|length > 4 %}
+              <span style="font-size:11px;padding:2px 8px;color:var(--text-secondary);">+{{ niche.subtopics|length - 4 }} more</span>
+              {% endif %}
+            </div>
+            {% endif %}
           </a>
           {% endif %}
         {% endfor %}

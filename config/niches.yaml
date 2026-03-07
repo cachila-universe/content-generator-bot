@@ -1,204 +1,776 @@
 niches:
   ai_tools:
-    name: "AI Tools & SaaS"
+    name: AI Tools & SaaS
     enabled: true
     seed_keywords:
-      - "best AI tools 2026"
-      - "AI productivity software"
-      - "ChatGPT alternatives"
-      - "AI writing tools"
-      - "AI automation tools"
+    - best AI tools 2026
+    - AI productivity software
+    - ChatGPT alternatives
+    - AI writing tools
+    - AI automation tools
     affiliate_programs:
-      - name: "Jasper AI"
-        url: "https://jasper.ai?aff=YOUR_ID"
-        keywords: ["Jasper", "AI writer", "content generator"]
-      - name: "Notion AI"
-        url: "https://notion.so?aff=YOUR_ID"
-        keywords: ["Notion", "Notion AI"]
-      - name: "Surfer SEO"
-        url: "https://surferseo.com?aff=YOUR_ID"
-        keywords: ["Surfer SEO", "SEO tool"]
+    - name: Jasper AI
+      url: https://jasper.ai?aff=YOUR_ID
+      keywords:
+      - Jasper
+      - AI writer
+      - content generator
+    - name: Notion AI
+      url: https://notion.so?aff=YOUR_ID
+      keywords:
+      - Notion
+      - Notion AI
+    - name: Surfer SEO
+      url: https://surferseo.com?aff=YOUR_ID
+      keywords:
+      - Surfer SEO
+      - SEO tool
     post_schedule_hour: 9
     post_schedule_minute: 0
     video_schedule_hour: 11
     video_schedule_minute: 0
     pinterest_schedule_hour: 12
     pinterest_schedule_minute: 0
-
+    subtopics:
+      ai_apps:
+        name: AI Apps & Software
+        keywords:
+        - AI app
+        - AI software
+        - AI platform
+        - AI tool review
+      ai_news:
+        name: AI News
+        keywords:
+        - AI news
+        - AI update
+        - OpenAI
+        - Google AI
+        - AI launch
+      ai_automation:
+        name: AI Automation
+        keywords:
+        - AI automation
+        - workflow
+        - AI agent
+        - no-code AI
+      ai_for_business:
+        name: AI for Business
+        keywords:
+        - AI business
+        - enterprise AI
+        - AI startup
+        - AI SaaS
+      ai_creative:
+        name: AI Creative Tools
+        keywords:
+        - AI art
+        - AI video
+        - AI music
+        - AI design
+        - generative AI
+      ai_coding:
+        name: AI for Developers
+        keywords:
+        - AI coding
+        - Copilot
+        - Cursor
+        - AI IDE
+        - code generation
   personal_finance:
-    name: "Personal Finance & Investing"
+    name: Personal Finance & Investing
     enabled: true
     seed_keywords:
-      - "how to invest money 2026"
-      - "best budgeting apps"
-      - "passive income ideas"
-      - "stock market for beginners"
-      - "best high yield savings account"
+    - how to invest money 2026
+    - best budgeting apps
+    - passive income ideas
+    - stock market for beginners
+    - best high yield savings account
     affiliate_programs:
-      - name: "Empower"
-        url: "https://empowerfinance.com?aff=YOUR_ID"
-        keywords: ["Personal Capital", "Empower", "net worth tracker"]
-      - name: "Acorns"
-        url: "https://acorns.com?aff=YOUR_ID"
-        keywords: ["Acorns", "micro investing"]
-      - name: "Rocket Money"
-        url: "https://rocketmoney.com?aff=YOUR_ID"
-        keywords: ["Rocket Money", "budget app", "bill negotiation"]
+    - name: Empower
+      url: https://empowerfinance.com?aff=YOUR_ID
+      keywords:
+      - Personal Capital
+      - Empower
+      - net worth tracker
+    - name: Acorns
+      url: https://acorns.com?aff=YOUR_ID
+      keywords:
+      - Acorns
+      - micro investing
+    - name: Rocket Money
+      url: https://rocketmoney.com?aff=YOUR_ID
+      keywords:
+      - Rocket Money
+      - budget app
+      - bill negotiation
     post_schedule_hour: 9
     post_schedule_minute: 15
     video_schedule_hour: 11
     video_schedule_minute: 15
     pinterest_schedule_hour: 12
     pinterest_schedule_minute: 15
-
+    subtopics:
+      investing:
+        name: Investing
+        keywords:
+        - investing
+        - portfolio
+        - ETF
+        - index fund
+        - dividend
+      stocks:
+        name: Stocks
+        keywords:
+        - stock
+        - shares
+        - S&P 500
+        - NASDAQ
+        - stock pick
+        - earnings
+      crypto:
+        name: Crypto
+        keywords:
+        - crypto
+        - Bitcoin
+        - Ethereum
+        - blockchain
+        - DeFi
+        - altcoin
+      budgeting:
+        name: Budgeting & Saving
+        keywords:
+        - budget
+        - saving
+        - emergency fund
+        - frugal
+        - money saving
+      market_news:
+        name: Market News
+        keywords:
+        - market news
+        - economy
+        - Fed
+        - interest rate
+        - inflation
+        - GDP
+      retirement:
+        name: Retirement
+        keywords:
+        - 401k
+        - IRA
+        - retirement
+        - pension
+        - FIRE
+      credit:
+        name: Credit & Loans
+        keywords:
+        - credit score
+        - credit card
+        - loan
+        - mortgage
+        - refinance
+      real_estate:
+        name: Real Estate
+        keywords:
+        - real estate
+        - property
+        - housing market
+        - rent
+        - REIT
   health_biohacking:
-    name: "Health & Biohacking"
+    name: Health & Biohacking
     enabled: true
     seed_keywords:
-      - "biohacking tips 2026"
-      - "best supplements for energy"
-      - "intermittent fasting guide"
-      - "sleep optimization hacks"
-      - "cold plunge benefits"
+    - biohacking tips 2026
+    - best supplements for energy
+    - intermittent fasting guide
+    - sleep optimization hacks
+    - cold plunge benefits
     affiliate_programs:
-      - name: "Amazon Health"
-        url: "https://amazon.com?tag=techlife0ac-20"
-        keywords: ["supplement", "vitamins", "protein powder", "collagen", "creatine"]
-      - name: "Thrive Market"
-        url: "https://thrivemarket.com?aff=YOUR_ID"
-        keywords: ["Thrive Market", "organic", "natural supplements"]
+    - name: Amazon Health
+      url: https://amazon.com?tag=techlife0ac-20
+      keywords:
+      - supplement
+      - vitamins
+      - protein powder
+      - collagen
+      - creatine
+    - name: Thrive Market
+      url: https://thrivemarket.com?aff=YOUR_ID
+      keywords:
+      - Thrive Market
+      - organic
+      - natural supplements
     post_schedule_hour: 9
     post_schedule_minute: 30
     video_schedule_hour: 11
     video_schedule_minute: 30
     pinterest_schedule_hour: 12
     pinterest_schedule_minute: 30
-
+    subtopics:
+      supplements:
+        name: Supplements & Vitamins
+        keywords:
+        - supplement
+        - vitamin
+        - magnesium
+        - protein
+        - creatine
+        - omega
+      biohacking:
+        name: Biohacking
+        keywords:
+        - biohacking
+        - nootropic
+        - cold plunge
+        - red light therapy
+        - sauna
+      nutrition:
+        name: Nutrition & Diet
+        keywords:
+        - nutrition
+        - diet
+        - fasting
+        - keto
+        - meal plan
+        - macro
+      sleep:
+        name: Sleep Optimization
+        keywords:
+        - sleep
+        - insomnia
+        - melatonin
+        - circadian
+        - sleep tracker
+      mental_health:
+        name: Mental Health
+        keywords:
+        - mental health
+        - stress
+        - anxiety
+        - meditation
+        - mindfulness
+      longevity:
+        name: Longevity & Anti-Aging
+        keywords:
+        - longevity
+        - anti-aging
+        - NAD
+        - resveratrol
+        - telomere
   home_tech:
-    name: "Home Tech & Smart Devices"
+    name: Home Tech & Smart Devices
     enabled: true
     seed_keywords:
-      - "best smart home devices 2026"
-      - "home automation guide"
-      - "best robot vacuum"
-      - "smart security cameras review"
-      - "best smart thermostat"
+    - best smart home devices 2026
+    - home automation guide
+    - best robot vacuum
+    - smart security cameras review
+    - best smart thermostat
     affiliate_programs:
-      - name: "Amazon Smart Home"
-        url: "https://amazon.com?tag=techlife0ac-20"
-        keywords: ["smart home", "Alexa", "Echo", "Ring", "robot vacuum", "Roomba", "Nest", "smart thermostat"]
-      - name: "Best Buy"
-        url: "https://bestbuy.com?aff=YOUR_ID"
-        keywords: ["Best Buy", "smart TV", "home theater"]
+    - name: Amazon Smart Home
+      url: https://amazon.com?tag=techlife0ac-20
+      keywords:
+      - smart home
+      - Alexa
+      - Echo
+      - Ring
+      - robot vacuum
+      - Roomba
+      - Nest
+      - smart thermostat
+    - name: Best Buy
+      url: https://bestbuy.com?aff=YOUR_ID
+      keywords:
+      - Best Buy
+      - smart TV
+      - home theater
     post_schedule_hour: 9
     post_schedule_minute: 45
     video_schedule_hour: 11
     video_schedule_minute: 45
     pinterest_schedule_hour: 12
     pinterest_schedule_minute: 45
-
+    subtopics:
+      smart_home:
+        name: Smart Home
+        keywords:
+        - smart home
+        - home automation
+        - Alexa
+        - Google Home
+        - HomeKit
+      security:
+        name: Home Security
+        keywords:
+        - security camera
+        - Ring
+        - smart lock
+        - doorbell
+        - alarm
+      appliances:
+        name: Smart Appliances
+        keywords:
+        - robot vacuum
+        - Roomba
+        - smart TV
+        - air purifier
+        - smart oven
+      entertainment:
+        name: Home Entertainment
+        keywords:
+        - home theater
+        - soundbar
+        - projector
+        - streaming device
+        - speaker
+      networking:
+        name: Wi-Fi & Networking
+        keywords:
+        - mesh wifi
+        - router
+        - Wi-Fi 7
+        - range extender
+        - smart switch
+      energy:
+        name: Energy & Solar
+        keywords:
+        - solar panel
+        - smart thermostat
+        - energy monitor
+        - EV charger
+        - battery
+      product_reviews:
+        name: Product Reviews
+        keywords:
+        - review
+        - best
+        - comparison
+        - vs
+        - unboxing
+        - hands-on
   travel:
-    name: "Travel"
+    name: Travel
     enabled: true
     seed_keywords:
-      - "best travel destinations 2026"
-      - "budget travel tips"
-      - "solo travel guide"
-      - "best travel credit cards"
-      - "travel hacks for cheap flights"
-      - "digital nomad destinations"
-      - "best travel insurance"
+    - best travel destinations 2026
+    - budget travel tips
+    - solo travel guide
+    - best travel credit cards
+    - travel hacks for cheap flights
+    - digital nomad destinations
+    - best travel insurance
     affiliate_programs:
-      - name: "Booking.com"
-        url: "https://booking.com?aid=YOUR_AFF_ID"
-        keywords: ["hotel", "hotels", "accommodation", "booking", "resort"]
-      - name: "TripAdvisor"
-        url: "https://tripadvisor.com?aff=YOUR_ID"
-        keywords: ["TripAdvisor", "reviews", "attractions", "tours"]
-      - name: "SafetyWing Travel Insurance"
-        url: "https://safetywing.com?referenceID=YOUR_ID"
-        keywords: ["travel insurance", "nomad insurance", "SafetyWing"]
-      - name: "Amazon Travel Gear"
-        url: "https://amazon.com?tag=techlife0ac-20"
-        keywords: ["luggage", "travel backpack", "packing cubes", "travel pillow", "passport holder"]
-      - name: "CJ Affiliate Travel"
-        url: "https://www.cj.com/YOUR_CJ_LINK"
-        keywords: ["flight deals", "cheap flights", "airline"]
+    - name: Booking.com
+      url: https://booking.com?aid=YOUR_AFF_ID
+      keywords:
+      - hotel
+      - hotels
+      - accommodation
+      - booking
+      - resort
+    - name: TripAdvisor
+      url: https://tripadvisor.com?aff=YOUR_ID
+      keywords:
+      - TripAdvisor
+      - reviews
+      - attractions
+      - tours
+    - name: SafetyWing Travel Insurance
+      url: https://safetywing.com?referenceID=YOUR_ID
+      keywords:
+      - travel insurance
+      - nomad insurance
+      - SafetyWing
+    - name: Amazon Travel Gear
+      url: https://amazon.com?tag=techlife0ac-20
+      keywords:
+      - luggage
+      - travel backpack
+      - packing cubes
+      - travel pillow
+      - passport holder
+    - name: CJ Affiliate Travel
+      url: https://www.cj.com/YOUR_CJ_LINK
+      keywords:
+      - flight deals
+      - cheap flights
+      - airline
+    - name: Skyscanner
+      url: https://skyscanner.com?aff=YOUR_ID
+      keywords:
+      - cheap flights
+      - flight deals
+      - airline tickets
+    - name: RentalCars
+      url: https://rentalcars.com?aff=YOUR_ID
+      keywords:
+      - car rental
+      - rental car
+      - rent a car
     post_schedule_hour: 9
     post_schedule_minute: 50
     video_schedule_hour: 11
     video_schedule_minute: 50
     pinterest_schedule_hour: 12
     pinterest_schedule_minute: 50
-
+    subtopics:
+      tips:
+        name: Travel Tips & Advice
+        keywords:
+        - travel tips
+        - travel hacks
+        - packing
+        - airport
+        - travel advice
+        - budget travel
+      destinations:
+        name: Destinations
+        keywords:
+        - destination
+        - country
+        - city guide
+        - where to go
+        - best places
+        - island
+        - beach
+      flights:
+        name: Flights & Airports
+        keywords:
+        - flight
+        - airline
+        - cheap flights
+        - airport
+        - booking
+        - first class
+        - business class
+      hotels:
+        name: Hotels & Accommodation
+        keywords:
+        - hotel
+        - resort
+        - Airbnb
+        - hostel
+        - accommodation
+        - booking
+        - stay
+      car_rental:
+        name: Car Rental & Transport
+        keywords:
+        - car rental
+        - rental car
+        - road trip
+        - transport
+        - train
+        - bus
+      travel_gear:
+        name: Travel Gear & Products
+        keywords:
+        - luggage
+        - backpack
+        - travel gear
+        - packing cubes
+        - travel pillow
+        - travel gadget
+      digital_nomad:
+        name: Digital Nomad
+        keywords:
+        - digital nomad
+        - remote work travel
+        - coworking
+        - visa
+        - expat
+      travel_insurance:
+        name: Travel Insurance
+        keywords:
+        - travel insurance
+        - SafetyWing
+        - World Nomads
+        - coverage
+        - medical
+      food_culture:
+        name: Food & Culture
+        keywords:
+        - food
+        - cuisine
+        - culture
+        - local
+        - street food
+        - restaurant
   pet_care:
-    name: "Pet Care & Products"
+    name: Pet Care & Products
     enabled: true
     seed_keywords:
-      - "best dog food 2026"
-      - "cat toys review"
-      - "best pet insurance 2026"
-      - "dog training tips for beginners"
-      - "best aquarium fish tank 2026"
-      - "puppy care guide"
+    - best dog food 2026
+    - cat toys review
+    - best pet insurance 2026
+    - dog training tips for beginners
+    - best aquarium fish tank 2026
+    - puppy care guide
     affiliate_programs:
-      - name: "Amazon Pet Supplies"
-        url: "https://amazon.com?tag=techlife0ac-20"
-        keywords: ["dog food", "cat food", "pet bed", "dog toy", "cat litter", "pet carrier", "fish tank", "dog collar", "cat tree"]
-      - name: "Chewy Affiliate"
-        url: "https://chewy.com?aff=YOUR_ID"
-        keywords: ["Chewy", "Chewy.com"]
+    - name: Amazon Pet Supplies
+      url: https://amazon.com?tag=techlife0ac-20
+      keywords:
+      - dog food
+      - cat food
+      - pet bed
+      - dog toy
+      - cat litter
+      - pet carrier
+      - fish tank
+      - dog collar
+      - cat tree
+    - name: Chewy Affiliate
+      url: https://chewy.com?aff=YOUR_ID
+      keywords:
+      - Chewy
+      - Chewy.com
     post_schedule_hour: 10
     post_schedule_minute: 0
     video_schedule_hour: 12
     video_schedule_minute: 0
     pinterest_schedule_hour: 13
     pinterest_schedule_minute: 0
-
+    subtopics:
+      dogs:
+        name: Dogs
+        keywords:
+        - dog
+        - puppy
+        - canine
+        - dog breed
+        - dog training
+      cats:
+        name: Cats
+        keywords:
+        - cat
+        - kitten
+        - feline
+        - cat breed
+        - indoor cat
+      pet_food:
+        name: Pet Food & Nutrition
+        keywords:
+        - pet food
+        - dog food
+        - cat food
+        - raw diet
+        - grain free
+      pet_products:
+        name: Pet Products & Gear
+        keywords:
+        - pet product
+        - dog toy
+        - cat tree
+        - pet bed
+        - collar
+        - leash
+        - carrier
+      pet_health:
+        name: Pet Health
+        keywords:
+        - pet health
+        - vet
+        - pet insurance
+        - vaccination
+        - flea
+        - tick
+      fish_aquarium:
+        name: Fish & Aquarium
+        keywords:
+        - fish
+        - aquarium
+        - fish tank
+        - tropical fish
+        - reef
+        - filter
+      exotic_pets:
+        name: Exotic & Small Pets
+        keywords:
+        - hamster
+        - rabbit
+        - bird
+        - reptile
+        - guinea pig
+        - turtle
   fitness_wellness:
-    name: "Fitness & Wellness"
+    name: Fitness & Wellness
     enabled: true
     seed_keywords:
-      - "best home gym equipment 2026"
-      - "workout routine for beginners"
-      - "best protein powder review 2026"
-      - "yoga for beginners guide"
-      - "resistance bands workout"
-      - "best running shoes 2026"
+    - best home gym equipment 2026
+    - workout routine for beginners
+    - best protein powder review 2026
+    - yoga for beginners guide
+    - resistance bands workout
+    - best running shoes 2026
     affiliate_programs:
-      - name: "Amazon Fitness"
-        url: "https://amazon.com?tag=techlife0ac-20"
-        keywords: ["dumbbells", "resistance bands", "yoga mat", "protein powder", "treadmill", "kettlebell", "foam roller", "pull-up bar", "jump rope"]
-      - name: "MyProtein"
-        url: "https://myprotein.com?aff=YOUR_ID"
-        keywords: ["MyProtein", "whey protein", "mass gainer"]
+    - name: Amazon Fitness
+      url: https://amazon.com?tag=techlife0ac-20
+      keywords:
+      - dumbbells
+      - resistance bands
+      - yoga mat
+      - protein powder
+      - treadmill
+      - kettlebell
+      - foam roller
+      - pull-up bar
+      - jump rope
+    - name: MyProtein
+      url: https://myprotein.com?aff=YOUR_ID
+      keywords:
+      - MyProtein
+      - whey protein
+      - mass gainer
     post_schedule_hour: 10
     post_schedule_minute: 15
     video_schedule_hour: 12
     video_schedule_minute: 15
     pinterest_schedule_hour: 13
     pinterest_schedule_minute: 15
-
+    subtopics:
+      workouts:
+        name: Workouts & Training
+        keywords:
+        - workout
+        - exercise
+        - training
+        - routine
+        - HIIT
+        - strength
+      equipment:
+        name: Gym Equipment & Gear
+        keywords:
+        - equipment
+        - dumbbells
+        - treadmill
+        - kettlebell
+        - resistance band
+        - home gym
+      nutrition:
+        name: Sports Nutrition
+        keywords:
+        - protein powder
+        - pre-workout
+        - creatine
+        - BCAA
+        - mass gainer
+      running:
+        name: Running & Cardio
+        keywords:
+        - running
+        - running shoes
+        - marathon
+        - jogging
+        - cardio
+        - cycling
+      yoga_flexibility:
+        name: Yoga & Flexibility
+        keywords:
+        - yoga
+        - stretching
+        - flexibility
+        - Pilates
+        - mobility
+      wearables:
+        name: Fitness Wearables
+        keywords:
+        - fitness tracker
+        - smartwatch
+        - Apple Watch
+        - Garmin
+        - Fitbit
+        - Whoop
+      product_reviews:
+        name: Product Reviews
+        keywords:
+        - review
+        - best
+        - comparison
+        - vs
+        - tested
+        - rating
   remote_work:
-    name: "Remote Work & Productivity"
+    name: Remote Work & Productivity
     enabled: true
     seed_keywords:
-      - "best home office setup 2026"
-      - "work from home productivity tips"
-      - "best standing desk review"
-      - "noise cancelling headphones comparison"
-      - "best productivity apps 2026"
-      - "best ergonomic chair review"
+    - best home office setup 2026
+    - work from home productivity tips
+    - best standing desk review
+    - noise cancelling headphones comparison
+    - best productivity apps 2026
+    - best ergonomic chair review
     affiliate_programs:
-      - name: "Amazon Office & Tech"
-        url: "https://amazon.com?tag=techlife0ac-20"
-        keywords: ["standing desk", "ergonomic chair", "monitor", "webcam", "microphone", "mechanical keyboard", "wireless mouse", "noise cancelling headphones", "desk lamp"]
-      - name: "Autonomous Affiliate"
-        url: "https://autonomous.ai?aff=YOUR_ID"
-        keywords: ["Autonomous", "SmartDesk"]
+    - name: Amazon Office & Tech
+      url: https://amazon.com?tag=techlife0ac-20
+      keywords:
+      - standing desk
+      - ergonomic chair
+      - monitor
+      - webcam
+      - microphone
+      - mechanical keyboard
+      - wireless mouse
+      - noise cancelling headphones
+      - desk lamp
+    - name: Autonomous Affiliate
+      url: https://autonomous.ai?aff=YOUR_ID
+      keywords:
+      - Autonomous
+      - SmartDesk
     post_schedule_hour: 10
     post_schedule_minute: 30
     video_schedule_hour: 12
     video_schedule_minute: 30
     pinterest_schedule_hour: 13
     pinterest_schedule_minute: 30
+    subtopics:
+      office_setup:
+        name: Office Setup
+        keywords:
+        - home office
+        - desk setup
+        - standing desk
+        - monitor
+        - ergonomic chair
+      productivity_apps:
+        name: Productivity Apps
+        keywords:
+        - productivity app
+        - Notion
+        - Todoist
+        - Trello
+        - project management
+      remote_jobs:
+        name: Remote Jobs
+        keywords:
+        - remote job
+        - work from home
+        - freelance
+        - hiring
+        - remote career
+      equipment:
+        name: Equipment & Gear
+        keywords:
+        - webcam
+        - microphone
+        - headphones
+        - keyboard
+        - mouse
+        - desk lamp
+      tips:
+        name: Tips & Guides
+        keywords:
+        - productivity tips
+        - time management
+        - focus
+        - work-life balance
+      coworking:
+        name: Coworking & Spaces
+        keywords:
+        - coworking
+        - shared office
+        - workspace
+        - coffee shop
+        - remote workspace

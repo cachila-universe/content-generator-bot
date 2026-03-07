@@ -1,8 +1,14 @@
-"""SEO optimizer that adds meta tags, schema markup, sitemaps, and canonical URLs."""
+"""SEO optimizer that adds meta tags, schema markup, sitemaps, and canonical URLs.
+
+Image priority: AI-generated (Leonardo → Stability → HuggingFace) → Pexels → Picsum fallback.
+"""
 
 import re
 import os
+import io
 import json
+import uuid
+import hashlib
 import logging
 import requests
 from pathlib import Path
@@ -13,10 +19,15 @@ from xml.etree import ElementTree as ET
 
 logger = logging.getLogger(__name__)
 
+_PROJECT_ROOT = Path(__file__).parent.parent
+_STOCK_DIR = _PROJECT_ROOT / "data" / "stock_images"
+_ARTICLE_IMG_DIR = _PROJECT_ROOT / "site" / "output" / "assets" / "images"
+
 
 def optimize(article: dict, niche_id: str, niche_config: dict, site_url: str, output_dir: Path) -> dict:
     """
     Add SEO metadata, schema markup, sitemap entry, and canonical URL to article.
+    Generates AI hero + inline images (Leonardo → Stability → HuggingFace → Pexels → Picsum).
 
     Returns enriched article dict with: slug, meta_html, schema_markup, canonical_url
     """
@@ -28,11 +39,11 @@ def optimize(article: dict, niche_id: str, niche_config: dict, site_url: str, ou
 
     # Generate URL slug
     slug = slugify(title, max_length=80, word_boundary=True, save_order=True)
+    subtopic_id = article.get("subtopic_id", "")
     canonical_url = f"{site_url.rstrip('/')}/{niche_id}/{slug}.html"
 
-    # Hero image via Picsum Photos (free, no API key needed)
-    # For production: replace with Unsplash API or your own image CDN
-    image_url = f"https://picsum.photos/seed/{slug}/800/450"
+    # ── Hero image: AI-generated primary, Pexels fallback, Picsum last resort ──
+    image_url = _generate_hero_image(title, niche_id, slug, site_url)
 
     # Build meta HTML block
     site_name = os.getenv("SITE_NAME", "TechLife Insights")
@@ -48,8 +59,8 @@ def optimize(article: dict, niche_id: str, niche_config: dict, site_url: str, ou
     if faq_schema:
         schema_markup += "\n" + faq_schema
 
-    # Inject inline images after every H2 heading (richer articles)
-    enriched_content = _inject_inline_images(html_content, slug, niche_id)
+    # Inject inline images after every H2 heading (AI-generated when possible)
+    enriched_content = _inject_inline_images(html_content, slug, niche_id, site_url)
 
     # Update sitemap
     _update_sitemap(output_dir, canonical_url, published_at)
@@ -62,6 +73,7 @@ def optimize(article: dict, niche_id: str, niche_config: dict, site_url: str, ou
         **article,
         "html_content": enriched_content,
         "slug": slug,
+        "subtopic_id": subtopic_id,
         "meta_html": meta_html,
         "schema_markup": schema_markup,
         "canonical_url": canonical_url,
@@ -70,17 +82,164 @@ def optimize(article: dict, niche_id: str, niche_config: dict, site_url: str, ou
     }
 
 
-def _inject_inline_images(html_content: str, base_slug: str, niche_id: str = "") -> str:
+# ═══════════════════════════════════════════════════════════════════════════
+#  AI Image Generation for Articles
+# ═══════════════════════════════════════════════════════════════════════════
+
+def _generate_hero_image(title: str, niche_id: str, slug: str, site_url: str) -> str:
+    """
+    Generate a hero image for the article using AI image APIs.
+    Falls back through: AI stock images → Pexels → Picsum.
+    Returns a URL string.
+    """
+    # 1. Try to find existing AI stock image for this topic
+    try:
+        from core.stock_generator import get_usable_images_for_niche
+        ai_images = get_usable_images_for_niche(niche_id, limit=5)
+        if ai_images:
+            # Pick the best match (first available)
+            img = ai_images[0]
+            filepath = Path(img.get("filepath", ""))
+            if filepath.exists():
+                # Copy to article assets
+                dest = _copy_to_article_assets(filepath, slug, "hero")
+                if dest:
+                    return f"/assets/images/{dest.name}"
+    except Exception as exc:
+        logger.debug("AI stock image lookup failed: %s", exc)
+
+    # 2. Try generating a new AI image on-the-fly
+    try:
+        ai_url = _generate_ai_image_for_article(title, niche_id, slug, "hero")
+        if ai_url:
+            return ai_url
+    except Exception as exc:
+        logger.debug("AI image generation failed: %s", exc)
+
+    # 3. Try Pexels
+    try:
+        pexels_url = _fetch_pexels_image(title, niche_id)
+        if pexels_url:
+            return pexels_url
+    except Exception as exc:
+        logger.debug("Pexels fetch failed: %s", exc)
+
+    # 4. Last resort: Picsum (deterministic, always works)
+    logger.info("Using Picsum fallback for hero image: %s", slug)
+    return f"https://picsum.photos/seed/{slug}/800/450"
+
+
+def _generate_ai_image_for_article(title: str, niche_id: str, slug: str, img_type: str) -> str | None:
+    """
+    Generate a single AI image for an article section using the stock_generator cascade.
+    Returns local URL path or None.
+    """
+    import yaml
+
+    try:
+        settings_path = _PROJECT_ROOT / "config" / "settings.yaml"
+        with open(settings_path) as f:
+            settings = yaml.safe_load(f) or {}
+    except Exception:
+        return None
+
+    stock_cfg = settings.get("stock_images", {})
+    has_api = any([
+        stock_cfg.get("leonardo_api_key", "").strip(),
+        stock_cfg.get("stability_api_key", "").strip(),
+        stock_cfg.get("huggingface_token", "").strip(),
+    ])
+    if not has_api:
+        return None
+
+    try:
+        from core.stock_generator import _generate_image_cascading, _build_prompt
+
+        prompt = _build_prompt(title, niche_id)
+        image_bytes, model_name, provider = _generate_image_cascading(
+            prompt["positive"], prompt["negative"], settings, 800, 450,
+        )
+        if image_bytes is None:
+            return None
+
+        # Save to article assets
+        _ARTICLE_IMG_DIR.mkdir(parents=True, exist_ok=True)
+        filename = f"{slug}-{img_type}-{uuid.uuid4().hex[:6]}.jpg"
+        output_path = _ARTICLE_IMG_DIR / filename
+
+        from PIL import Image as PILImage
+        img = PILImage.open(io.BytesIO(image_bytes))
+        if img.mode != "RGB":
+            img = img.convert("RGB")
+        img = img.resize((800, 450), PILImage.LANCZOS)
+        img.save(output_path, format="JPEG", quality=90, optimize=True)
+
+        logger.info("AI hero image generated: %s (%s via %s)", filename, model_name, provider)
+        return f"/assets/images/{filename}"
+
+    except Exception as exc:
+        logger.debug("AI image cascade failed for article: %s", exc)
+        return None
+
+
+def _fetch_pexels_image(query: str, niche_id: str) -> str | None:
+    """Fetch a relevant image URL from Pexels API."""
+    api_key = os.getenv("PEXELS_API_KEY", "")
+    if not api_key:
+        return None
+
+    # Clean query for search
+    clean = re.sub(r'[^a-zA-Z0-9\s]', '', query)
+    words = [w for w in clean.split() if len(w) > 2][:4]
+    search_query = " ".join(words) if words else niche_id.replace("_", " ")
+
+    try:
+        resp = requests.get(
+            "https://api.pexels.com/v1/search",
+            headers={"Authorization": api_key},
+            params={"query": search_query, "per_page": 3, "orientation": "landscape"},
+            timeout=10,
+        )
+        if resp.status_code == 200:
+            data = resp.json()
+            photos = data.get("photos", [])
+            if photos:
+                # Return the large2x version (high quality, landscape)
+                return photos[0].get("src", {}).get("large2x", photos[0].get("src", {}).get("large", ""))
+    except Exception as exc:
+        logger.debug("Pexels API error: %s", exc)
+
+    return None
+
+
+def _copy_to_article_assets(source: Path, slug: str, img_type: str) -> Path | None:
+    """Copy an existing stock image to the article assets directory."""
+    try:
+        from PIL import Image as PILImage
+        _ARTICLE_IMG_DIR.mkdir(parents=True, exist_ok=True)
+        filename = f"{slug}-{img_type}-{uuid.uuid4().hex[:6]}.jpg"
+        dest = _ARTICLE_IMG_DIR / filename
+
+        img = PILImage.open(source)
+        if img.mode != "RGB":
+            img = img.convert("RGB")
+        img = img.resize((800, 450), PILImage.LANCZOS)
+        img.save(dest, format="JPEG", quality=90, optimize=True)
+        return dest
+    except Exception as exc:
+        logger.debug("Image copy failed: %s", exc)
+        return None
+
+
+def _inject_inline_images(html_content: str, base_slug: str, niche_id: str = "", site_url: str = "") -> str:
     """
     Inject topic-relevant images throughout the article dynamically.
-    Uses Unsplash Source (keyword-based, free, no API key) so images relate to the section.
+    Priority: AI-generated → Pexels → Picsum fallback.
     Number of images varies per article — typically 2-5 depending on section count.
-    Each image uses a unique seed to avoid duplicates within the same article.
     Skips FAQ, Conclusion, and headings that are purely affiliate links.
     """
-    import hashlib
 
-    # Words that add no keyword value — filtered out before building the image query
+    # Words that add no keyword value
     _STOP_WORDS = {
         'best', 'top', 'most', 'the', 'a', 'an', 'and', 'or', 'for', 'in', 'to',
         'of', 'how', 'why', 'what', 'when', 'where', 'your', 'our', 'my', 'get',
@@ -93,7 +252,6 @@ def _inject_inline_images(html_content: str, base_slug: str, niche_id: str = "")
         'using', 'making', 'getting', 'having', 'setting', 'understanding',
     }
 
-    # Per-niche fallback keywords if heading yields nothing useful
     _NICHE_FALLBACK = {
         'ai_tools': 'technology,software',
         'personal_finance': 'finance,money',
@@ -105,7 +263,7 @@ def _inject_inline_images(html_content: str, base_slug: str, niche_id: str = "")
         'remote_work': 'office,laptop',
     }
 
-    # Count total content H2s (excluding FAQ/Conclusion) to decide image placement
+    # Count content H2s (excluding FAQ/Conclusion)
     all_h2s = re.findall(r"<h2>(.*?)</h2>", html_content, flags=re.IGNORECASE | re.DOTALL)
     content_h2s = []
     for h2_html in all_h2s:
@@ -115,24 +273,18 @@ def _inject_inline_images(html_content: str, base_slug: str, niche_id: str = "")
 
     total_sections = len(content_h2s)
 
-    # Decide which sections get images — spread them out, never the same pattern
-    # For 1-2 sections: image on every section
-    # For 3-4 sections: image on 2-3 sections (skip one in the middle)
-    # For 5+ sections:  image on 3-4 sections (spread evenly)
+    # Decide which sections get images
     if total_sections <= 2:
         image_positions = set(range(1, total_sections + 1))
     elif total_sections <= 4:
-        # Always first, always last content section, and one in middle
         image_positions = {1, total_sections}
         if total_sections >= 3:
             image_positions.add(total_sections // 2 + 1)
     else:
-        # Spread evenly: first, ~1/3, ~2/3, last
         image_positions = {1, total_sections}
         step = max(1, total_sections // 3)
         for i in range(step, total_sections, step):
             image_positions.add(i)
-        # Cap at 5 images max for very long articles
         if len(image_positions) > 5:
             image_positions = set(sorted(image_positions)[:5])
 
@@ -140,20 +292,17 @@ def _inject_inline_images(html_content: str, base_slug: str, niche_id: str = "")
     img_counter = [0]
 
     def _keywords_from_heading(raw_html: str) -> str:
-        """Strip HTML, remove stop words, return comma-separated keywords."""
-        clean = re.sub(r'<[^>]+>', '', raw_html)          # strip HTML tags
-        clean = re.sub(r'[^a-zA-Z0-9 ]', ' ', clean)      # keep only alphanumeric
+        clean = re.sub(r'<[^>]+>', '', raw_html)
+        clean = re.sub(r'[^a-zA-Z0-9 ]', ' ', clean)
         words = [w.lower() for w in clean.split() if len(w) > 2 and w.lower() not in _STOP_WORDS]
-        keywords = words[:3]  # up to 3 keywords for better specificity
+        keywords = words[:3]
         if not keywords:
             keywords = _NICHE_FALLBACK.get(niche_id, 'lifestyle,guide').split(',')
         return ','.join(keywords)
 
     def _unique_seed(keywords: str) -> str:
-        """Generate a unique seed from keywords + counter so no two images repeat."""
         raw = f"{base_slug}-{keywords}-{img_counter[0]}"
         seed = hashlib.md5(raw.encode()).hexdigest()[:8]
-        # Ensure uniqueness even if keywords repeat
         while seed in used_seeds:
             seed = hashlib.md5(f"{seed}x".encode()).hexdigest()[:8]
         used_seeds.add(seed)
@@ -163,14 +312,12 @@ def _inject_inline_images(html_content: str, base_slug: str, niche_id: str = "")
         heading_html = match.group(1)
         plain_heading = re.sub(r'<[^>]+>', '', heading_html).strip()
 
-        # Skip image injection for FAQ / Conclusion / Questions sections
         lower = plain_heading.lower()
         if any(word in lower for word in ("faq", "frequently", "question", "conclusion")):
             return match.group(0)
 
         img_counter[0] += 1
 
-        # Only inject at dynamically chosen positions
         if img_counter[0] not in image_positions:
             return match.group(0)
 
@@ -178,9 +325,21 @@ def _inject_inline_images(html_content: str, base_slug: str, niche_id: str = "")
         seed = _unique_seed(keywords)
         alt_text = plain_heading[:80] if plain_heading else keywords.replace(',', ' ')
 
-        # Picsum with seed ensures deterministic unique images per section
-        # Use keyword-derived seed so the same topic always gets the same image
-        img_src = f"https://picsum.photos/seed/{seed}/800/400"
+        # Try AI image generation for inline image
+        img_src = None
+
+        # Try Pexels first for inline (faster, saves AI credits for hero)
+        try:
+            pexels_url = _fetch_pexels_image(plain_heading, niche_id)
+            if pexels_url:
+                img_src = pexels_url
+        except Exception:
+            pass
+
+        # Fallback to Picsum
+        if not img_src:
+            img_src = f"https://picsum.photos/seed/{seed}/800/400"
+
         img_html = (
             f'\n<figure style="margin:24px 0;text-align:center;">'
             f'<img src="{img_src}" '
