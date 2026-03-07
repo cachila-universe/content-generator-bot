@@ -70,61 +70,11 @@ def fetch_image(
     use_ai_images: bool = True,
 ) -> "Image.Image | None":
     """
-    Fetch a relevant image for video slides.
+    Fetch a relevant image for video slides via Pexels API.
 
-    Priority:
-      1. Local AI-generated stock images (free, unique, already on disk)
-      2. Pexels API search (free tier)
-      3. None (caller renders text-only slide)
-
-    Returns a PIL Image or None if all sources fail.
+    Returns a PIL Image or None if the fetch fails.
     """
-    # ── Try local AI-generated images first ───────────────────────
-    if use_ai_images and niche_id:
-        ai_img = _try_ai_stock_image(niche_id, photo_index, target_w, target_h)
-        if ai_img is not None:
-            return ai_img
-
-    # ── Pexels fallback ───────────────────────────────────────────
     return _fetch_from_pexels(query, api_key, orientation, target_w, target_h, photo_index)
-
-
-def _try_ai_stock_image(
-    niche_id: str,
-    photo_index: int,
-    target_w: int,
-    target_h: int,
-) -> "Image.Image | None":
-    """Try to load a local AI-generated stock image for this niche."""
-    try:
-        from core.stock_generator import get_usable_images_for_niche, mark_used_in_video
-
-        available = get_usable_images_for_niche(niche_id, limit=20)
-        if not available:
-            return None
-
-        # Pick image by index (wraps around)
-        img_record = available[photo_index % len(available)]
-        filepath = Path(img_record["filepath"])
-
-        if not filepath.exists():
-            logger.debug("AI stock image file missing: %s", filepath)
-            return None
-
-        img = Image.open(filepath)
-        img = _resize_cover(img, target_w, target_h)
-
-        # Mark as used in video
-        mark_used_in_video(img_record["id"])
-        logger.info("Using AI stock image #%d for niche '%s'", img_record["id"], niche_id)
-        return img
-
-    except ImportError:
-        logger.debug("stock_generator not available — skipping AI images")
-        return None
-    except Exception as exc:
-        logger.debug("AI stock image fetch failed: %s", exc)
-        return None
 
 
 def _fetch_from_pexels(

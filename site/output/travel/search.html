@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Travel Search — Flights, Hotels & Cars | {{ site_title }}</title>
+  <title>Travel Search — Flights, Hotels & Cars | TechLife Insights</title>
   <meta name="description" content="Search and compare flights, hotels, and car rentals across multiple providers. Smart autocomplete, deep links to booking sites.">
   <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -105,12 +105,47 @@
         <a href="/" class="logo"><img src="/assets/logo-full-dark.svg" alt="TechLife Insights"></a>
         <nav class="nav-links" id="navLinks">
           <a href="/" class="nav-link" style="font-weight:700;color:#fff;">Home</a>
-          {% for nid, niche in niches.items() %}{% if niche.enabled %}
+          
           <div class="nav-item">
-            <a href="/{{ nid }}/" class="nav-link">{{ niche.name }}</a>
-            {% if niche.subtopics %}<div class="nav-dropdown">{% for sub_id, sub in niche.subtopics.items() %}<a href="/{{ nid }}/{{ sub_id }}/">{{ sub.name }}</a>{% endfor %}</div>{% endif %}
+            <a href="/ai_tools/" class="nav-link">AI Tools &amp; SaaS</a>
+            <div class="nav-dropdown"><a href="/ai_tools/ai_apps/">AI Apps &amp; Software</a><a href="/ai_tools/ai_news/">AI News</a><a href="/ai_tools/ai_automation/">AI Automation</a><a href="/ai_tools/ai_for_business/">AI for Business</a><a href="/ai_tools/ai_creative/">AI Creative Tools</a><a href="/ai_tools/ai_coding/">AI for Developers</a></div>
           </div>
-          {% endif %}{% endfor %}
+          
+          <div class="nav-item">
+            <a href="/personal_finance/" class="nav-link">Personal Finance &amp; Investing</a>
+            <div class="nav-dropdown"><a href="/personal_finance/investing/">Investing</a><a href="/personal_finance/stocks/">Stocks</a><a href="/personal_finance/crypto/">Crypto</a><a href="/personal_finance/budgeting/">Budgeting &amp; Saving</a><a href="/personal_finance/market_news/">Market News</a><a href="/personal_finance/retirement/">Retirement</a><a href="/personal_finance/credit/">Credit &amp; Loans</a><a href="/personal_finance/real_estate/">Real Estate</a></div>
+          </div>
+          
+          <div class="nav-item">
+            <a href="/health_biohacking/" class="nav-link">Health &amp; Biohacking</a>
+            <div class="nav-dropdown"><a href="/health_biohacking/supplements/">Supplements &amp; Vitamins</a><a href="/health_biohacking/biohacking/">Biohacking</a><a href="/health_biohacking/nutrition/">Nutrition &amp; Diet</a><a href="/health_biohacking/sleep/">Sleep Optimization</a><a href="/health_biohacking/mental_health/">Mental Health</a><a href="/health_biohacking/longevity/">Longevity &amp; Anti-Aging</a></div>
+          </div>
+          
+          <div class="nav-item">
+            <a href="/home_tech/" class="nav-link">Home Tech &amp; Smart Devices</a>
+            <div class="nav-dropdown"><a href="/home_tech/smart_home/">Smart Home</a><a href="/home_tech/security/">Home Security</a><a href="/home_tech/appliances/">Smart Appliances</a><a href="/home_tech/entertainment/">Home Entertainment</a><a href="/home_tech/networking/">Wi-Fi &amp; Networking</a><a href="/home_tech/energy/">Energy &amp; Solar</a><a href="/home_tech/product_reviews/">Product Reviews</a></div>
+          </div>
+          
+          <div class="nav-item">
+            <a href="/travel/" class="nav-link">Travel</a>
+            <div class="nav-dropdown"><a href="/travel/tips/">Travel Tips &amp; Advice</a><a href="/travel/destinations/">Destinations</a><a href="/travel/flights/">Flights &amp; Airports</a><a href="/travel/hotels/">Hotels &amp; Accommodation</a><a href="/travel/car_rental/">Car Rental &amp; Transport</a><a href="/travel/travel_gear/">Travel Gear &amp; Products</a><a href="/travel/digital_nomad/">Digital Nomad</a><a href="/travel/travel_insurance/">Travel Insurance</a><a href="/travel/food_culture/">Food &amp; Culture</a></div>
+          </div>
+          
+          <div class="nav-item">
+            <a href="/pet_care/" class="nav-link">Pet Care &amp; Products</a>
+            <div class="nav-dropdown"><a href="/pet_care/dogs/">Dogs</a><a href="/pet_care/cats/">Cats</a><a href="/pet_care/pet_food/">Pet Food &amp; Nutrition</a><a href="/pet_care/pet_products/">Pet Products &amp; Gear</a><a href="/pet_care/pet_health/">Pet Health</a><a href="/pet_care/fish_aquarium/">Fish &amp; Aquarium</a><a href="/pet_care/exotic_pets/">Exotic &amp; Small Pets</a></div>
+          </div>
+          
+          <div class="nav-item">
+            <a href="/fitness_wellness/" class="nav-link">Fitness &amp; Wellness</a>
+            <div class="nav-dropdown"><a href="/fitness_wellness/workouts/">Workouts &amp; Training</a><a href="/fitness_wellness/equipment/">Gym Equipment &amp; Gear</a><a href="/fitness_wellness/nutrition/">Sports Nutrition</a><a href="/fitness_wellness/running/">Running &amp; Cardio</a><a href="/fitness_wellness/yoga_flexibility/">Yoga &amp; Flexibility</a><a href="/fitness_wellness/wearables/">Fitness Wearables</a><a href="/fitness_wellness/product_reviews/">Product Reviews</a></div>
+          </div>
+          
+          <div class="nav-item">
+            <a href="/remote_work/" class="nav-link">Remote Work &amp; Productivity</a>
+            <div class="nav-dropdown"><a href="/remote_work/office_setup/">Office Setup</a><a href="/remote_work/productivity_apps/">Productivity Apps</a><a href="/remote_work/remote_jobs/">Remote Jobs</a><a href="/remote_work/equipment/">Equipment &amp; Gear</a><a href="/remote_work/tips/">Tips &amp; Guides</a><a href="/remote_work/coworking/">Coworking &amp; Spaces</a></div>
+          </div>
+          
           <div class="nav-item">
             <a href="/tools/" class="nav-link">🛠️ Tools</a>
             <div class="nav-dropdown">
@@ -224,7 +259,7 @@
 
     <div class="disclaimer"><strong>⚠️ Transparency Notice:</strong> When you click a provider link, you'll be taken to their official website with your search pre-filled. We may earn a referral commission at no extra cost to you. All results come directly from the provider. Prices and availability change frequently — always verify before booking.</div>
   </div>
-  <footer class="footer"><div class="container">&copy; 2026 {{ site_title }}. · <a href="/privacy.html">Privacy</a> · <a href="/about.html">About</a> · <a href="/tools/">All Tools</a></div></footer>
+  <footer class="footer"><div class="container">&copy; 2026 TechLife Insights. · <a href="/privacy.html">Privacy</a> · <a href="/about.html">About</a> · <a href="/tools/">All Tools</a></div></footer>
   <a href="https://techlife-insights.kit.com/be266c00d5" target="_blank" rel="noopener" class="subscribe-float">📬 Subscribe</a>
   <script>
   // ── Airport database: 175+ airports with lat/lon for distance calculation ────

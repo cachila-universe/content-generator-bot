@@ -154,8 +154,15 @@
   function selectEco(btn,eco){activeEco=eco;document.querySelectorAll('.eco-btn').forEach(function(b){b.classList.remove('selected')});btn.classList.add('selected');renderDevices();}
 
   function renderFilters(){
-    var html='';categories.forEach(function(c){html+='<button class="cat-btn'+(c===activeCat?' active':'')+'" onclick="setCat(''+c+'')">'+c+'</button>'});
+    var html='';
+    categories.forEach(function(c){
+      html+='<button class="cat-btn'+(c===activeCat?' active':'')+'" data-cat="'+c+'">'+c+'</button>';
+    });
     document.getElementById('catFilter').innerHTML=html;
+    document.getElementById('catFilter').onclick=function(e){
+      var btn=e.target.closest('.cat-btn');
+      if(btn) setCat(btn.dataset.cat);
+    };
   }
   function setCat(c){activeCat=c;renderFilters();renderDevices();}
 

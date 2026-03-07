@@ -199,8 +199,14 @@
 
   function renderFilters(){
     var html='';
-    categories.forEach(function(c){html+='<button class="filter-btn'+(c===activeFilter?' active':'')+'" onclick="setFilter(''+c+'')">'+c+'</button>';});
+    categories.forEach(function(c){
+      html+='<button class="filter-btn'+(c===activeFilter?' active':'')+'" data-cat="'+c+'">'+c+'</button>';
+    });
     document.getElementById('filters').innerHTML=html;
+    document.getElementById('filters').onclick=function(e){
+      var btn=e.target.closest('.filter-btn');
+      if(btn) setFilter(btn.dataset.cat);
+    };
   }
 
   function setFilter(cat){activeFilter=cat;renderFilters();filterTools();}
