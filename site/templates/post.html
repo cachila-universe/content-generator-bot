@@ -40,8 +40,8 @@
     .nav {
       position: sticky; top: 0; z-index: 50;
       backdrop-filter: blur(16px);
-      background: rgba(255, 255, 255, 0.9);
-      border-bottom: 1px solid var(--border);
+      background: #1e3a8a;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
       font-family: 'Inter', sans-serif;
     }
     .nav-inner {
@@ -64,10 +64,10 @@
     .nav-link {
       padding: 6px 14px; border-radius: 8px;
       font-size: 14px; font-weight: 500;
-      color: var(--text-muted); text-decoration: none;
+      color: rgba(255,255,255,0.75); text-decoration: none;
       transition: all 0.15s;
     }
-    .nav-link:hover, .nav-link.active { color: var(--accent); background: var(--accent-light); text-decoration: none; }
+    .nav-link:hover, .nav-link.active { color: #fff; background: rgba(255,255,255,0.12); text-decoration: none; }
 
     /* ── FTC Banner ──────────────────────────────── */
     .ftc-banner {
@@ -214,8 +214,7 @@
   <nav class="nav">
     <div class="nav-inner">
       <a href="/" class="nav-logo">
-        <img src="/assets/favicon.svg" alt="Logo" style="width:28px;height:28px;border-radius:6px;">
-        <span>{{ settings.site.title if settings and settings.site else 'TechLife Insights' }}</span>
+        <img src="/assets/logo-full-dark.svg" alt="TechLife Insights" style="height:38px;width:auto;">
       </a>
       <div class="nav-links">
         <a href="/" class="nav-link">Home</a>
