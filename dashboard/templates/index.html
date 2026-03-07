@@ -9,6 +9,7 @@
     <span class="status-dot-lg {% if bot_state.bot_running %}dot-green{% else %}dot-red{% endif %}" id="bannerDot"></span>
     <span class="status-banner-text" id="bannerText">
       Bot is {{ "RUNNING" if bot_state.bot_running else "STOPPED" }}
+      {% if bot_state.bot_mode == 'paused' %} (PAUSED){% endif %}
     </span>
     <span class="status-detail" id="bannerDetail">
       {{ bot_state.posts_today or 0 }} posts today · Max {{ bot_state.schedule.max_posts_per_day }}/day
@@ -17,7 +18,38 @@
   <div class="status-banner-right">
     <span class="platform-pill {% if bot_state.platforms.blog %}pill-active{% else %}pill-inactive{% endif %}">📝 Blog</span>
     <span class="platform-pill {% if bot_state.platforms.youtube_shorts %}pill-active{% else %}pill-inactive{% endif %}">🎬 Shorts</span>
+    <span class="platform-pill {% if bot_state.platforms.get('twitter', True) %}pill-active{% else %}pill-inactive{% endif %}">🐦 Twitter</span>
     <span class="platform-pill {% if bot_state.platforms.pinterest %}pill-active{% else %}pill-inactive{% endif %}">📌 Pinterest</span>
+  </div>
+</div>
+
+<!-- Bot Mode Controls -->
+<div class="card mode-card">
+  <h3 class="card-title">🎛️ Bot Mode</h3>
+  <p class="card-desc">Control how the bot operates. <strong>Paused</strong> = active but idle. <strong>Scheduled</strong> = follows cron schedule. <strong>Manual</strong> = runs tasks only when triggered.</p>
+  <div class="mode-buttons">
+    <button class="btn {% if bot_state.bot_mode == 'paused' %}btn-mode-active{% else %}btn-mode{% endif %}" onclick="setBotMode('paused')" id="btnPaused">
+      ⏸️ Paused
+    </button>
+    <button class="btn {% if bot_state.bot_mode == 'scheduled' or not bot_state.bot_mode %}btn-mode-active{% else %}btn-mode{% endif %}" onclick="setBotMode('scheduled')" id="btnScheduled">
+      📅 Scheduled
+    </button>
+    <button class="btn {% if bot_state.bot_mode == 'manual' %}btn-mode-active{% else %}btn-mode{% endif %}" onclick="setBotMode('manual')" id="btnManual">
+      🔧 Manual
+    </button>
+  </div>
+  <div class="mode-status" id="modeStatus">
+    Current mode: <strong>{{ bot_state.bot_mode or 'scheduled' }}</strong>
+  </div>
+
+  <!-- Run All Pipeline (visible in manual mode) -->
+  <div class="run-all-section {% if bot_state.bot_mode != 'manual' %}hidden{% endif %}" id="runAllSection">
+    <hr>
+    <h4>🚀 Run Full Pipeline</h4>
+    <p class="card-desc">Runs ALL tasks in dependency order: Trends → Articles → Stock Images → Videos → Twitter → Pinterest</p>
+    <button class="btn btn-trigger-arm" id="btnRunAllArm" onclick="armRunAll()">🔓 Arm Pipeline</button>
+    <button class="btn btn-trigger-fire" id="btnRunAllFire" onclick="fireRunAll()" disabled>🚀 Run All Tasks</button>
+    <div class="trigger-status" id="runAllStatus"></div>
   </div>
 </div>
 
@@ -71,6 +103,7 @@
     <div class="trigger-platforms">
       <label class="checkbox-label"><input type="checkbox" id="trigBlog" checked> 📝 Blog</label>
       <label class="checkbox-label"><input type="checkbox" id="trigShorts"> 🎬 YouTube Short</label>
+      <label class="checkbox-label"><input type="checkbox" id="trigTwitter" checked> 🐦 Twitter</label>
       <label class="checkbox-label"><input type="checkbox" id="trigPinterest"> 📌 Pinterest</label>
     </div>
     <div class="trigger-safety">

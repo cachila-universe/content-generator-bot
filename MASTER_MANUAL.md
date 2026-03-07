@@ -157,6 +157,12 @@ This generates one test article across all niches to verify everything works.
 39. [Newsletter Email List Setup — "📬 Get Our Best Guides Weekly"](#39-newsletter-email-list--how-to-set-up--get-our-best-guides-weekly)
 40. [YouTube — Best Free Video Content Makers](#40-youtube--best-free-video-content-makers)
 41. [YouTube Channel — Connect the Bot for Auto-Uploads](#41-youtube-channel--connect-the-bot-for-auto-uploads)
+42. [Social Media Auto-Posting (Twitter, Instagram Reels, TikTok)](#42-social-media-auto-posting-twitter-instagram-reels-tiktok)
+43. [Video Generation: Edge TTS Neural Voices & Visual Variety](#43-video-generation-edge-tts-neural-voices--visual-variety)
+44. [AI Stock Image Generator — Multi-API Cascade](#44-ai-stock-image-generator--multi-api-cascade)
+45. [Trend Intelligence System — Self-Learning Brain](#45-trend-intelligence-system--self-learning-brain)
+46. [Bot Modes — Paused, Scheduled & Manual](#46-bot-modes--paused-scheduled--manual)
+47. [Twitter/X Auto-Posting for Articles & Videos](#47-twitterx-auto-posting-for-articles--videos)
 
 ---
 
@@ -2591,107 +2597,278 @@ print('✅ Twitter connected!' if tp.enabled else '❌ Twitter not configured')
 
 ### §42.2 — Instagram Reels Setup
 
-**Requirements:**
-- Instagram **Business** or **Creator** account (not personal)
-- Facebook Page linked to the Instagram account
-- Facebook Developer App with `instagram_content_publish` permission
+Instagram does **not** allow bots to upload Reels via a simple API key. You must go through Meta's full review process. Here's how it actually works:
 
-**Step 1: Convert to Business Account**
+#### What You Need
 
-1. Instagram → Settings → Account → Switch to Professional Account → **Business**
-2. Link it to a Facebook Page (create one if needed)
+- Instagram **Business** or **Creator** account (not a personal account)
+- A **Facebook Page** linked to that Instagram account
+- A **Meta Developer App** that passes Meta's App Review
+- A **public URL** where your video file is hosted (Instagram won't accept local files)
 
-**Step 2: Create a Facebook App**
+#### Step 1 — Convert Your Instagram to a Business Account
 
-1. Go to [developers.facebook.com/apps](https://developers.facebook.com/apps/)
-2. Click **Create App** → **Business** type
-3. Add the **Instagram Graph API** product
-4. Under Permissions, request: `instagram_content_publish`, `instagram_basic`, `pages_read_engagement`
+1. Open the Instagram app → tap your profile → ☰ → **Settings and privacy**
+2. Scroll to **Account type and tools** → **Switch to professional account**
+3. Choose **Business** (not Creator — Business gets full API access)
+4. Connect it to a Facebook Page when prompted. If you don't have one, Instagram will create one for you
 
-**Step 3: Get Long-Lived Access Token**
+#### Step 2 — Create a Meta Developer App
 
-1. In Graph API Explorer: [developers.facebook.com/tools/explorer](https://developers.facebook.com/tools/explorer/)
-2. Select your app, add permissions above
-3. Click **Generate Access Token**
-4. Exchange for a long-lived token (60 days):
+1. Go to **https://developers.facebook.com/** → log in with the Facebook account that owns the Page
+2. Click **My Apps** (top-right) → **Create App**
+3. Choose app type: **Business**
+4. Name it something like `TechLife Bot` → click **Create App**
+
+#### Step 3 — Add Instagram Graph API to Your App
+
+1. In your new app's dashboard, click **Add Product** in the left sidebar
+2. Find **Instagram Graph API** → click **Set Up**
+3. This adds the Instagram API to your app
+
+#### Step 4 — Request Permissions (App Review Required)
+
+This is the part most guides skip. You **must** submit your app for Meta review before you can publish content.
+
+1. In your app dashboard, go to **App Review** → **Permissions and Features**
+2. Request these permissions:
+   - `instagram_basic` — read profile info
+   - `instagram_content_publish` — publish Reels and posts
+   - `pages_read_engagement` — required dependency
+3. For each permission, you need to:
+   - Write a description of how you'll use it (e.g., "Automated posting of educational tech videos as Reels")
+   - Provide a screencast demo showing your app in action
+   - Submit a privacy policy URL (use `https://tech-life-insights.com/privacy.html`)
+4. Click **Submit for Review**
+5. **Timeline:** Meta typically takes **3–7 business days** to review. You may get follow-up questions.
+
+> ⚠️ **Until your app passes review, you can only use the API with test users added in the dashboard.** This is enough to test the pipeline.
+
+#### Step 5 — Generate a Long-Lived Access Token
+
+1. Go to **Graph API Explorer**: https://developers.facebook.com/tools/explorer/
+2. Select your app from the dropdown
+3. Click **Generate Access Token** → grant the permissions when prompted
+4. This gives you a **short-lived token** (valid ~1 hour). Exchange it for a long-lived one:
 
 ```bash
-curl "https://graph.facebook.com/v21.0/oauth/access_token?grant_type=fb_exchange_token&client_id=YOUR_APP_ID&client_secret=YOUR_APP_SECRET&fb_exchange_token=YOUR_SHORT_TOKEN"
+# Replace YOUR_APP_ID, YOUR_APP_SECRET, and YOUR_SHORT_TOKEN
+curl -s "https://graph.facebook.com/v21.0/oauth/access_token?\
+grant_type=fb_exchange_token&\
+client_id=YOUR_APP_ID&\
+client_secret=YOUR_APP_SECRET&\
+fb_exchange_token=YOUR_SHORT_TOKEN" | python3 -m json.tool
 ```
 
-**Step 4: Get Your Instagram User ID**
+The response gives you a token valid for **60 days**. Save it.
+
+> 💡 **To auto-refresh before it expires**, set a reminder to regenerate every 50 days, or build a refresh script (the token endpoint returns a new long-lived token if you exchange the current one before expiry).
+
+#### Step 6 — Find Your Instagram Business Account User ID
 
 ```bash
-curl "https://graph.facebook.com/v21.0/me/accounts?access_token=YOUR_TOKEN"
-# Get the page ID, then:
-curl "https://graph.facebook.com/v21.0/PAGE_ID?fields=instagram_business_account&access_token=YOUR_TOKEN"
+# Step A: Get your Facebook Page ID
+curl -s "https://graph.facebook.com/v21.0/me/accounts?access_token=YOUR_LONG_LIVED_TOKEN" | python3 -m json.tool
+# Look for the "id" field of your page
+
+# Step B: Get the Instagram account linked to that page
+curl -s "https://graph.facebook.com/v21.0/YOUR_PAGE_ID?fields=instagram_business_account&access_token=YOUR_LONG_LIVED_TOKEN" | python3 -m json.tool
+# The "instagram_business_account.id" is your ig_user_id
 ```
 
-**Step 5: Add to Settings**
+#### Step 7 — Add Credentials to Settings
+
+Edit `config/settings.yaml`:
 
 ```yaml
 social:
   instagram:
-    access_token: "YOUR_LONG_LIVED_TOKEN"
-    ig_user_id: "YOUR_IG_USER_ID"
+    access_token: "EAAxxxxxxxxx..."     # Your long-lived token from Step 5
+    ig_user_id: "17841400xxxxxxx"        # Your IG user ID from Step 6
 ```
 
-**Important note:** Instagram Graph API requires videos to be hosted at a **public URL**. The bot generates videos locally — you need to either:
-- Upload them to your site (`tech-life-insights.com/videos/`)
-- Use a cloud bucket (S3, Cloudflare R2, etc.)
-- The bot can use your Cloudflare Pages deploy URL once videos are pushed to git
+#### Step 8 — Test It
+
+```bash
+source contentgenerator/bin/activate
+PYTHONPATH=. python -c "
+import yaml
+from core.social_poster import InstagramPoster
+cfg = yaml.safe_load(open('config/settings.yaml'))
+ip = InstagramPoster(cfg['social']['instagram'])
+print('✅ Instagram connected!' if ip.enabled else '❌ Not configured')
+"
+```
+
+#### How Posting Works
+
+The bot **cannot** upload a local file directly to Instagram. Instead:
+
+1. Bot generates a video locally (e.g., `data/videos/my-short.mp4`)
+2. You push it to your site so it gets a public URL:
+   ```bash
+   cp data/videos/my-short.mp4 site/output/videos/
+   git add site/output/videos/ && git commit -m "Add video" && git push
+   # URL becomes: https://tech-life-insights.com/videos/my-short.mp4
+   ```
+3. The bot calls Instagram Graph API with that **public URL** → Instagram downloads and publishes it as a Reel
+
+> ⚠️ **Common gotchas:**
+> - Video must be MP4, H.264, AAC audio, 3–90 seconds, max 1GB
+> - The URL must be directly accessible (no redirects, no auth walls)
+> - Cloudflare Pages works perfectly as the video host
+> - If your token expires you'll get a `190` error — regenerate it
 
 ---
 
 ### §42.3 — TikTok Setup
 
-**Requirements:**
-- TikTok Developer account with approved app
-- Content Posting API access (requires app review)
+TikTok's Content Posting API also requires developer approval. It's stricter than Meta's.
 
-**Step 1: Register as TikTok Developer**
+#### What You Need
 
-1. Go to [developers.tiktok.com](https://developers.tiktok.com/)
-2. Create a new app → select **Content Posting API**
-3. Submit for review (TikTok reviews take 1–5 business days)
+- A TikTok account (the one you'll post to)
+- A TikTok Developer account with an approved app
+- OAuth2 access token with `video.publish` scope
+- A **public URL** where your video file is hosted
 
-**Step 2: Get Access Token**
+#### Step 1 — Register as a TikTok Developer
 
-1. Once approved, use TikTok's OAuth flow to get an access token
-2. Required scope: `video.publish`
+1. Go to **https://developers.tiktok.com/** → click **Log In** (use your TikTok account)
+2. Fill in the developer registration form (name, email, purpose)
+3. Accept the Terms of Service
 
-**Step 3: Add to Settings**
+#### Step 2 — Create an App
+
+1. In the TikTok Developer Portal → **Manage Apps** → **Connect an app**
+2. Fill in:
+   - **App name:** `TechLife Bot`
+   - **App description:** "Automated educational content posting for tech insights"
+   - **App icon:** Upload your logo
+   - **Category:** Media/Entertainment or Education
+   - **Platform:** Web
+3. Under **Products**, add: **Content Posting API**
+4. Under **Scopes**, select: `video.publish`, `video.upload`
+
+#### Step 3 — Submit for Review
+
+1. Go to your app → **Submit for review**
+2. You need to provide:
+   - A **privacy policy URL** (`https://tech-life-insights.com/privacy.html`)
+   - A **terms of service URL** (`https://tech-life-insights.com/terms.html`)
+   - A description of your use case
+   - A demo video or screenshots of your app
+3. **Timeline:** TikTok reviews take **1–5 business days**, sometimes longer
+4. You may be rejected the first time — common reasons: vague use case description, missing privacy policy. Resubmit with more detail.
+
+> ⚠️ **TikTok is the strictest of the three platforms.** Many apps get rejected on the first try. Be specific about your use case: "We publish educational technology review videos to our TikTok audience. Each video summarizes an article from our website tech-life-insights.com."
+
+#### Step 4 — Get an OAuth2 Access Token
+
+Once approved, you need to run TikTok's OAuth2 flow to get a token for your account:
+
+1. In your app settings, find your **Client Key** and **Client Secret**
+2. Build the authorization URL:
+   ```
+   https://www.tiktok.com/v2/auth/authorize/?
+     client_key=YOUR_CLIENT_KEY&
+     scope=video.publish,video.upload&
+     response_type=code&
+     redirect_uri=https://tech-life-insights.com/callback&
+     state=random_string
+   ```
+3. Open that URL in a browser → log into TikTok → authorize the app
+4. You'll be redirected to your `redirect_uri` with a `?code=AUTH_CODE` parameter
+5. Exchange the auth code for an access token:
+
+```bash
+curl -X POST "https://open.tiktokapis.com/v2/oauth/token/" \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "client_key=YOUR_CLIENT_KEY&client_secret=YOUR_CLIENT_SECRET&code=YOUR_AUTH_CODE&grant_type=authorization_code&redirect_uri=https://tech-life-insights.com/callback"
+```
+
+The response contains `access_token` (valid 24 hours) and `refresh_token` (valid 365 days).
+
+> 💡 **The access token expires every 24 hours.** You must use the `refresh_token` to get a new one. A cron job or the bot's scheduler can handle this automatically.
+
+#### Step 5 — Add to Settings
 
 ```yaml
 social:
   tiktok:
-    access_token: "YOUR_TIKTOK_ACCESS_TOKEN"
+    client_key: "YOUR_CLIENT_KEY"          # From TikTok Developer Portal
+    client_secret: "YOUR_CLIENT_SECRET"    # From TikTok Developer Portal
+    access_token: "YOUR_ACCESS_TOKEN"      # From OAuth2 flow
+    refresh_token: "YOUR_REFRESH_TOKEN"    # For auto-renewal
 ```
 
-**Note:** Like Instagram, TikTok requires a **public video URL**. Same hosting solution applies.
+#### Step 6 — Test It
+
+```bash
+source contentgenerator/bin/activate
+PYTHONPATH=. python -c "
+import yaml
+from core.social_poster import TikTokPoster
+cfg = yaml.safe_load(open('config/settings.yaml'))
+tp = TikTokPoster(cfg['social']['tiktok'])
+print('✅ TikTok connected!' if tp.enabled else '❌ Not configured')
+"
+```
+
+#### How Posting Works
+
+Same as Instagram — TikTok pulls the video from a **public URL**:
+
+1. Bot generates video → push to site → get public URL
+2. Bot calls TikTok Content Posting API with the URL
+3. TikTok downloads and publishes it
+
+> ⚠️ **Common gotchas:**
+> - Video must be MP4, 1–60 seconds for feed, up to 10 min for long-form
+> - Min resolution: 720p. Shorts (9:16) work best
+> - The Content Posting API has a rate limit of **~20 posts/day**
+> - If your access token expires, use the refresh token to get a new one
 
 ---
 
 ### §42.4 — Video Hosting for Instagram & TikTok
 
-Both Instagram Reels and TikTok require a **publicly accessible video URL** (not a local file). Options:
-
-| Method | Difficulty | Cost |
-|---|---|---|
-| **Cloudflare R2** (recommended) | Medium | Free tier: 10GB storage |
-| **GitHub raw files** | Easy | Free but has bandwidth limits |
-| **Your own site** | Easy | Push to `site/output/videos/` and deploy |
-| **AWS S3** | Medium | ~$0.02/GB |
-
-**Simplest approach — push videos to your site:**
+Both Instagram and TikTok require a **publicly accessible video URL** — they will NOT accept a local file upload. The simplest approach is to push videos to your Cloudflare Pages site:
 
 ```bash
 # After generating a video:
+mkdir -p site/output/videos
 cp data/videos/my-short.mp4 site/output/videos/
 git add site/output/videos/my-short.mp4
-git push  # Cloudflare Pages deploys automatically
+git commit -m "Add video for social posting"
+git push origin main
+# Cloudflare Pages deploys automatically in ~30 seconds
 # Video URL: https://tech-life-insights.com/videos/my-short.mp4
 ```
+
+**Other hosting options:**
+
+| Method | Pros | Cons |
+|---|---|---|
+| **Cloudflare Pages** (current setup) | Free, already configured, auto-deploys | Git repo gets large with videos over time |
+| **Cloudflare R2** | Free 10GB, purpose-built for media | Requires R2 bucket setup + API calls |
+| **GitHub Release assets** | Free, up to 2GB per file | Manual upload, not automated easily |
+| **AWS S3 / DigitalOcean Spaces** | Reliable, scalable | Costs ~$0.02/GB/month |
+
+> 💡 **Recommendation:** Start with Cloudflare Pages (push to `site/output/videos/`). When your video library grows past ~500MB, move to Cloudflare R2 for dedicated media storage.
+
+---
+
+### §42.5 — Quick Reference: What's Working vs. Needs Setup
+
+| Platform | Status | What You Need |
+|---|---|---|
+| **YouTube** | ✅ Working | Already configured — `client_secrets.json` + `data/youtube_token.json` |
+| **Twitter/X** | ✅ Working | Already configured in `config/settings.yaml` |
+| **Instagram** | ⬜ Needs Setup | Meta Developer App + App Review (~3–7 days) + public video URL |
+| **TikTok** | ⬜ Needs Setup | TikTok Developer App + App Review (~1–5 days) + public video URL |
+
+**Easiest order to set up:** YouTube → Twitter (done) → Instagram → TikTok
 
 ---
 
@@ -2776,5 +2953,472 @@ print(f'✅ Video created: {result}' if result else '❌ Failed')
 
 ---
 
-*Manual Version 2.3 — March 2026*
+## §44 — AI Stock Image Generator — Multi-API Cascade
+
+### Overview
+
+The stock image generator creates **high-quality AI images** using a **multi-API cascade** system that automatically falls through to the next provider when one runs out of credits:
+
+**Leonardo AI → Stability AI → HuggingFace SDXL → HuggingFace FLUX**
+
+Images are tracked for:
+
+1. **Stock photo platform submission** — Adobe Stock, Dreamstime, Freepik, Alamy, 123RF, Pond5, Wirestock
+2. **Video backgrounds** — replaces Pexels images with unique AI-generated visuals
+3. **Article hero images** — custom imagery for blog posts
+
+All images carry **mandatory AI disclosure** metadata — this cannot be disabled.
+
+### Multi-API Cascade — Priority Order
+
+| Priority | Provider | Model | Free Tier | Quality |
+|----------|----------|-------|-----------|---------|
+| 🥇 1st | **Leonardo AI** | Leonardo Phoenix | 150 tokens/day (~20 images) | ⭐⭐⭐⭐⭐ |
+| 🥈 2nd | **Stability AI** | SD 3.5 Medium | 25 credits (~7 images) | ⭐⭐⭐⭐⭐ |
+| 🥉 3rd | **HuggingFace** | SDXL 1.0 | ~30 images/day | ⭐⭐⭐⭐ |
+| 4th | **HuggingFace** | FLUX.1-schnell | ~30 images/day | ⭐⭐⭐ |
+| Fallback | **Pexels** | N/A | 200 req/month | Stock photos |
+
+**How the cascade works:**
+1. The bot tries **Leonardo AI** first (highest quality)
+2. If Leonardo returns 402 (out of tokens) or fails → tries **Stability AI**
+3. If Stability returns 402 (out of credits) or fails → tries **HuggingFace SDXL**
+4. If SDXL fails → tries **HuggingFace FLUX** as last resort
+5. Every API call is logged to the `api_usage` database table for dashboard tracking
+
+**No API key required to start** — the system works with just HuggingFace. Add Leonardo and Stability keys when available for higher quality output.
+
+### Configuration
+
+In `config/settings.yaml`:
+
+```yaml
+stock_images:
+  enabled: true
+  leonardo_api_key: ""         # Get FREE at https://app.leonardo.ai — 150 tokens/day
+  stability_api_key: ""        # Get FREE at https://platform.stability.ai — 25 credits on signup
+  huggingface_token: "hf_..."  # Get FREE at https://huggingface.co/settings/tokens
+  primary_model: "stabilityai/stable-diffusion-xl-base-1.0"
+  fallback_model: "black-forest-labs/FLUX.1-schnell"
+  images_per_run: 5
+  resolution: "1024x1024"
+  use_in_videos: true
+  ai_disclosure:
+    enabled: true              # MANDATORY — DO NOT DISABLE
+    title_prefix: "[AI Generated]"
+    description_notice: "This content was created using generative artificial intelligence."
+```
+
+### How It Works
+
+```
+                              ┌──────────────┐
+Article H2 / Trend Topics ──→│ Prompt Builder │
+                              └──────┬───────┘
+                                     ↓
+                        ┌────────────────────────┐
+                        │   Leonardo AI (best)    │──→ 402? ─┐
+                        └────────────────────────┘          │
+                        ┌────────────────────────┐          │
+                    ┌───│   Stability AI (great)  │←─────────┘
+                    │   └────────────────────────┘
+                    │   ┌────────────────────────┐
+               402? ├───│   HuggingFace SDXL     │
+                    │   └────────────────────────┘
+                    │   ┌────────────────────────┐
+                    └──→│   HuggingFace FLUX     │
+                        └───────────┬────────────┘
+                                    ↓
+                        ┌────────────────────────┐
+                        │  Post-process + Save    │
+                        │  + API Usage Logging    │
+                        │  + AI Disclosure        │
+                        └────────────────────────┘
+```
+
+#### Trend-Aware Image Generation
+
+When the **Trend Intelligence System** (§45) is active, stock image generation uses trending topics and market demand data to pick the most commercially valuable subjects:
+
+- **Google Trends** data determines what people are searching for
+- **Niche-specific demand categories** ensure relevant output
+- **Market demand scores** are stored per image for prioritization
+
+#### Prompt Engineering
+
+Each niche has 3 tailored prompt templates. A random **style modifier** is applied:
+
+- **Photorealistic** — studio lighting, sharp focus
+- **Digital Art** — vibrant colors, creative composition
+- **Minimalist** — clean, soft palette
+- **Cinematic** — dramatic lighting, wide aspect
+- **Editorial** — magazine-quality, professional
+
+A **quality suffix** ensures professional output:
+> "4K resolution, highly detailed, professional stock photo, sharp focus, clean composition"
+
+#### AI Disclosure (Mandatory)
+
+Every generated image record includes:
+- `ai_disclosed = 1` (always true, cannot be overridden)
+- `ai_disclosure_text` — "This image was created using generative artificial intelligence."
+- Keywords always include: `ai generated`, `artificial intelligence`, `ai art`, `generative ai`
+
+This ensures compliance with stock platform requirements for AI-generated content.
+
+### Video Integration
+
+The image fetcher uses this **priority order** for video backgrounds:
+
+1. **Local AI stock images** — check `stock_generator.get_usable_images_for_niche()`
+2. **Pexels API** — fallback to stock photo search
+3. **Gradient** — solid color fallback if all sources fail
+
+When an AI image is used in a video, it's marked via `mark_used_in_video()` in the DB.
+
+### Dashboard
+
+The dashboard has a dedicated **Stock Images** tab (`/stock-images`) showing:
+
+- Total generated / submitted / used in videos / storage size
+- Image gallery with preview thumbnails
+- One-click **Generate** button for batch creation (now uses trend intelligence for topics)
+- AI disclosure badge on every image card
+- **API Usage Stats** — per-provider breakdown (Leonardo / Stability / HuggingFace) with call counts, success rates, and last-used timestamps
+
+### Database Schema
+
+Table `stock_images`:
+
+| Column | Type | Description |
+|--------|------|-------------|
+| id | INTEGER PRIMARY KEY | Auto-increment |
+| filename | TEXT | UUID-based filename |
+| filepath | TEXT | Absolute path on disk |
+| prompt | TEXT | Full positive prompt used |
+| topic | TEXT | Source topic / heading |
+| niche_id | TEXT | Associated niche |
+| category | TEXT | Content category |
+| style | TEXT | Style modifier applied |
+| resolution | TEXT | e.g. "1024x1024" |
+| ai_model | TEXT | Model used (Leonardo / SD3.5 / SDXL / FLUX) |
+| api_provider | TEXT | **NEW** — "leonardo" / "stability" / "huggingface" |
+| trend_source | TEXT | **NEW** — Source trend that inspired this image |
+| market_demand_score | REAL | **NEW** — 0.0–1.0 commercial demand score |
+| ai_disclosed | INTEGER | Always 1 |
+| ai_disclosure_text | TEXT | Disclosure notice |
+| title | TEXT | Generated SEO title |
+| description | TEXT | Generated description |
+| keywords | TEXT | Comma-separated keywords |
+| file_size_bytes | INTEGER | File size |
+| status | TEXT | "generated" / "submitted" |
+| platform_submissions | TEXT | JSON of platform submissions |
+| generated_at | TEXT | Timestamp |
+| used_in_video | INTEGER | 0 or 1 |
+
+Table `api_usage` (**NEW**):
+
+| Column | Type | Description |
+|--------|------|-------------|
+| id | INTEGER PRIMARY KEY | Auto-increment |
+| provider | TEXT | "leonardo" / "stability" / "huggingface" |
+| endpoint | TEXT | API endpoint called |
+| status_code | INTEGER | HTTP response code |
+| success | INTEGER | 1 = success, 0 = failure |
+| error_message | TEXT | Error details (if failed) |
+| timestamp | TEXT | ISO timestamp |
+
+### File Structure
+
+```
+core/stock_generator.py          # Multi-API cascade generator
+data/stock_images/               # Output directory
+  └── 2026/03/15/ai_tools/       # Organized by date + niche
+       └── abc123def456.jpg
+```
+
+### Manual Test
+
+```bash
+source contentgenerator/bin/activate
+PYTHONPATH=. python -c "
+from core.stock_generator import generate_stock_images, get_api_usage_stats
+import yaml
+
+with open('config/settings.yaml') as f:
+    settings = yaml.safe_load(f)
+
+topics = [
+    {'topic': 'AI productivity workspace setup', 'niche_id': 'ai_tools'},
+    {'topic': 'Smart home technology dashboard', 'niche_id': 'home_tech'},
+]
+
+results = generate_stock_images(topics, settings, count=2)
+for r in results:
+    print(f'  ✓ {r[\"filename\"]} — {r[\"title\"]} via {r.get(\"api_provider\", \"unknown\")}')
+print(f'Generated {len(results)} images')
+
+# Check API usage
+stats = get_api_usage_stats()
+for provider, data in stats.items():
+    print(f'  {provider}: {data[\"total_calls\"]} calls, {data[\"success_rate\"]}% success')
+"
+```
+
+---
+
+## §45 — Trend Intelligence System — Self-Learning Brain
+
+### Overview
+
+The **Trend Intelligence System** is the bot's "self-learning brain." It continuously gathers data from multiple online sources to determine:
+
+1. **What topics are trending** — what to write about
+2. **What writing styles perform best** — how to format articles
+3. **What video formats get views** — how to structure Shorts
+4. **What images have market demand** — what stock photos to generate
+
+The system **learns from its own performance data** over time, adjusting recommendations based on what actually works.
+
+### Data Sources
+
+| Source | What It Provides | Update Frequency |
+|--------|-----------------|------------------|
+| **Google Trends** | Real-time trending topics per niche | Daily (6 AM) |
+| **Google Suggest** | Autocomplete queries people are searching | Daily (6 AM) |
+| **Reddit** | Hot posts from niche-specific subreddits | Daily (6 AM) |
+| **HackerNews** | Top tech/startup stories | Daily (6 AM) |
+| **Internal DB** | Style performance metrics (self-learning) | After each article |
+
+### Writing Style Intelligence
+
+The system recommends one of **7 article styles** based on topic analysis:
+
+| Style | When It's Used | Example |
+|-------|---------------|---------|
+| **Listicle** | "best", "top", numbers in topic | "10 Best AI Tools for 2025" |
+| **How-To** | "how to", "setup", "guide" | "How to Set Up a Smart Home" |
+| **Comparison** | "vs", "compare", "alternative" | "ChatGPT vs Claude: Which Is Better?" |
+| **Review** | "review", product names | "Notion AI Review: Worth It?" |
+| **Problem-Solution** | "fix", "solve", "issue" | "Fix Slow WiFi in 5 Minutes" |
+| **News/Trending** | breaking news, fresh trends | "Apple Just Launched Vision Pro 2" |
+| **Beginner Guide** | "beginner", "start", "101" | "Investing 101: Where to Start" |
+
+Each style has a **specialized LLM prompt** that shapes the article's structure, tone, and formatting.
+
+### Video Format Intelligence
+
+The system catalogs **7 trending video formats** for YouTube Shorts:
+
+| Format | Duration | Description |
+|--------|----------|-------------|
+| **Quick Tips** | 15–30s | Rapid-fire numbered tips with text overlays |
+| **Split Screen** | 30–45s | Before/after or side-by-side comparisons |
+| **Hook → Story** | 45–60s | Controversial opening → explanation → CTA |
+| **Tutorial Steps** | 30–45s | Numbered steps with progress bar |
+| **Text Reveal** | 15–30s | Text appearing word-by-word over visuals |
+| **POV Style** | 30–45s | First-person "when you discover…" framing |
+| **Myth Bust** | 30–45s | "Most people think X… actually Y" format |
+
+### Self-Learning Loop
+
+```
+Article Published → Track Views/Engagement → Record Style Performance
+       ↑                                              ↓
+       └──── Next Article Uses Best-Performing Style ←┘
+```
+
+The `style_intelligence` database table stores a **rolling average** effectiveness score for each writing style per niche. Over time, the bot naturally gravitates toward styles that generate the most engagement.
+
+### Dashboard — Intelligence Page
+
+Access at **Dashboard → 🧠 Intelligence** (`/intelligence`):
+
+- **Metrics Bar** — cached topics, writing styles, video formats, last refresh time
+- **Refresh Button** — force-refresh all intelligence data
+- **Data Sources** — visual grid showing all 4 sources with status
+- **Writing Style Table** — all 7 styles with patterns and best-for categories
+- **Video Format Table** — all 7 formats with durations and descriptions
+- **Style Performance** — self-learning data table (appears after articles are published)
+
+### Database Schema
+
+Table `trend_intelligence`:
+
+| Column | Type | Description |
+|--------|------|-------------|
+| id | INTEGER PRIMARY KEY | Auto-increment |
+| niche_id | TEXT | Associated niche |
+| source | TEXT | "google_trends" / "reddit" / "hackernews" / "google_suggest" |
+| topic | TEXT | Trending topic text |
+| score | REAL | Relevance/trending score |
+| url | TEXT | Source URL (if available) |
+| fetched_at | TEXT | ISO timestamp |
+
+Table `style_intelligence`:
+
+| Column | Type | Description |
+|--------|------|-------------|
+| id | INTEGER PRIMARY KEY | Auto-increment |
+| niche_id | TEXT | Associated niche |
+| style_type | TEXT | "writing" or "video" |
+| style_name | TEXT | e.g. "listicle", "quick_tips" |
+| effectiveness | REAL | Rolling average score (0.0–1.0) |
+| sample_count | INTEGER | Number of data points |
+| updated_at | TEXT | Last update timestamp |
+
+### File Structure
+
+```
+core/trend_intelligence.py       # Self-learning intelligence engine
+```
+
+### Configuration
+
+No additional configuration needed — the trend intelligence system is built into the scheduler and runs automatically. It uses only free, public APIs (no keys required for Google Trends, Reddit, or HackerNews).
+
+---
+
+## §46 — Bot Modes — Paused, Scheduled & Manual
+
+### Overview
+
+The bot supports **3 operating modes** controllable from the dashboard:
+
+| Mode | Icon | Behavior |
+|------|------|----------|
+| ⏸️ **Paused** | Yellow | Bot is running but **does nothing**. All scheduled jobs are skipped. Dashboard still accessible. |
+| 📅 **Scheduled** | Green | **Normal operation.** Bot follows its configured schedule automatically. |
+| 🎯 **Manual** | Blue | Bot only acts when you **manually trigger** tasks from the dashboard. |
+
+### Switching Modes
+
+From the **Dashboard home page**, click the mode buttons at the top:
+
+```
+┌──────────┐  ┌────────────┐  ┌──────────┐
+│ ⏸️ Paused │  │ 📅 Schedule │  │ 🎯 Manual │
+└──────────┘  └────────────┘  └──────────┘
+```
+
+The active mode is highlighted. Mode persists across bot restarts (stored in `bot_state.json`).
+
+### Dependency-Aware Manual Pipeline
+
+In **Manual mode**, the "Run All Pipeline" button executes tasks in the correct dependency order:
+
+```
+Step 1: 🧠 Refresh Trend Intelligence     (no dependencies)
+Step 2: 📝 Generate & Publish Articles     (needs trends)
+Step 3: 🎨 Generate Stock Images           (needs trends)
+Step 4: 🎬 Generate YouTube Shorts         (needs articles)
+Step 5: 🐦 Post to Twitter                 (needs articles + videos)
+Step 6: 📌 Post to Pinterest               (needs articles)
+```
+
+Articles are **always generated before videos** because videos use article content as their script.
+
+### Individual Manual Triggers
+
+You can also trigger individual tasks from the dashboard. The manual trigger section lets you:
+
+1. Select which niche to run
+2. Choose which platforms to publish to (Blog, YouTube, Pinterest, Twitter)
+3. Fire the task — it runs in the background
+
+### How Mode Checking Works
+
+Every scheduled job calls `bot_state.should_execute_scheduled_job()` before doing any work:
+
+- **Paused** → returns `False` → job logs "Bot is paused, skipping" and exits
+- **Scheduled** → returns `True` → job runs normally
+- **Manual** → returns `False` → job skips (waits for manual trigger)
+
+Manual triggers bypass the mode check — they always execute regardless of current mode.
+
+### Bot State File
+
+The mode is stored in `data/bot_state.json`:
+
+```json
+{
+  "bot_mode": "scheduled",
+  "platforms": {
+    "blog": true,
+    "youtube": true,
+    "pinterest": true,
+    "twitter": true
+  }
+}
+```
+
+---
+
+## §47 — Twitter/X Auto-Posting for Articles & Videos
+
+### Overview
+
+The bot now **automatically tweets** when new content is created:
+
+1. **Article tweets** — posted 30 minutes after each article is published
+2. **Video tweets** — posted immediately after each YouTube Short is generated
+
+### What Gets Tweeted
+
+#### Article Tweet Format
+```
+📝 New article: {Article Title}
+
+{First 200 chars of article}...
+
+Read more: {article_url}
+
+#niche #hashtags
+```
+
+#### Video Tweet Format
+```
+🎬 New video: {Video Title}
+
+Watch: {youtube_url}
+
+#niche #hashtags
+```
+
+### Schedule
+
+| Event | Timing |
+|-------|--------|
+| Article tweet | 30 min after article published |
+| Video tweet | Immediately after Short generated |
+
+### Configuration
+
+Twitter credentials in `config/settings.yaml`:
+
+```yaml
+social:
+  twitter:
+    api_key: "your_api_key"
+    api_secret: "your_api_secret"
+    access_token: "your_access_token"
+    access_token_secret: "your_access_token_secret"
+    bearer_token: "your_bearer_token"
+```
+
+If any Twitter credential is empty, the bot skips Twitter posting automatically — no errors.
+
+### Dashboard Integration
+
+- **Twitter platform pill** on dashboard home page (🐦 icon)
+- **Twitter checkbox** in manual trigger section
+- Twitter posting included in "Run All Pipeline" dependency chain
+
+### Social Media Posting — Empty Credential Handling
+
+If any social platform (Instagram, TikTok, Twitter) has **empty API credentials** in `settings.yaml`, the bot will **skip posting** to that platform automatically — no errors, no crashes. Only platforms with valid, non-empty credentials will be used.
+
+---
+
+*Manual Version 2.5 — June 2025*
 *For the latest updates, check the repository README.*

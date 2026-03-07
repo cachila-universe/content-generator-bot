@@ -1021,6 +1021,91 @@ affiliate_programs:
 
 ---
 
+## AI Image API Setup (Stock Images + Video Backgrounds)
+
+The bot generates AI images using a **cascading multi-API system** — it tries the best API first, then falls back to the next if it runs out of tokens. All APIs are **free with no credit card required**.
+
+### API Priority Order
+
+| Priority | API | Free Tier | Quality | Setup |
+|---|---|---|---|---|
+| 1st | **Leonardo AI** | 150 tokens/day (~20-37 images) | ⭐⭐⭐⭐⭐ Highest | app.leonardo.ai |
+| 2nd | **Stability AI** | 25 credits on signup (~7 images) | ⭐⭐⭐⭐ Great | platform.stability.ai |
+| 3rd | **HuggingFace** | ~30 images/day, always free | ⭐⭐⭐ Good | huggingface.co |
+
+### Leonardo AI Setup (Best Quality — Recommended)
+
+1. Go to **https://app.leonardo.ai** and sign up (free, no CC)
+2. Go to **https://app.leonardo.ai/api** → Click "Create API key"
+3. Copy the API key
+4. Add to `config/settings.yaml`:
+
+```yaml
+stock_images:
+  leonardo_api_key: "your-leonardo-key-here"
+```
+
+### Stability AI Setup
+
+1. Go to **https://platform.stability.ai** and sign up (free, no CC)
+2. Go to **Account → API Keys → Create key**
+3. Copy the API key
+4. Add to `config/settings.yaml`:
+
+```yaml
+stock_images:
+  stability_api_key: "sk-your-stability-key-here"
+```
+
+### HuggingFace Setup (Free Fallback — Always Works)
+
+1. Go to **https://huggingface.co/settings/tokens**
+2. Sign up or log in (free account)
+3. Click **"New token"**
+4. Name: `content-generator-bot`, Type: **Read**
+5. Click **"Generate"** and copy the token (starts with `hf_...`)
+6. Add to `config/settings.yaml`:
+
+```yaml
+stock_images:
+  huggingface_token: "hf_YOUR_TOKEN_HERE"
+```
+
+### How It Works
+
+The bot tries Leonardo first (highest quality). If Leonardo runs out of tokens, it falls back to Stability AI. If both are exhausted, HuggingFace handles it. You can configure one, two, or all three — the bot skips any API with a blank key.
+
+### Test It
+
+```bash
+source contentgenerator/bin/activate
+PYTHONPATH=. python -c "
+from core.stock_generator import generate_stock_images
+import yaml
+with open('config/settings.yaml') as f:
+    settings = yaml.safe_load(f)
+topics = [{'topic': 'modern workspace', 'niche_id': 'ai_tools'}]
+results = generate_stock_images(topics, settings, count=1)
+print('✅ Success!' if results else '❌ Check your API keys')
+"
+```
+
+---
+
+## Bot Modes
+
+The dashboard has **three operating modes**:
+
+| Mode | Behavior |
+|---|---|
+| ⏸️ **Paused** | Bot is active but does nothing. No scheduled jobs run. Use this to stop all automated work while keeping the bot alive. |
+| 📅 **Scheduled** | Normal operation — follows the cron schedule (trends → articles → videos → tweets → pins). |
+| 🔧 **Manual** | Only runs tasks when YOU click the trigger. Runs all tasks in dependency order: Trends → Articles → Stock Images → Videos → Twitter → Pinterest. |
+
+Switch modes from the Overview page in the dashboard.
+
+---
+
 ## Quick Start (TL;DR)
 
 ```bash

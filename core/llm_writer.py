@@ -1,4 +1,11 @@
-"""LLM-based article writer using Ollama for local AI text generation."""
+"""
+LLM-based article writer using Ollama with trend-intelligent style adaptation.
+
+The writer queries the trend_intelligence module to:
+  1. Pick the best article FORMAT for the topic (listicle, how-to, review, etc.)
+  2. Craft style-specific prompts that match proven high-performing patterns
+  3. Record which style was used so the intelligence system can learn
+"""
 
 import os
 import re
@@ -9,16 +16,88 @@ from pathlib import Path
 logger = logging.getLogger(__name__)
 
 
-def generate_article(topic: str, niche_config: dict) -> dict | None:
+# ── Style-specific prompt fragments ──────────────────────────────────────
+_STYLE_PROMPTS = {
+    "listicle": """
+FORMAT: Listicle (Top-N list article)
+- Structure the ENTIRE article as a numbered list of items
+- Start the H1 title with a number (e.g., "10 Best...", "7 Must-Have...")
+- Each list item gets its own ## H2 heading with the number and item name
+- For each item: 2-3 sentences explaining why it's good, a key stat or price, and who it's best for
+- Use bullet points within items for features/pros/cons
+- Make the intro promise exactly how many items the reader will discover""",
+
+    "how_to": """
+FORMAT: How-To / Step-by-Step Guide
+- Structure as a sequential tutorial with clear numbered steps
+- Title should start with "How to..." or "The Complete Guide to..."
+- Each step gets its own ## H2 heading: "Step 1: [Action]", "Step 2: [Action]"
+- Include a "What You'll Need" or "Prerequisites" section early
+- Add "Pro tip:" callouts within steps for expert advice
+- End with a "Troubleshooting" or "Common Mistakes" section""",
+
+    "comparison": """
+FORMAT: Comparison / Head-to-Head
+- Compare 2-3 products, tools, or approaches side-by-side
+- Title should include "vs" or "Compared"
+- Include a quick verdict in the intro (don't make readers scroll to find it)
+- Use a markdown comparison table for specs/features
+- Have dedicated sections for each option, then a "Winner for [use case]" section
+- End with "Which One Should You Choose?" recommendation""",
+
+    "review": """
+FORMAT: In-Depth Review
+- Title should include the product name and "Review"
+- Open with your overall verdict (star rating, recommend or not)
+- Include sections: First Impressions, Key Features, Performance, Pros & Cons, Value
+- Use bullet-point lists for pros/cons
+- Include specific metrics, prices, and real usage time
+- End with "Is it worth it?" and clear recommendation""",
+
+    "problem_solution": """
+FORMAT: Problem-Solution Article
+- Title should hint at a problem the reader has
+- Open by acknowledging the reader's pain point — show you understand
+- Clearly define the problem in the first section
+- Provide 3-5 solutions, ranked from easiest to most effective
+- Include real examples of people who solved this
+- End with an action plan the reader can start TODAY""",
+
+    "news_trending": """
+FORMAT: Trending News Analysis
+- Title should include the year and feel timely (e.g., "...in 2025")
+- Open with the breaking development or trend
+- Provide context: what changed, why it matters, who it affects
+- Include expert quotes or data points
+- Have a "What This Means For You" section
+- End with predictions or next steps""",
+
+    "beginner_guide": """
+FORMAT: Beginner's Guide
+- Title should include "for Beginners" or "Complete Guide"
+- Start by reassuring the reader — no jargon, no assumptions
+- Define key terms as you introduce them (bold + explanation)
+- Use simple analogies to explain complex concepts
+- Structure from basic → intermediate → "next steps"
+- Include a glossary section or quick reference cheat sheet""",
+}
+
+
+def generate_article(topic: str, niche_config: dict, niche_id: str = "") -> dict | None:
     """
-    Generate an SEO blog post using Ollama.
+    Generate an SEO blog post using Ollama with intelligent style selection.
+
+    The trend intelligence system recommends the best article format for the
+    topic, then we craft a targeted prompt that matches proven patterns.
 
     Args:
         topic: The topic to write about
         niche_config: Niche configuration dict with name, keywords, etc.
+        niche_id: The niche identifier (for trend intelligence lookup)
 
     Returns:
-        dict with keys: title, html_content, meta_description, tags, word_count
+        dict with keys: title, html_content, meta_description, tags, word_count,
+                        writing_style (style used)
         Returns None on failure.
     """
     try:
@@ -32,16 +111,30 @@ def generate_article(topic: str, niche_config: dict) -> dict | None:
     niche_name = niche_config.get("name", "General")
     seed_keywords = niche_config.get("seed_keywords", [])
 
+    # ── Trend intelligence: pick optimal writing style ────────────────────
+    style_info = {"style_id": "listicle", "name": "Listicle"}
+    try:
+        from core.trend_intelligence import get_recommended_writing_style
+        style_info = get_recommended_writing_style(niche_id or "", topic)
+        logger.info("📝 Writing style chosen: %s (score: %s)", style_info["name"], style_info.get("effectiveness_score", "?"))
+    except Exception as exc:
+        logger.debug("Trend intelligence unavailable, using default style: %s", exc)
+
+    style_id = style_info.get("style_id", "listicle")
+    style_prompt = _STYLE_PROMPTS.get(style_id, _STYLE_PROMPTS["listicle"])
+
     prompt = f"""Write a complete, expert blog post about: "{topic}"
 
 Niche: {niche_name}
 Naturally include these keywords: {', '.join(seed_keywords[:5])}
 
-Format the article in markdown:
-- Start with a # H1 title (specific and compelling, not generic)
+{style_prompt}
+
+General formatting rules (apply ON TOP of the format above):
+- Start with a # H1 title (specific, compelling, optimized for clicks)
 - Write an engaging 2-3 sentence introduction that hooks the reader immediately
 - Write 5-7 sections — each with a descriptive ## H2 heading
-- Mix up the format across sections. DO NOT write every section as long paragraphs. Use a variety of:
+- Mix up the format across sections. Use a variety of:
   • Bullet-point lists when comparing features, pros/cons, or listing recommendations
   • Numbered steps for how-to or process sections
   • Short punchy paragraphs (2-3 sentences max) mixed with lists
@@ -73,7 +166,10 @@ Writing style rules:
                 messages=[{"role": "user", "content": prompt}],
             )
             raw_text = response["message"]["content"]
-            return _parse_response(raw_text, niche_config)
+            result = _parse_response(raw_text, niche_config)
+            if result:
+                result["writing_style"] = style_id
+            return result
         except Exception as exc:
             logger.warning("Ollama attempt %d failed: %s", attempt + 1, exc)
             if attempt < 2:

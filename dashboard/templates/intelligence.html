@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+{% block title %}Trend Intelligence{% endblock %}
+{% block page_title %}🧠 Trend Intelligence{% endblock %}
+
+{% block content %}
+<!-- Intelligence Summary -->
+<div class="metrics-grid">
+  <div class="metric-card">
+    <div class="metric-icon">📊</div>
+    <div class="metric-value" id="totalTopics">{{ summary.topics_by_niche.values()|sum if summary.topics_by_niche else 0 }}</div>
+    <div class="metric-label">Cached Topic Records</div>
+  </div>
+  <div class="metric-card">
+    <div class="metric-icon">📝</div>
+    <div class="metric-value">{{ summary.writing_styles|length if summary.writing_styles else 7 }}</div>
+    <div class="metric-label">Writing Styles</div>
+  </div>
+  <div class="metric-card">
+    <div class="metric-icon">🎬</div>
+    <div class="metric-value">{{ summary.video_formats|length if summary.video_formats else 7 }}</div>
+    <div class="metric-label">Video Formats</div>
+  </div>
+  <div class="metric-card accent">
+    <div class="metric-icon">🔄</div>
+    <div class="metric-value text-sm">{{ summary.last_refresh[:16] if summary.last_refresh else 'Never' }}</div>
+    <div class="metric-label">Last Refresh</div>
+  </div>
+</div>
+
+<!-- Refresh Button -->
+<div class="card">
+  <h3 class="card-title">🔍 Refresh Intelligence</h3>
+  <p class="card-desc">Force a full trend scan from Google Trends, Reddit, HackerNews, and Google Suggest. This usually takes 30-60 seconds.</p>
+  <button class="btn btn-primary" onclick="refreshIntelligence()" id="btnRefresh">🔄 Refresh Now</button>
+  <span class="trigger-status" id="refreshStatus"></span>
+</div>
+
+<!-- Data Sources -->
+<div class="card">
+  <h3 class="card-title">📡 Data Sources</h3>
+  <div class="source-grid">
+    <div class="source-card">
+      <div class="source-icon">🔍</div>
+      <div class="source-name">Google Trends</div>
+      <div class="source-desc">Real-time search volume, rising queries, breakout topics</div>
+      <span class="badge badge-success">Free • No API Key</span>
+    </div>
+    <div class="source-card">
+      <div class="source-icon">💬</div>
+      <div class="source-name">Reddit</div>
+      <div class="source-desc">Hot posts from niche-relevant subreddits, engagement scores</div>
+      <span class="badge badge-success">Free • JSON Feed</span>
+    </div>
+    <div class="source-card">
+      <div class="source-icon">🔶</div>
+      <div class="source-name">HackerNews</div>
+      <div class="source-desc">Tech trend signals from top stories (AI, Home Tech, Remote Work niches)</div>
+      <span class="badge badge-success">Free • Public API</span>
+    </div>
+    <div class="source-card">
+      <div class="source-icon">🔮</div>
+      <div class="source-name">Google Suggest</div>
+      <div class="source-desc">Autocomplete suggestions for long-tail keyword ideas</div>
+      <span class="badge badge-success">Free • No API Key</span>
+    </div>
+  </div>
+</div>
+
+<!-- Writing Styles -->
+<div class="card">
+  <h3 class="card-title">📝 Writing Style Intelligence</h3>
+  <p class="card-desc">The bot automatically selects the best article format for each topic based on trend data and past performance.</p>
+  <div class="table-wrapper">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Style</th>
+          <th>Pattern</th>
+          <th>Best For</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>📋 Listicle</strong></td><td>Top N {topic}</td><td>High CTR, SEO, shareable</td></tr>
+        <tr><td><strong>📖 How-To Guide</strong></td><td>How to {action}</td><td>High engagement, search volume</td></tr>
+        <tr><td><strong>⚖️ Comparison</strong></td><td>{A} vs {B}</td><td>Affiliate conversion, commercial intent</td></tr>
+        <tr><td><strong>⭐ Review</strong></td><td>{product} Review</td><td>Strong affiliate revenue</td></tr>
+        <tr><td><strong>🔧 Problem-Solution</strong></td><td>Why {problem} + fix</td><td>Trust building, authority</td></tr>
+        <tr><td><strong>📰 Trending News</strong></td><td>{topic} in 2025</td><td>Timeliness, newsjacking</td></tr>
+        <tr><td><strong>🎓 Beginner Guide</strong></td><td>{topic} for Beginners</td><td>Evergreen, high volume</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Video Formats -->
+<div class="card">
+  <h3 class="card-title">🎬 Video Format Intelligence</h3>
+  <p class="card-desc">Trending video formats that drive views and engagement on YouTube Shorts, TikTok, and Instagram Reels.</p>
+  <div class="table-wrapper">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Format</th>
+          <th>Duration</th>
+          <th>Why It Works</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>⚡ Quick Tips</strong></td><td>30-60s</td><td>Fast-paced numbered tips — highest engagement</td></tr>
+        <tr><td><strong>🔀 Split Screen</strong></td><td>30-60s</td><td>Side-by-side comparison — trending on Reels</td></tr>
+        <tr><td><strong>🪝 Hook + Story</strong></td><td>45-90s</td><td>Provocative hook → value delivery — best retention</td></tr>
+        <tr><td><strong>📐 Tutorial Steps</strong></td><td>30-60s</td><td>Step-by-step walkthrough — educational shorts</td></tr>
+        <tr><td><strong>✨ Text Reveal</strong></td><td>15-30s</td><td>ASMR text animation — trending on TikTok</td></tr>
+        <tr><td><strong>👁️ POV Style</strong></td><td>15-45s</td><td>First-person immersive — TikTok/Reels favorite</td></tr>
+        <tr><td><strong>🔍 Myth Busting</strong></td><td>30-60s</td><td>Myth vs Reality — drives comments & shares</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Style Performance (if any data) -->
+{% if summary.top_styles %}
+<div class="card">
+  <h3 class="card-title">📈 Style Performance (Self-Learning)</h3>
+  <p class="card-desc">The bot tracks which styles perform best and adapts over time.</p>
+  <div class="table-wrapper">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Style</th>
+          <th>Niche</th>
+          <th>Score</th>
+          <th>Uses</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for style in summary.top_styles %}
+        <tr>
+          <td>{{ style.style_type }}</td>
+          <td><strong>{{ style.style_id }}</strong></td>
+          <td>{{ style.niche_id or 'All' }}</td>
+          <td>{{ "%.1f"|format(style.effectiveness_score) }}</td>
+          <td>{{ style.usage_count }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+
+<script>
+async function refreshIntelligence() {
+  const btn = document.getElementById('btnRefresh');
+  const status = document.getElementById('refreshStatus');
+  btn.disabled = true;
+  btn.textContent = '⏳ Scanning...';
+  status.textContent = '';
+
+  try {
+    const resp = await fetch('/api/intelligence/refresh', { method: 'POST' });
+    const data = await resp.json();
+    if (data.ok) {
+      status.textContent = `✅ Found ${data.summary.total_topics} topics from ${data.summary.sources.length} sources`;
+      setTimeout(() => location.reload(), 2000);
+    } else {
+      status.textContent = `❌ ${data.error}`;
+    }
+  } catch (e) {
+    status.textContent = `❌ ${e.message}`;
+  }
+  btn.disabled = false;
+  btn.textContent = '🔄 Refresh Now';
+}
+</script>
+{% endblock %}

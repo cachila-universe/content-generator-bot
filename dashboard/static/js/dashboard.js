@@ -182,6 +182,7 @@ function fireTrigger() {
   var platforms = [];
   if (document.getElementById('trigBlog') && document.getElementById('trigBlog').checked) platforms.push('blog');
   if (document.getElementById('trigShorts') && document.getElementById('trigShorts').checked) platforms.push('youtube_shorts');
+  if (document.getElementById('trigTwitter') && document.getElementById('trigTwitter').checked) platforms.push('twitter');
   if (document.getElementById('trigPinterest') && document.getElementById('trigPinterest').checked) platforms.push('pinterest');
   if (platforms.length === 0) platforms.push('blog');
 
@@ -223,6 +224,106 @@ function fireTrigger() {
 function toggleSidebar() {
   const sidebar = document.getElementById('sidebar');
   if (sidebar) sidebar.classList.toggle('open');
+}
+
+// ── Bot Mode Control ────────────────────────────────────────────────────────
+
+function setBotMode(mode) {
+  fetch('/api/bot/mode', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ mode: mode }),
+  })
+    .then(r => r.json())
+    .then(data => {
+      if (data.ok) {
+        // Update button states
+        ['paused', 'scheduled', 'manual'].forEach(m => {
+          const btn = document.getElementById('btn' + m.charAt(0).toUpperCase() + m.slice(1));
+          if (btn) {
+            btn.className = 'btn ' + (m === data.bot_mode ? 'btn-mode-active' : 'btn-mode');
+          }
+        });
+        // Update status text
+        const status = document.getElementById('modeStatus');
+        if (status) status.innerHTML = 'Current mode: <strong>' + data.bot_mode + '</strong>';
+        // Show/hide Run All section
+        const runAll = document.getElementById('runAllSection');
+        if (runAll) {
+          runAll.classList.toggle('hidden', data.bot_mode !== 'manual');
+        }
+        // Update banner
+        updateBotUI(true);
+        const bannerText = document.getElementById('bannerText');
+        if (bannerText) {
+          var suffix = data.bot_mode === 'paused' ? ' (PAUSED)' : '';
+          bannerText.textContent = 'Bot is RUNNING' + suffix;
+        }
+      }
+    })
+    .catch(err => console.error('Set mode failed:', err));
+}
+
+// ── Run All Pipeline ────────────────────────────────────────────────────────
+
+var _runAllArmed = false;
+var _runAllTimeout = null;
+
+function armRunAll() {
+  _runAllArmed = true;
+  const fireBtn = document.getElementById('btnRunAllFire');
+  const armBtn = document.getElementById('btnRunAllArm');
+  if (fireBtn) { fireBtn.disabled = false; fireBtn.classList.add('armed'); }
+  if (armBtn) { armBtn.textContent = '🔒 Armed (15s)'; armBtn.disabled = true; }
+  if (_runAllTimeout) clearTimeout(_runAllTimeout);
+  _runAllTimeout = setTimeout(disarmRunAll, 15000);
+}
+
+function disarmRunAll() {
+  _runAllArmed = false;
+  const fireBtn = document.getElementById('btnRunAllFire');
+  const armBtn = document.getElementById('btnRunAllArm');
+  if (fireBtn) { fireBtn.disabled = true; fireBtn.classList.remove('armed'); }
+  if (armBtn) { armBtn.textContent = '🔓 Arm Pipeline'; armBtn.disabled = false; }
+}
+
+function fireRunAll() {
+  if (!_runAllArmed) return;
+  const status = document.getElementById('runAllStatus');
+  const fireBtn = document.getElementById('btnRunAllFire');
+  if (fireBtn) { fireBtn.disabled = true; fireBtn.textContent = '⏳ Running pipeline...'; }
+  if (status) { status.textContent = 'Running all tasks in dependency order...'; status.className = 'trigger-status'; }
+
+  fetch('/api/pipeline/run-all', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ confirm: 'CONFIRM_RUN_ALL' }),
+  })
+    .then(r => r.json())
+    .then(data => {
+      if (data.ok) {
+        const s = data.summary;
+        if (status) {
+          status.textContent = '✅ Pipeline complete: ' + s.steps_completed + ' steps, ' + (s.errors || []).length + ' errors';
+          status.className = 'trigger-status success';
+        }
+      } else {
+        if (status) {
+          status.textContent = '❌ ' + (data.error || 'Unknown error');
+          status.className = 'trigger-status error';
+        }
+      }
+      disarmRunAll();
+      if (fireBtn) fireBtn.textContent = '🚀 Run All Tasks';
+    })
+    .catch(err => {
+      if (status) {
+        status.textContent = '❌ Request failed: ' + err.message;
+        status.className = 'trigger-status error';
+      }
+      disarmRunAll();
+      if (fireBtn) fireBtn.textContent = '🚀 Run All Tasks';
+    });
 }
 
 // ── Helpers ────────────────────────────────────────────────────────────────

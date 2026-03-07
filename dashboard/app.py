@@ -114,6 +114,15 @@ def niches():
     )
 
 
+@app.route("/stock-images")
+def stock_images():
+    from core import stock_generator
+    settings = _load_settings()
+    images = stock_generator.get_all_stock_images()
+    stats = stock_generator.get_stock_stats()
+    return render_template("stock_images.html", images=images, stats=stats, settings=settings)
+
+
 @app.route("/settings")
 def settings_page():
     from core import bot_state
@@ -156,6 +165,16 @@ def api_bot_stop():
     from core import bot_state
     state = bot_state.set_bot_running(False)
     return jsonify({"ok": True, "bot_running": state["bot_running"]})
+
+
+@app.route("/api/bot/mode", methods=["POST"])
+def api_bot_mode():
+    """Set bot mode: paused, scheduled, or manual."""
+    from core import bot_state
+    data = request.get_json(force=True)
+    mode = data.get("mode", "scheduled")
+    state = bot_state.set_bot_mode(mode)
+    return jsonify({"ok": True, "bot_mode": state.get("bot_mode", "scheduled")})
 
 
 @app.route("/api/bot/state")
@@ -261,6 +280,79 @@ def api_posts_chart():
     return jsonify(analytics_tracker.get_posts_chart_data(db))
 
 
+# ── Stock image API ──────────────────────────────────────────────────────────
+
+
+@app.route("/api/stock-image/<int:image_id>/preview")
+def api_stock_image_preview(image_id):
+    """Serve a stock image file for dashboard preview."""
+    from flask import send_file
+    from core import stock_generator
+    images = stock_generator.get_all_stock_images()
+    img = next((i for i in images if i["id"] == image_id), None)
+    if not img:
+        return "Not found", 404
+    filepath = Path(img["filepath"])
+    if not filepath.exists():
+        return "File not found", 404
+    return send_file(str(filepath), mimetype="image/jpeg")
+
+
+@app.route("/api/stock-images/generate", methods=["POST"])
+def api_stock_images_generate():
+    """Trigger a batch of AI stock image generation."""
+    from core import stock_generator
+    settings = _load_settings()
+    stock_cfg = settings.get("stock_images", {})
+
+    if not stock_cfg.get("enabled", False):
+        return jsonify({"ok": False, "error": "Stock images feature is disabled in settings."}), 400
+
+    # Check at least one API key is configured
+    has_api = any([
+        stock_cfg.get("leonardo_api_key", "").strip(),
+        stock_cfg.get("stability_api_key", "").strip(),
+        stock_cfg.get("huggingface_token", "").strip(),
+    ])
+    if not has_api:
+        return jsonify({"ok": False, "error": "No image API keys configured. Add Leonardo, Stability, or HuggingFace API key in settings.yaml"}), 400
+
+    count = stock_cfg.get("images_per_run", 5)
+    niches = _load_niches()
+
+    # Build topics using trend intelligence
+    topics = []
+    try:
+        from core import trend_intelligence
+        for niche_id, niche_data in niches.items():
+            if niche_data.get("enabled", True):
+                demand = trend_intelligence.get_image_demand_topics(niche_id, count=2)
+                topics.extend(demand)
+    except Exception:
+        for niche_id, niche_data in niches.items():
+            if niche_data.get("enabled", True):
+                topics.append({
+                    "topic": niche_data.get("name", niche_id.replace("_", " ").title()),
+                    "niche_id": niche_id,
+                })
+
+    if not topics:
+        return jsonify({"ok": False, "error": "No enabled niches to generate images for."}), 400
+
+    try:
+        results = stock_generator.generate_stock_images(topics, settings, count=count)
+        return jsonify({"ok": True, "count": len(results)})
+    except Exception as exc:
+        logger.exception("Stock image generation failed")
+        return jsonify({"ok": False, "error": str(exc)}), 500
+
+
+@app.route("/api/stock-images/stats")
+def api_stock_images_stats():
+    from core import stock_generator
+    return jsonify(stock_generator.get_stock_stats())
+
+
 @app.route("/api/posts/<int:post_id>/delete", methods=["POST"])
 def api_delete_post(post_id):
     """Delete a post: remove from DB, delete HTML file, rebuild site indexes."""
@@ -292,6 +384,93 @@ def api_delete_post(post_id):
     logger.info("Post deleted: %s", title)
     return jsonify({"ok": True, "message": f"Deleted: {title}"})
 
+
+# ── Trend Intelligence API ───────────────────────────────────────────────────
+
+
+@app.route("/intelligence")
+def intelligence():
+    """Trend intelligence dashboard page."""
+    settings = _load_settings()
+    try:
+        from core import trend_intelligence
+        summary = trend_intelligence.get_intelligence_summary()
+    except Exception:
+        summary = {}
+    return render_template("intelligence.html", summary=summary, settings=settings)
+
+
+@app.route("/api/intelligence/summary")
+def api_intelligence_summary():
+    """Return trend intelligence summary."""
+    try:
+        from core import trend_intelligence
+        return jsonify(trend_intelligence.get_intelligence_summary())
+    except Exception as exc:
+        return jsonify({"error": str(exc)}), 500
+
+
+@app.route("/api/intelligence/refresh", methods=["POST"])
+def api_intelligence_refresh():
+    """Force a full trend intelligence refresh."""
+    try:
+        from core import trend_intelligence
+        niches = _load_niches()
+        summary = trend_intelligence.refresh_all_intelligence(niches, force=True)
+        return jsonify({"ok": True, "summary": summary})
+    except Exception as exc:
+        return jsonify({"ok": False, "error": str(exc)}), 500
+
+
+@app.route("/api/intelligence/topics/<niche_id>")
+def api_intelligence_topics(niche_id):
+    """Get trending topics for a specific niche."""
+    try:
+        from core import trend_intelligence
+        niches = _load_niches()
+        niche_cfg = niches.get(niche_id, {})
+        topics = trend_intelligence.gather_trending_topics(niche_id, niche_cfg, force=False)
+        return jsonify({"niche_id": niche_id, "topics": topics})
+    except Exception as exc:
+        return jsonify({"error": str(exc)}), 500
+
+
+# ── API Usage tracking ───────────────────────────────────────────────────────
+
+
+@app.route("/api/stock-images/api-usage")
+def api_stock_image_usage():
+    """Return API usage stats per provider."""
+    try:
+        from core import stock_generator
+        return jsonify(stock_generator.get_api_usage_stats())
+    except Exception as exc:
+        return jsonify({"error": str(exc)}), 500
+
+
+# ── Full pipeline run (manual mode) ─────────────────────────────────────────
+
+
+@app.route("/api/pipeline/run-all", methods=["POST"])
+def api_run_full_pipeline():
+    """Run the full pipeline in dependency order for all enabled niches."""
+    data = request.get_json(force=True)
+    confirm = data.get("confirm")
+    if confirm != "CONFIRM_RUN_ALL":
+        return jsonify({"ok": False, "error": "Missing confirmation"}), 400
+
+    try:
+        from core import scheduler
+        settings = _load_settings()
+        niches = _load_niches()
+        db = _get_db()
+        site_url = os.getenv("SITE_URL", settings.get("site_url", "https://tech-life-insights.com"))
+
+        summary = scheduler.run_full_pipeline(niches, settings, db, site_url)
+        return jsonify({"ok": True, "summary": summary})
+    except Exception as exc:
+        logger.exception("Full pipeline run failed")
+        return jsonify({"ok": False, "error": str(exc)}), 500
 
 if __name__ == "__main__":
     port = int(os.getenv("DASHBOARD_PORT", 5002))

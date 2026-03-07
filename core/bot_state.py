@@ -20,11 +20,13 @@ _lock = threading.Lock()
 # Default state for a fresh install
 _DEFAULT_STATE = {
     "bot_running": False,
+    "bot_mode": "scheduled",       # "paused" | "scheduled" | "manual"
     "niches": {},           # niche_id -> {"enabled": True/False}
     "platforms": {
         "blog": True,
         "youtube_shorts": True,
         "pinterest": True,
+        "twitter": True,
     },
     "schedule": {
         "randomize_minutes": 15,   # ±N minutes jitter added to schedules
@@ -103,6 +105,46 @@ def set_bot_running(running: bool) -> dict:
     return state
 
 
+def get_bot_mode() -> str:
+    """Get current bot mode: 'paused', 'scheduled', or 'manual'."""
+    return load_state().get("bot_mode", "scheduled")
+
+
+def set_bot_mode(mode: str) -> dict:
+    """
+    Set bot operating mode:
+      - 'paused'    → bot is active but does NOTHING (no scheduled jobs execute)
+      - 'scheduled' → follows the normal cron schedule
+      - 'manual'    → waits for manual trigger only, runs all tasks in dependency order
+    """
+    valid = {"paused", "scheduled", "manual"}
+    if mode not in valid:
+        logger.warning("Invalid bot mode '%s', defaulting to 'scheduled'", mode)
+        mode = "scheduled"
+
+    state = load_state()
+    old_mode = state.get("bot_mode", "scheduled")
+    state["bot_mode"] = mode
+
+    # Auto-manage bot_running based on mode
+    if mode == "paused":
+        state["bot_running"] = True  # Active but idle
+    elif mode in ("scheduled", "manual"):
+        state["bot_running"] = True
+
+    save_state(state)
+    logger.info("Bot mode changed: %s → %s", old_mode, mode)
+    return state
+
+
+def should_execute_scheduled_job() -> bool:
+    """Check if scheduled (cron) jobs should execute. Returns False when paused or manual."""
+    state = load_state()
+    if not state.get("bot_running", False):
+        return False
+    return state.get("bot_mode", "scheduled") == "scheduled"
+
+
 def is_niche_enabled(niche_id: str) -> bool:
     state = load_state()
     return state.get("niches", {}).get(niche_id, {}).get("enabled", True)
@@ -174,12 +216,23 @@ def record_post_run(niche_id: str) -> None:
     save_state(state)
 
 
-def can_post_now(niche_id: str) -> tuple[bool, str]:
+def can_post_now(niche_id: str, ignore_mode: bool = False) -> tuple[bool, str]:
     """
-    Check if posting is allowed right now based on rate limits.
+    Check if posting is allowed right now based on rate limits and bot mode.
+    Set ignore_mode=True for manual triggers that bypass mode checks.
     Returns (allowed, reason).
     """
     state = load_state()
+
+    if not state.get("bot_running", False):
+        return False, "Bot is stopped"
+
+    if not ignore_mode:
+        mode = state.get("bot_mode", "scheduled")
+        if mode == "paused":
+            return False, "Bot is paused — switch to Scheduled or Manual mode"
+        if mode == "manual":
+            return False, "Bot is in Manual mode — use manual trigger"
 
     if not state.get("bot_running", False):
         return False, "Bot is stopped"
