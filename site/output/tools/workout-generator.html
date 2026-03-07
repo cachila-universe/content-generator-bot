@@ -42,15 +42,36 @@
     .config-card.done{border-color:#a7f3d0}
     .config-card.done h2{color:#059669}
     .workout-result{display:none;margin-top:28px}
-    .workout-header{background:var(--accent-light);border:1px solid #ddd6fe;border-radius:var(--radius);padding:20px 24px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center}
-    .workout-header h2{font-size:18px;font-weight:800;color:var(--accent)}
-    .workout-header .stats{font-size:13px;color:var(--text-secondary)}
-    .exercise-card{border:1px solid var(--border);border-radius:var(--radius);padding:16px 20px;margin-bottom:10px;display:flex;align-items:center;gap:16px}
-    .exercise-num{width:36px;height:36px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0}
-    .exercise-info h3{font-size:15px;font-weight:700;margin-bottom:2px}.exercise-info p{font-size:13px;color:var(--text-secondary)}
-    .exercise-detail{display:flex;gap:12px;margin-top:4px}.exercise-detail span{font-size:12px;background:var(--surface);padding:2px 8px;border-radius:4px;font-weight:600}
-    .print-btn{background:transparent;border:1px solid var(--border);color:var(--text);padding:8px 16px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit}
-    .print-btn:hover{border-color:var(--accent);color:var(--accent)}
+    .workout-header{background:linear-gradient(135deg,#5b21b6,#7c3aed);border-radius:var(--radius);padding:22px 28px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center}
+    .workout-header h2{font-size:20px;font-weight:900;color:#fff}
+    .workout-header .stats{font-size:13px;color:rgba(255,255,255,.75)}
+    .print-btn{background:transparent;border:1px solid rgba(255,255,255,.4);color:#fff;padding:8px 16px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit}
+    .print-btn:hover{background:rgba(255,255,255,.15);border-color:#fff}
+    .workout-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px}
+    .summary-box{background:var(--accent-light);border:1px solid #ddd6fe;border-radius:8px;padding:16px;text-align:center}
+    .summary-box .s-val{font-size:26px;font-weight:900;color:var(--accent)}
+    .summary-box .s-lab{font-size:11px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.05em;margin-top:2px}
+    .phase-section{margin-bottom:22px}
+    .phase-header{display:flex;align-items:center;gap:8px;padding:9px 14px;border-radius:8px;margin-bottom:10px;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.06em}
+    .phase-header.warmup{background:#fff7ed;color:#c2410c;border-left:4px solid #fb923c}
+    .phase-header.main{background:var(--accent-light);color:#5b21b6;border-left:4px solid var(--accent)}
+    .phase-header.cooldown{background:#ecfdf5;color:#065f46;border-left:4px solid #10b981}
+    .exercise-card{border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:8px;display:flex;align-items:flex-start;gap:14px;background:#fff;transition:box-shadow .15s}
+    .exercise-card:hover{box-shadow:0 2px 12px rgba(0,0,0,.07)}
+    .exercise-card.warmup{border-left:3px solid #fb923c}
+    .exercise-card.main{border-left:3px solid var(--accent)}
+    .exercise-card.cooldown{border-left:3px solid #10b981}
+    .exercise-num{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0}
+    .exercise-num.warmup{background:#fff7ed;color:#c2410c}
+    .exercise-num.main{background:var(--accent-light);color:var(--accent)}
+    .exercise-num.cooldown{background:#ecfdf5;color:#059669}
+    .exercise-info{flex:1}
+    .exercise-info h3{font-size:15px;font-weight:700;margin-bottom:6px}
+    .exercise-pills{display:flex;flex-wrap:wrap;gap:6px}
+    .pill{display:inline-flex;align-items:center;font-size:12px;font-weight:600;padding:3px 10px;border-radius:20px}
+    .pill.sets{background:#ede9fe;color:#6d28d9;border:1px solid #c4b5fd}
+    .pill.reps{background:#dbeafe;color:#1d4ed8;border:1px solid #93c5fd}
+    .pill.rest{background:#d1fae5;color:#065f46;border:1px solid #6ee7b7}
     .disclaimer{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 20px;margin-top:24px;font-size:12px;color:var(--text-secondary);line-height:1.7}
     .footer{background:#0f172a;color:rgba(255,255,255,.7);padding:32px 0;font-size:13px;text-align:center;margin-top:48px}.footer a{color:rgba(255,255,255,.6)}.footer a:hover{color:#fff}
 
@@ -253,10 +274,40 @@
     document.getElementById('workoutTitle').textContent=goalNames[sel.goal]+' Workout';
     document.getElementById('workoutStats').textContent=mins+' min · '+workout.length+' exercises · '+sel.level;
 
-    var html='';workout.forEach(function(ex,i){
-      html+='<div class="exercise-card"><div class="exercise-num">'+(i+1)+'</div><div class="exercise-info"><h3>'+ex.name+'</h3><p>'+ex.phase+'</p><div class="exercise-detail"><span>'+ex.sets+' set'+(ex.sets>1?'s':'')+'</span><span>'+ex.reps+'</span><span>Rest: '+ex.rest+'</span></div></div></div>';
+    // Summary strip
+    var summaryHtml='<div class="workout-summary">'
+      +'<div class="summary-box"><div class="s-val">'+workout.length+'</div><div class="s-lab">Exercises</div></div>'
+      +'<div class="summary-box"><div class="s-val">'+mins+'</div><div class="s-lab">Minutes</div></div>'
+      +'<div class="summary-box"><div class="s-val">'+sets+'</div><div class="s-lab">Sets Each</div></div>'
+      +'</div>';
+
+    // Group by phase and render with colored headers
+    var phases=[
+      {key:'Warm-up', cls:'warmup', icon:'🔥', label:'Warm-Up'},
+      {key:'Main',    cls:'main',   icon:'💪', label:'Main Set'},
+      {key:'Cool-down',cls:'cooldown',icon:'🧘',label:'Cool-Down'}
+    ];
+    var grouped={};
+    workout.forEach(function(ex){if(!grouped[ex.phase])grouped[ex.phase]=[];grouped[ex.phase].push(ex);});
+    var listHtml=''; var counter=1;
+    phases.forEach(function(ph){
+      var exs=grouped[ph.key]; if(!exs||!exs.length) return;
+      listHtml+='<div class="phase-section"><div class="phase-header '+ph.cls+'">'+ph.icon+' '+ph.label+' &mdash; '+exs.length+' exercise'+(exs.length>1?'s':'')+'</div>';
+      exs.forEach(function(ex){
+        listHtml+='<div class="exercise-card '+ph.cls+'">'
+          +'<div class="exercise-num '+ph.cls+'">'+counter+'</div>'
+          +'<div class="exercise-info"><h3>'+ex.name+'</h3>'
+          +'<div class="exercise-pills">'
+          +'<span class="pill sets">'+ex.sets+' set'+(ex.sets>1?'s':'')+'</span>'
+          +'<span class="pill reps">'+ex.reps+'</span>'
+          +'<span class="pill rest">Rest: '+ex.rest+'</span>'
+          +'</div></div></div>';
+        counter++;
+      });
+      listHtml+='</div>';
     });
-    document.getElementById('exerciseList').innerHTML=html;
+
+    document.getElementById('exerciseList').innerHTML=summaryHtml+listHtml;
     document.getElementById('workoutResult').style.display='block';
     document.getElementById('workoutResult').scrollIntoView({behavior:'smooth'});
   }

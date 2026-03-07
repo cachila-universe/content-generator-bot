@@ -37,8 +37,10 @@
     .pet-btn span{display:block;font-size:28px;margin-bottom:4px}
     textarea{width:100%;padding:14px;border:1px solid var(--border);border-radius:8px;font-size:14px;font-family:inherit;resize:vertical;min-height:100px;outline:none}
     textarea:focus{border-color:var(--accent)}
-    .btn{background:var(--accent);color:#fff;border:none;padding:14px 28px;border-radius:8px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;width:100%;margin-top:12px;transition:background .2s}
-    .btn:hover{background:#c2410c}
+    .btn{background:var(--accent);color:#fff;border:none;padding:14px 28px;border-radius:8px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;width:100%;margin-top:12px;transition:all .2s}
+    .btn:hover:not(:disabled){background:#c2410c}
+    .btn:disabled{background:#d1d5db;color:#9ca3af;cursor:not-allowed}
+    .btn-hint{text-align:center;font-size:13px;color:var(--text-secondary);margin-top:8px;min-height:18px}
     .results{display:none;margin-top:24px}
     .score-card{text-align:center;padding:32px;border-radius:var(--radius);margin-bottom:20px}
     .score-card.good{background:#ecfdf5;border:2px solid #a7f3d0}.score-card.ok{background:#fffbeb;border:2px solid #fde68a}.score-card.bad{background:#fef2f2;border:2px solid #fecaca}
@@ -138,13 +140,14 @@
   <div class="container"><div class="input-section">
     <div class="input-card">
       <h2>Select Pet Type</h2>
-      <div class="pet-type">
-        <button class="pet-btn selected" onclick="selectPet(this,'dog')"><span>🐕</span>Dog</button>
-        <button class="pet-btn" onclick="selectPet(this,'cat')"><span>🐱</span>Cat</button>
+      <div class="pet-type" id="petType">
+        <button class="pet-btn selected" data-pet="dog"><span>🐕</span>Dog</button>
+        <button class="pet-btn" data-pet="cat"><span>🐱</span>Cat</button>
       </div>
       <h2>Paste Ingredient List</h2>
-      <textarea id="ingredients" placeholder="Paste the ingredient list from your pet food packaging here...&#10;&#10;Example: Chicken, Brown Rice, Chicken Meal, Barley, Oatmeal, Chicken Fat, Dried Beet Pulp, Natural Flavor..."></textarea>
-      <button class="btn" onclick="analyzeFood()">Analyze Ingredients</button>
+      <textarea id="ingredients" placeholder="Paste the ingredient list from your pet food packaging here...&#10;&#10;Example: Chicken, Brown Rice, Chicken Meal, Barley, Oatmeal, Chicken Fat, Dried Beet Pulp, Natural Flavor..." oninput="checkAnalyzeReady()"></textarea>
+      <button class="btn" id="analyzeBtn" disabled>🔒 Analyze Ingredients</button>
+      <p class="btn-hint" id="analyzeHint">Paste the ingredient list above to analyze</p>
     </div>
 
     <div class="results" id="results">
@@ -162,7 +165,27 @@
 
   <script>
   var petType='dog';
-  function selectPet(btn,type){petType=type;document.querySelectorAll('.pet-btn').forEach(function(b){b.classList.remove('selected')});btn.classList.add('selected')}
+
+  // Event delegation for pet type buttons
+  document.getElementById('petType').addEventListener('click', function(e) {
+    var btn = e.target.closest('.pet-btn');
+    if (!btn) return;
+    petType = btn.dataset.pet;
+    document.querySelectorAll('.pet-btn').forEach(function(b){b.classList.remove('selected');});
+    btn.classList.add('selected');
+    checkAnalyzeReady();
+  });
+
+  document.getElementById('analyzeBtn').addEventListener('click', analyzeFood);
+
+  function checkAnalyzeReady() {
+    var hasIngredients = document.getElementById('ingredients').value.trim().length > 0;
+    var btn  = document.getElementById('analyzeBtn');
+    var hint = document.getElementById('analyzeHint');
+    btn.disabled = !hasIngredients;
+    btn.textContent = hasIngredients ? '🔍 Analyze Ingredients' : '🔒 Analyze Ingredients';
+    hint.textContent = hasIngredients ? '' : 'Paste the ingredient list above to analyze';
+  }
 
   var goodIngredients={dog:['chicken','beef','salmon','turkey','lamb','duck','venison','bison','brown rice','sweet potato','peas','blueberries','cranberries','spinach','carrots','pumpkin','flaxseed','fish oil','coconut oil','turmeric','probiotics','glucosamine','chondroitin','egg','sardine','herring','oatmeal','barley','quinoa','kale','broccoli','apple'],cat:['chicken','tuna','salmon','turkey','duck','rabbit','sardine','herring','egg','liver','heart','fish oil','pumpkin','cranberries','blueberries','taurine','probiotics','flaxseed']};
   var okIngredients=['chicken meal','fish meal','brewers rice','rice','corn','wheat','soybean','beet pulp','chicken fat','natural flavor','cellulose','tomato pomace','potassium chloride','salt','calcium carbonate','yeast','dried egg','pork meal','corn gluten meal'];
@@ -170,9 +193,8 @@
 
   function analyzeFood(){
     var raw=document.getElementById('ingredients').value.trim();
-    if(!raw){alert('Please paste ingredient list');return;}
-    var ings=raw.split(/,|;|
-/).map(function(s){return s.trim()}).filter(function(s){return s.length>0});
+    if(!raw){return;}
+    var ings=raw.split(/[,;\n]/).map(function(s){return s.trim()}).filter(function(s){return s.length>0});
     var results=[];var totalScore=0;
     ings.forEach(function(ing){
       var lower=ing.toLowerCase();var rating='ok';var note='Common ingredient';
