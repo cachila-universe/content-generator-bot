@@ -17,7 +17,7 @@
   </div>
   <div class="metric-card">
     <div class="metric-icon">🎬</div>
-    <div class="metric-value">{{ summary.video_formats|length if summary.video_formats else 7 }}</div>
+    <div class="metric-value">{{ (summary.short_form_formats|length if summary.short_form_formats else 7) + (summary.landscape_formats|length if summary.landscape_formats else 6) }}</div>
     <div class="metric-label">Video Formats</div>
   </div>
   <div class="metric-card accent">
@@ -92,27 +92,54 @@
   </div>
 </div>
 
-<!-- Video Formats -->
+<!-- Short-Form Video Formats -->
 <div class="card">
-  <h3 class="card-title">🎬 Video Format Intelligence</h3>
-  <p class="card-desc">Trending video formats that drive views and engagement on YouTube Shorts, TikTok, and Instagram Reels.</p>
+  <h3 class="card-title">📱 Short-Form Video Formats (Shorts / Reels / TikTok)</h3>
+  <p class="card-desc">Vertical 9:16 formats optimized for YouTube Shorts, TikTok, and Instagram Reels. Selected automatically based on topic analysis.</p>
   <div class="table-wrapper">
     <table class="data-table">
       <thead>
         <tr>
           <th>Format</th>
           <th>Duration</th>
-          <th>Why It Works</th>
+          <th>Aspect</th>
+          <th>Best For Topics</th>
         </tr>
       </thead>
       <tbody>
-        <tr><td><strong>⚡ Quick Tips</strong></td><td>30-60s</td><td>Fast-paced numbered tips — highest engagement</td></tr>
-        <tr><td><strong>🔀 Split Screen</strong></td><td>30-60s</td><td>Side-by-side comparison — trending on Reels</td></tr>
-        <tr><td><strong>🪝 Hook + Story</strong></td><td>45-90s</td><td>Provocative hook → value delivery — best retention</td></tr>
-        <tr><td><strong>📐 Tutorial Steps</strong></td><td>30-60s</td><td>Step-by-step walkthrough — educational shorts</td></tr>
-        <tr><td><strong>✨ Text Reveal</strong></td><td>15-30s</td><td>ASMR text animation — trending on TikTok</td></tr>
-        <tr><td><strong>👁️ POV Style</strong></td><td>15-45s</td><td>First-person immersive — TikTok/Reels favorite</td></tr>
-        <tr><td><strong>🔍 Myth Busting</strong></td><td>30-60s</td><td>Myth vs Reality — drives comments & shares</td></tr>
+        <tr><td><strong>⚡ Quick Tips</strong></td><td>30-60s</td><td>9:16</td><td>Tips, tools, quick fixes, lists</td></tr>
+        <tr><td><strong>🔀 Split Screen</strong></td><td>30-60s</td><td>9:16</td><td>Comparisons, vs, before/after</td></tr>
+        <tr><td><strong>🪝 Hook + Story</strong></td><td>45-90s</td><td>9:16</td><td>Storytelling, surprising facts, mistakes</td></tr>
+        <tr><td><strong>📐 Tutorial Steps</strong></td><td>30-60s</td><td>9:16</td><td>How-to, step-by-step, guides</td></tr>
+        <tr><td><strong>✨ Text Reveal</strong></td><td>15-30s</td><td>9:16</td><td>Facts, secrets, ASMR-style reveals</td></tr>
+        <tr><td><strong>👁️ POV Style</strong></td><td>15-45s</td><td>9:16</td><td>First-person, day-in-the-life</td></tr>
+        <tr><td><strong>🔍 Myth Busting</strong></td><td>30-60s</td><td>9:16</td><td>Myths, misconceptions, debunking</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Landscape Video Formats -->
+<div class="card">
+  <h3 class="card-title">🖥️ Landscape Video Formats (YouTube Long-Form)</h3>
+  <p class="card-desc">Horizontal 16:9 formats for full YouTube videos. Selected based on topic depth, type, and engagement potential.</p>
+  <div class="table-wrapper">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Format</th>
+          <th>Duration</th>
+          <th>Aspect</th>
+          <th>Best For Topics</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>🔬 Deep Dive</strong></td><td>10-20 min</td><td>16:9</td><td>Complex topics, analysis, research</td></tr>
+        <tr><td><strong>📋 Top List</strong></td><td>8-15 min</td><td>16:9</td><td>Rankings, best-of, recommendations</td></tr>
+        <tr><td><strong>🎓 Tutorial</strong></td><td>10-20 min</td><td>16:9</td><td>Full walkthroughs, how-to, setup</td></tr>
+        <tr><td><strong>⚖️ Comparison Review</strong></td><td>8-15 min</td><td>16:9</td><td>Product comparisons, vs, reviews</td></tr>
+        <tr><td><strong>📰 News Roundup</strong></td><td>5-10 min</td><td>16:9</td><td>Weekly updates, news, announcements</td></tr>
+        <tr><td><strong>📖 Story Documentary</strong></td><td>10-20 min</td><td>16:9</td><td>Narratives, history, stories</td></tr>
       </tbody>
     </table>
   </div>

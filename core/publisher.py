@@ -76,13 +76,9 @@ def publish(article: dict, niche_id: str, niche_name: str, settings: dict, db_pa
 
     url_path = f"/{niche_id}/{slug}.html"
 
-    # Save to database
-    avg_commission = float(settings.get("analytics", {}).get("avg_commission_value", 25.0))
-    estimated_ctr = float(settings.get("analytics", {}).get("estimated_ctr", 0.02))
+    # Save to database — income is tracked via income_tracker.py, NOT estimated here
     word_count = article.get("word_count", 0)
     affiliate_count = article.get("affiliate_links_count", 0)
-    estimated_clicks = int(word_count * estimated_ctr)
-    estimated_income = round(estimated_clicks * avg_commission * estimated_ctr, 2)
 
     analytics_tracker.save_post(
         db_path,
@@ -95,8 +91,8 @@ def publish(article: dict, niche_id: str, niche_name: str, settings: dict, db_pa
             "youtube_url": article.get("youtube_url", ""),
             "word_count": word_count,
             "affiliate_links_count": affiliate_count,
-            "estimated_clicks": estimated_clicks,
-            "estimated_income": estimated_income,
+            "estimated_clicks": 0,
+            "estimated_income": 0.0,
             "status": "published",
         },
     )

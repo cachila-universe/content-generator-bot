@@ -3,6 +3,27 @@
 {% block page_title %}Analytics{% endblock %}
 
 {% block content %}
+<!-- Income Summary -->
+<div class="card" style="margin-bottom:24px;">
+  <h3 class="card-title">💰 Revenue Tracking</h3>
+  <p style="color:#71717a; font-size:14px; margin-bottom:16px;">
+    Real income from all sources. Add income entries via the
+    <a href="/income">Income Tracker</a> page.
+    {% if income_summary.total_income == 0 %}
+    <br><em style="color:#92400e;">No income recorded yet — $0.00 until you add real earnings.</em>
+    {% endif %}
+  </p>
+  <div class="metrics-grid" style="grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));">
+    {% for src_id, src in income_summary.by_source.items() %}
+    <div class="metric-card">
+      <div class="metric-icon">{{ src.icon }}</div>
+      <div class="metric-value">${{ "%.2f"|format(src.total) }}</div>
+      <div class="metric-label">{{ src.name }}</div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
 <!-- Charts row -->
 <div class="charts-row three-col">
   <div class="chart-card">
@@ -10,11 +31,11 @@
     <canvas id="postsPerNicheChart" height="180"></canvas>
   </div>
   <div class="chart-card">
-    <h3 class="chart-title">Est. Income per Niche</h3>
+    <h3 class="chart-title">Real Income per Niche</h3>
     <canvas id="incomePerNicheChart" height="180"></canvas>
   </div>
   <div class="chart-card">
-    <h3 class="chart-title">Clicks per Niche</h3>
+    <h3 class="chart-title">Affiliate Clicks per Niche</h3>
     <canvas id="clicksPerNicheChart" height="180"></canvas>
   </div>
 </div>
@@ -30,7 +51,7 @@
           <th>Posts</th>
           <th>Videos</th>
           <th>Clicks</th>
-          <th>Est. Income</th>
+          <th>Income</th>
           <th>Income/Post</th>
         </tr>
       </thead>

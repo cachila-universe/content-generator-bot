@@ -190,13 +190,13 @@ def get_dashboard_stats(db_path: Path) -> dict:
         ).fetchone()[0]
         total_clicks = conn.execute("SELECT COUNT(*) FROM clicks").fetchone()[0]
 
-        avg_commission = float(
-            conn.execute(
-                "SELECT COALESCE(AVG(estimated_income / NULLIF(estimated_clicks, 0)), 25.0) FROM posts"
+        # Real income from income_entries table (not estimates)
+        try:
+            real_income = conn.execute(
+                "SELECT COALESCE(SUM(amount), 0) FROM income_entries"
             ).fetchone()[0]
-            or 25.0
-        )
-        estimated_income = total_clicks * 0.02 * avg_commission
+        except Exception:
+            real_income = 0.0
 
         recent_logs = [
             dict(row)
@@ -217,7 +217,7 @@ def get_dashboard_stats(db_path: Path) -> dict:
             "total_posts": total_posts,
             "total_videos": total_videos,
             "total_clicks": total_clicks,
-            "estimated_income": round(estimated_income, 2),
+            "estimated_income": round(real_income, 2),
             "recent_logs": recent_logs,
             "posts_by_niche": posts_by_niche,
         }
@@ -270,11 +270,16 @@ def get_niche_stats(db_path: Path) -> list:
                 COUNT(*) as total_posts,
                 SUM(CASE WHEN p.youtube_url != '' AND p.youtube_url IS NOT NULL THEN 1 ELSE 0 END) as total_videos,
                 COALESCE(c.total_clicks, 0) as total_clicks,
-                COALESCE(SUM(p.estimated_income), 0.0) as estimated_income
+                COALESCE(i.real_income, 0.0) as estimated_income
                FROM posts p
                LEFT JOIN (
                    SELECT niche_id, COUNT(*) as total_clicks FROM clicks GROUP BY niche_id
                ) c ON p.niche_id = c.niche_id
+               LEFT JOIN (
+                   SELECT niche_id, SUM(amount) as real_income FROM income_entries
+                   WHERE niche_id IS NOT NULL AND niche_id != ''
+                   GROUP BY niche_id
+               ) i ON p.niche_id = i.niche_id
                GROUP BY p.niche_id"""
         ).fetchall()
         conn.close()

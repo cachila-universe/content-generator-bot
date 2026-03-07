@@ -323,5 +323,41 @@
     </p>
   </footer>
 
+  <!-- Affiliate click tracking -->
+  <script>
+  (function(){
+    // Track outbound affiliate link clicks
+    var affiliateDomains = ['amazon.com','amzn.to','shareasale.com','anrdoezrs.net','tkqlhce.com',
+      'jdoqocy.com','dpbolvw.net','kqzyfj.com','commission-junction.com'];
+    var slug = '{{ article.slug | default("") }}';
+    var niche = '{{ niche_id | default("") }}';
+
+    document.addEventListener('click', function(e){
+      var link = e.target.closest('a[href]');
+      if(!link) return;
+      var href = link.getAttribute('href') || '';
+      if(!href.startsWith('http')) return;
+
+      // Check if it's an affiliate link (nofollow or known domain)
+      var isAffiliate = link.getAttribute('rel') && link.getAttribute('rel').indexOf('nofollow') !== -1;
+      if(!isAffiliate){
+        for(var i=0; i<affiliateDomains.length; i++){
+          if(href.indexOf(affiliateDomains[i]) !== -1){ isAffiliate = true; break; }
+        }
+      }
+
+      if(isAffiliate){
+        // Send tracking ping (non-blocking)
+        var img = new Image();
+        img.src = '/track?url=' + encodeURIComponent(href) + '&slug=' + encodeURIComponent(slug) + '&niche=' + encodeURIComponent(niche);
+        // Also send via beacon if available
+        if(navigator.sendBeacon){
+          navigator.sendBeacon('/track?url=' + encodeURIComponent(href) + '&slug=' + encodeURIComponent(slug) + '&niche=' + encodeURIComponent(niche));
+        }
+      }
+    });
+  })();
+  </script>
+
 </body>
 </html>

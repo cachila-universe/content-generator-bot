@@ -20,6 +20,13 @@
 11. [Step 9 — Keep PC Awake 24/7](#11-step-9--keep-pc-awake-247)
 12. [Useful Windows Commands](#12-useful-windows-commands)
 13. [Troubleshooting Windows-Specific Issues](#13-troubleshooting-windows-specific-issues)
+14. [Stock Platform Submissions](#14-new-features--stock-platform-submissions)
+15. [Real Income Tracking](#15-new-features--real-income-tracking)
+16. [Trend Intelligence (Video Types)](#16-new-features--trend-intelligence-video-types)
+17. [Affiliate Click Tracking](#17-new-features--affiliate-click-tracking)
+18. [Bot Modes](#18-new-features--bot-modes)
+19. [Twitter/X Auto-Posting](#19-new-features--twitterx-auto-posting)
+20. [Full Pipeline Dependency Chain](#20-full-pipeline-dependency-chain-manual-run-all)
 
 ---
 
@@ -497,3 +504,163 @@ Start-Process -NoNewWindow -FilePath "python" -ArgumentList "scripts/start_bot.p
 ---
 
 *Last updated: March 2026 — AI Content Generator Bot*
+
+---
+
+## 14. New Features — Stock Platform Submissions
+
+### What It Does
+
+The bot generates AI images and prepares them with platform-specific metadata for stock photo platform submissions. Export creates organized folders with images + JSON sidecars.
+
+### Windows-Specific Notes
+
+- Export directory: `data\stock_exports\<platform>\`
+- File paths use backslashes on Windows — the bot handles this automatically
+- To open export folder: `explorer data\stock_exports`
+
+### Stock Platforms (All Free to Join)
+
+| Platform | Apply URL | Commission |
+|---|---|---|
+| Wirestock | contributor.wirestock.io | Varies |
+| Adobe Stock | contributor.stock.adobe.com | 33% |
+| Shutterstock | submit.shutterstock.com | 15–40% |
+| Freepik | contributor.freepik.com | Up to 50% |
+| Dreamstime | dreamstime.com/sell | 25–60% |
+| Pond5 | pond5.com/sell | 50–60% |
+| Depositphotos | depositphotos.com/sell | 34–42% |
+| 123RF | 123rf.com/contributors | 30–60% |
+
+**Do NOT upload to:** Alamy, iStock/Getty, Stocksy (they ban AI content)
+
+### Dashboard Usage
+
+1. Open `http://localhost:5002/stock-images`
+2. Generate images → Export for Platforms
+3. Upload to each platform's web portal
+4. Mark as submitted in dashboard
+
+---
+
+## 15. New Features — Real Income Tracking
+
+### What It Does
+
+The dashboard tracks **real income only**. No fake estimates. Revenue from AdSense, Amazon, stock photos, YouTube, and other affiliates is tracked in a central database.
+
+### Dashboard Usage
+
+1. Open `http://localhost:5002/income`
+2. Add income entries (source, amount, niche, period)
+3. Stock photo sales auto-sync from recorded data
+4. All other sources: enter manually from their reporting dashboards
+
+### Revenue Sources
+
+- **Google AdSense** — Manual from AdSense reports
+- **Amazon Associates** — Manual from Associates reports
+- **Stock Photos** — Auto-synced from bot's sales records
+- **YouTube** — Manual from YouTube Studio (requires monetization)
+- **Other Affiliates** — Manual from CJ/ShareASale/etc.
+
+---
+
+## 16. New Features — Trend Intelligence (Video Types)
+
+### What Changed
+
+The trend intelligence system now distinguishes between:
+
+- **Short-Form (9:16)** — 7 vertical formats for Shorts/Reels/TikTok (≤60s)
+- **Landscape (16:9)** — 6 horizontal formats for YouTube long-form (5–20 min)
+
+### Short-Form Formats
+
+Quick Tips, Split Screen, Hook + Story, Tutorial Steps, Text Reveal, POV Style, Myth Busting
+
+### Landscape Formats
+
+Deep Dive, Top List, Tutorial, Comparison Review, News Roundup, Story Documentary
+
+### Dashboard
+
+View all formats on the **🧠 Intelligence** page — now shows two separate tables.
+
+---
+
+## 17. New Features — Affiliate Click Tracking
+
+The published website now tracks outbound affiliate link clicks. JavaScript in each article page intercepts clicks on affiliate links (Amazon, ShareASale, CJ, etc.) and sends a tracking ping for per-article analytics.
+
+---
+
+## 18. New Features — Bot Modes
+
+The bot supports three operational modes:
+
+| Mode | Behavior |
+|---|---|
+| ⏸️ Paused | Bot is active but does nothing |
+| 📅 Scheduled | Follows cron schedule automatically |
+| 🔧 Manual | Only runs when you click trigger buttons |
+
+Switch modes from the dashboard Overview page.
+
+---
+
+## 19. New Features — Twitter/X Auto-Posting
+
+The bot auto-posts to Twitter/X when articles or videos are published.
+
+### Windows Setup
+
+Add Twitter credentials to `config/settings.yaml`:
+
+```yaml
+social:
+  twitter:
+    api_key: "your_key"
+    api_secret: "your_secret"
+    access_token: "your_token"
+    access_token_secret: "your_token_secret"
+    bearer_token: "your_bearer"
+```
+
+Apply for Twitter API access at [developer.x.com](https://developer.x.com). Free tier allows 1,500 tweets/month.
+
+---
+
+## 20. Full Pipeline Dependency Chain (Manual Run All)
+
+When you click "Run All Pipeline" on the dashboard, the bot executes in this order:
+
+1. 🔍 Trend Intelligence refresh
+2. 📝 Article generation (per niche)
+3. 🖼️ Stock image generation (per niche)
+4. 🎬 Short video generation (per niche)
+5. 🐦 Twitter posting (per niche)
+6. 📌 Pinterest posting (per niche)
+7. 📦 Stock image export for platforms
+8. 💰 Income sync (stock earnings)
+
+---
+
+## Quick Reference: Mac → Windows Command Equivalents
+
+| Mac/Linux Command | Windows Equivalent |
+|---|---|
+| `source contentgenerator/bin/activate` | `contentgenerator\Scripts\Activate.ps1` |
+| `PYTHONPATH=. python script.py` | `$env:PYTHONPATH = "." ; python script.py` |
+| `python3` | `python` |
+| `cat file.txt` | `type file.txt` |
+| `nano .env` | `notepad .env` |
+| `lsof -i :5002` | `netstat -ano \| findstr :5002` |
+| `kill <pid>` | `taskkill /PID <pid> /F` |
+| `ps aux \| grep python` | `tasklist \| findstr python` |
+| `cp .env.example .env` | `copy .env.example .env` |
+| `mkdir -p data/logs` | `mkdir data\logs` |
+
+---
+
+*Last updated: June 2025 — AI Content Generator Bot v3.0*

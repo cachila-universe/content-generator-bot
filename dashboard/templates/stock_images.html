@@ -24,10 +24,13 @@
   </div>
 </div>
 
-<!-- Generate Button -->
-<div style="margin: 24px 0; display: flex; gap: 12px; align-items: center;">
+<!-- Generate + Export Buttons -->
+<div style="margin: 24px 0; display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
   <button class="btn btn-start" onclick="generateImages()" id="btnGenerate">
     🎨 Generate Stock Images
+  </button>
+  <button class="btn btn-start" onclick="exportForPlatforms()" id="btnExport" style="background: linear-gradient(135deg, #8b5cf6, #6d28d9);">
+    📦 Export for Stock Platforms
   </button>
   <span id="genStatus" style="color: var(--text-muted); font-size: 0.9em;"></span>
 </div>
@@ -35,6 +38,59 @@
 <!-- AI Disclosure Notice -->
 <div style="background: rgba(234,179,8,0.1); border: 1px solid rgba(234,179,8,0.3); border-radius: 8px; padding: 12px 16px; margin-bottom: 24px; font-size: 0.85em; color: #eab308;">
   ⚠️ <strong>AI Disclosure:</strong> All generated images are automatically tagged as AI-generated content. This is mandatory for stock platform submissions and cannot be disabled.
+</div>
+
+<!-- Stock Platform Submission Tracking -->
+{% if submission_stats %}
+<div class="card">
+  <h2 class="card-title">📊 Platform Submission Tracker</h2>
+  <p style="color: var(--text-muted); font-size: 0.85em; margin-bottom: 16px;">Track exports and submissions across all stock platforms. Export prepares images with platform-specific metadata — then upload manually via each platform's web portal.</p>
+  <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px;">
+    {% for platform_id, pstats in submission_stats.items() %}
+    <div style="background: rgba(139,92,246,0.08); border: 1px solid rgba(139,92,246,0.2); border-radius: 8px; padding: 14px;">
+      <div style="font-weight: 600; font-size: 0.95em; margin-bottom: 8px;">
+        {{ platform_info[platform_id].name if platform_info and platform_id in platform_info else platform_id }}
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px; font-size: 0.8em;">
+        <span style="color: var(--text-muted);">Exported:</span>
+        <span style="font-weight: 600;">{{ pstats.exported or 0 }}</span>
+        <span style="color: var(--text-muted);">Submitted:</span>
+        <span style="font-weight: 600;">{{ pstats.submitted or 0 }}</span>
+        <span style="color: var(--text-muted);">Approved:</span>
+        <span style="font-weight: 600; color: #00ff88;">{{ pstats.approved or 0 }}</span>
+        <span style="color: var(--text-muted);">Rejected:</span>
+        <span style="font-weight: 600; color: #ef4444;">{{ pstats.rejected or 0 }}</span>
+        <span style="color: var(--text-muted);">Sales:</span>
+        <span style="font-weight: 600; color: #eab308;">{{ pstats.total_sales or 0 }}</span>
+        <span style="color: var(--text-muted);">Earnings:</span>
+        <span style="font-weight: 600; color: #00ff88;">${{ "%.2f"|format(pstats.total_earnings or 0) }}</span>
+      </div>
+      {% if platform_info and platform_id in platform_info %}
+      <div style="margin-top: 8px; font-size: 0.7em; color: var(--text-muted);">
+        Commission: {{ platform_info[platform_id].commission }} · <a href="{{ platform_info[platform_id].url }}" target="_blank" style="color: #60a5fa;">Open Portal ↗</a>
+      </div>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+<!-- Platform Setup Guide -->
+<div class="card">
+  <h2 class="card-title">🏪 Stock Platform Setup</h2>
+  <p style="color: var(--text-muted); font-size: 0.85em; margin-bottom: 16px;">Register as a contributor on each platform. <strong>No platform offers an upload API</strong> — all submissions are via web portal. The bot prepares images with optimized metadata for batch upload.</p>
+  <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 12px;">
+    {% if platform_info %}
+    {% for pid, pinfo in platform_info.items() %}
+    <div style="background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 14px;">
+      <div style="font-weight: 600; margin-bottom: 6px;">{{ pinfo.name }}</div>
+      <div style="font-size: 0.8em; color: var(--text-muted); margin-bottom: 8px;">Commission: {{ pinfo.commission }}</div>
+      <a href="{{ pinfo.signup_url }}" target="_blank" class="btn btn-start" style="font-size: 0.75em; padding: 6px 12px; display: inline-block;">Apply Now ↗</a>
+    </div>
+    {% endfor %}
+    {% endif %}
+  </div>
 </div>
 
 <!-- Image Grid -->
@@ -118,6 +174,34 @@ async function generateImages() {
   } finally {
     btn.disabled = false;
     btn.textContent = '🎨 Generate Stock Images';
+  }
+}
+
+async function exportForPlatforms() {
+  const btn = document.getElementById('btnExport');
+  const status = document.getElementById('genStatus');
+  btn.disabled = true;
+  btn.textContent = '⏳ Exporting...';
+  status.textContent = 'Preparing images with platform metadata...';
+
+  try {
+    const resp = await fetch('/api/stock-images/export', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({})
+    });
+    const data = await resp.json();
+    if (data.ok) {
+      status.textContent = `✅ Exported ${data.exported} images! Check data/stock_exports/ folder.`;
+      setTimeout(() => location.reload(), 2000);
+    } else {
+      status.textContent = `❌ ${data.error}`;
+    }
+  } catch (err) {
+    status.textContent = `❌ Error: ${err.message}`;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '📦 Export for Stock Platforms';
   }
 }
 </script>

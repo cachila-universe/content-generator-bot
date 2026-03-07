@@ -1,10 +1,15 @@
 """
-YouTube Shorts / Instagram Reels / TikTok generator — vertical 9:16 ≤60s.
+Shorts generator — vertical 9:16 fast-paced videos for YouTube Shorts,
+Instagram Reels, TikTok, and Twitter.
 
-Features:
-  • Edge TTS neural voices (rotated per article)
-  • Visual theme & layout rotation (never the same look twice)
-  • Optimised for Shorts, Reels, and TikTok re-upload
+Design principles:
+  • FAST pacing — TTS at +20% speed, quick 0.15s fades
+  • Relevant stock images from Pexels (portrait orientation)
+  • Heavy dark overlay with bold centered text
+  • Ken Burns zoom (10% — more dramatic than landscape)
+  • Punchy hooks, numbered points, strong CTA
+  • Max 58 seconds to stay under 60s limit
+  • One output file works on all platforms
 """
 
 import os
@@ -14,6 +19,7 @@ import logging
 import tempfile
 import shutil
 import hashlib
+import yaml
 import numpy as np
 from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
@@ -22,7 +28,8 @@ logger = logging.getLogger(__name__)
 
 WIDTH, HEIGHT = 1080, 1920  # 9:16 vertical
 FPS = 30
-MAX_DURATION = 58  # stay under 60s limit
+MAX_DURATION = 58
+_PROJECT_ROOT = Path(__file__).parent.parent
 
 # ── Voice pool ────────────────────────────────────────────────────────────
 VOICES = [
@@ -44,33 +51,42 @@ VOICES = [
     "en-CA-LiamNeural",
 ]
 
-# ── Theme pool ────────────────────────────────────────────────────────────
-THEMES = [
-    {"name": "neon_green",   "bg": (13, 17, 23),  "text": (255, 255, 255), "accent": (0, 255, 136),   "sub": (180, 180, 180), "sep": (48, 54, 61)},
-    {"name": "ocean_blue",   "bg": (15, 23, 42),  "text": (248, 250, 252), "accent": (96, 165, 250),  "sub": (148, 163, 184), "sep": (51, 65, 85)},
-    {"name": "warm_amber",   "bg": (28, 18, 8),   "text": (255, 247, 237), "accent": (251, 191, 36),  "sub": (194, 175, 148), "sep": (68, 52, 28)},
-    {"name": "violet_dream", "bg": (20, 10, 32),  "text": (250, 245, 255), "accent": (192, 132, 252), "sub": (168, 148, 194), "sep": (55, 35, 75)},
-    {"name": "rose_red",     "bg": (24, 10, 12),  "text": (255, 241, 242), "accent": (251, 113, 133), "sub": (190, 150, 155), "sep": (65, 30, 38)},
-    {"name": "mint_teal",    "bg": (10, 25, 28),  "text": (240, 253, 250), "accent": (45, 212, 191),  "sub": (148, 194, 188), "sep": (35, 65, 60)},
-    {"name": "coral_pop",    "bg": (26, 14, 16),  "text": (255, 245, 247), "accent": (244, 114, 100), "sub": (190, 155, 150), "sep": (60, 35, 38)},
-    {"name": "sky_cyan",     "bg": (10, 20, 28),  "text": (230, 245, 255), "accent": (34, 211, 238),  "sub": (140, 180, 200), "sep": (30, 50, 65)},
+# ── Accent palette ────────────────────────────────────────────────────────
+ACCENTS = [
+    {"name": "blue",   "primary": (96, 165, 250),  "dark": (37, 99, 235)},
+    {"name": "green",  "primary": (52, 211, 153),  "dark": (16, 185, 129)},
+    {"name": "amber",  "primary": (251, 191, 36),  "dark": (217, 119, 6)},
+    {"name": "purple", "primary": (192, 132, 252), "dark": (139, 92, 246)},
+    {"name": "rose",   "primary": (251, 113, 133), "dark": (225, 29, 72)},
+    {"name": "teal",   "primary": (45, 212, 191),  "dark": (20, 184, 166)},
 ]
 
-# ── Layout pool ───────────────────────────────────────────────────────────
-LAYOUTS = ["bold_center", "numbered_card", "side_stripe", "top_gradient"]
+KB_STYLES = ["zoom_in", "zoom_out", "pan_up", "pan_down"]
 
 
-def _pick(pool: list, seed: str, offset: int = 0):
+def _pick(pool, seed, offset=0):
     h = int(hashlib.md5((seed + str(offset)).encode()).hexdigest(), 16)
     return pool[h % len(pool)]
 
 
-def _tts(text: str, voice: str, out_path: Path) -> "Path | None":
+def _load_pexels_key() -> str:
+    try:
+        cfg = yaml.safe_load((_PROJECT_ROOT / "config" / "settings.yaml").read_text())
+        return cfg.get("video", {}).get("pexels_api_key", "") or ""
+    except Exception:
+        return ""
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+#  TTS (fast — +20% speed for shorts)
+# ═══════════════════════════════════════════════════════════════════════════
+def _tts_fast(text: str, voice: str, out_path: Path) -> "Path | None":
+    """Generate speech at +20% speed for fast-paced shorts."""
     try:
         import edge_tts
 
         async def _gen():
-            communicate = edge_tts.Communicate(text, voice)
+            communicate = edge_tts.Communicate(text, voice, rate="+20%")
             await communicate.save(str(out_path))
 
         loop = asyncio.new_event_loop()
@@ -82,7 +98,8 @@ def _tts(text: str, voice: str, out_path: Path) -> "Path | None":
         if out_path.exists() and out_path.stat().st_size > 0:
             return out_path
     except Exception as exc:
-        logger.warning("Edge TTS failed (%s): %s — falling back to gTTS", voice, exc)
+        logger.warning("Edge TTS failed: %s", exc)
+
     try:
         from gtts import gTTS
         gTTS(text=text, lang="en", slow=False).save(str(out_path))
@@ -96,22 +113,28 @@ def _tts(text: str, voice: str, out_path: Path) -> "Path | None":
 # ═══════════════════════════════════════════════════════════════════════════
 def generate_short(article: dict, output_path: Path) -> "Path | None":
     """
-    Generate a vertical short-form video (≤60 sec) from article content.
+    Generate a vertical short-form video (≤58s) from article content.
 
-    Works for YouTube Shorts, Instagram Reels, and TikTok.
+    Fast-paced, bold text, image backgrounds — one file for all platforms.
     Returns output_path on success, None on failure.
     """
     try:
-        from moviepy import ImageClip, AudioFileClip, concatenate_videoclips, vfx
+        from moviepy import VideoClip, ImageClip, AudioFileClip, concatenate_videoclips, vfx
     except ImportError as exc:
         logger.error("Missing moviepy: %s", exc)
         return None
 
     slug = article.get("slug", "short")
+    niche_name = article.get("niche_name", "")
+    niche_id = article.get("niche_id", "")
     voice = _pick(VOICES, slug, offset=10)
-    theme = _pick(THEMES, slug, offset=11)
-    layout = _pick(LAYOUTS, slug, offset=12)
-    logger.info("Short style → voice=%s  theme=%s  layout=%s", voice, theme["name"], layout)
+    accent = _pick(ACCENTS, slug, offset=11)
+    pexels_key = _load_pexels_key()
+
+    logger.info(
+        "Short style → voice=%s  accent=%s  images=%s",
+        voice, accent["name"], "pexels" if pexels_key else "gradient",
+    )
 
     tmp_dir = Path(tempfile.mkdtemp(prefix="shortgen_"))
     try:
@@ -120,6 +143,7 @@ def generate_short(article: dict, output_path: Path) -> "Path | None":
             logger.error("No slides extracted for Short")
             return None
 
+        total_slides = len(slides)
         clips = []
         total_duration = 0.0
 
@@ -127,21 +151,36 @@ def generate_short(article: dict, output_path: Path) -> "Path | None":
             if total_duration >= MAX_DURATION:
                 break
 
+            # 1. Fetch portrait image
+            from core.image_fetcher import fetch_image, extract_search_query
+
+            query = extract_search_query(slide["heading"], niche_name)
+            bg_img = fetch_image(
+                query, pexels_key, "portrait", WIDTH, HEIGHT, photo_index=i + 5,
+                niche_id=niche_id,
+            )
+
+            # 2. Build frame
+            frame = _build_short_frame(slide, bg_img, accent, i, total_slides)
+            frame_array = np.array(frame)
+
+            # 3. Fast TTS
             audio_path = tmp_dir / f"audio_{i}.mp3"
-            audio_file = _tts(slide["narration"], voice, audio_path)
+            audio_file = _tts_fast(slide["narration"], voice, audio_path)
 
-            img_array = _build_short_slide(slide, theme, layout)
-
+            # 4. Create clip with Ken Burns
             if audio_file and audio_file.exists():
                 audio_clip = AudioFileClip(str(audio_file))
                 duration = min(audio_clip.duration + 0.3, MAX_DURATION - total_duration)
-                video_clip = ImageClip(img_array, duration=duration).with_audio(audio_clip)
+                clip = _make_ken_burns_clip(frame_array, duration, FPS, i)
+                clip = clip.with_audio(audio_clip)
             else:
-                duration = min(4.0, MAX_DURATION - total_duration)
-                video_clip = ImageClip(img_array, duration=duration)
+                duration = min(3.5, MAX_DURATION - total_duration)
+                clip = _make_ken_burns_clip(frame_array, duration, FPS, i)
 
-            video_clip = video_clip.with_effects([vfx.FadeIn(0.2), vfx.FadeOut(0.2)])
-            clips.append(video_clip)
+            # Quick fades for fast pacing
+            clip = clip.with_effects([vfx.FadeIn(0.15), vfx.FadeOut(0.15)])
+            clips.append(clip)
             total_duration += duration
 
         if not clips:
@@ -151,13 +190,9 @@ def generate_short(article: dict, output_path: Path) -> "Path | None":
         output_path.parent.mkdir(parents=True, exist_ok=True)
         final = concatenate_videoclips(clips, method="compose")
         final.write_videofile(
-            str(output_path),
-            fps=FPS,
-            codec="libx264",
-            audio_codec="aac",
+            str(output_path), fps=FPS, codec="libx264", audio_codec="aac",
         )
-        logger.info("Short generated: %s (%.1fs, voice=%s, theme=%s)",
-                     output_path, total_duration, voice, theme["name"])
+        logger.info("Short generated: %s (%.1fs, voice=%s)", output_path, total_duration, voice)
         return output_path
 
     except Exception as exc:
@@ -168,179 +203,286 @@ def generate_short(article: dict, output_path: Path) -> "Path | None":
 
 
 # ═══════════════════════════════════════════════════════════════════════════
-#  Slide extraction
+#  Ken Burns (more dramatic for shorts — 10% zoom)
+# ═══════════════════════════════════════════════════════════════════════════
+def _make_ken_burns_clip(frame_array, duration, fps, slide_index, amount=0.10):
+    """Ken Burns with more dramatic zoom for shorts."""
+    try:
+        from moviepy import VideoClip
+
+        h, w = frame_array.shape[:2]
+        pil_source = Image.fromarray(frame_array)
+        style = KB_STYLES[slide_index % len(KB_STYLES)]
+
+        def make_frame(t):
+            progress = max(0.0, min(1.0, t / max(duration, 0.01)))
+
+            if style == "zoom_in":
+                zoom = 1.0 + amount * progress
+                cx, cy = w // 2, h // 2
+            elif style == "zoom_out":
+                zoom = 1.0 + amount * (1 - progress)
+                cx, cy = w // 2, h // 2
+            elif style == "pan_up":
+                zoom = 1.0 + amount
+                cx = w // 2
+                cy = int(h * (0.55 - 0.10 * progress))
+            else:  # pan_down
+                zoom = 1.0 + amount
+                cx = w // 2
+                cy = int(h * (0.45 + 0.10 * progress))
+
+            crop_w = min(int(w / zoom), w)
+            crop_h = min(int(h / zoom), h)
+            x1 = max(0, min(cx - crop_w // 2, w - crop_w))
+            y1 = max(0, min(cy - crop_h // 2, h - crop_h))
+
+            cropped = pil_source.crop((x1, y1, x1 + crop_w, y1 + crop_h))
+            resized = cropped.resize((w, h), Image.LANCZOS)
+            return np.array(resized)
+
+        clip = VideoClip(make_frame, duration=duration)
+        clip.fps = fps
+        return clip
+
+    except Exception:
+        from moviepy import ImageClip
+        return ImageClip(frame_array, duration=duration)
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+#  Slide extraction (punchy, condensed)
 # ═══════════════════════════════════════════════════════════════════════════
 def _extract_short_slides(article: dict) -> list:
-    """Extract 3-5 punchy slides for a Short from article HTML."""
+    """Extract 4-5 punchy slides for a Short from article content."""
     html = article.get("html_content", "")
     title = article.get("title", "Untitled")
 
     slides = []
 
-    # Slide 1: Hook
+    # ── Slide 1: Hook ─────────────────────────────────────────────
     hook = title
+    if len(title) > 50:
+        # Shorten for impact
+        hook = title.split(":")[0].strip() if ":" in title else title[:50]
     if not hook.endswith("?"):
-        hook = f"Did you know? {title}"
+        hook = f"{hook} 🤯"
+
     slides.append({
         "type": "hook",
         "heading": hook,
         "body": "",
-        "narration": hook,
+        "narration": f"Here's what you need to know about {title}",
     })
 
-    # Slides 2-4: Key points from H2 sections
-    h2_pattern = re.compile(r"<h2>(.*?)</h2>(.*?)(?=<h2>|$)", re.DOTALL)
+    # ── Slides 2-4: Key points ────────────────────────────────────
+    h2_pattern = re.compile(r"<h2[^>]*>(.*?)</h2>(.*?)(?=<h2|$)", re.DOTALL)
     point_num = 1
+
     for match in h2_pattern.finditer(html):
         heading = re.sub(r"<[^>]+>", "", match.group(1)).strip()
         body_html = match.group(2)
 
-        if any(skip in heading.lower() for skip in ["faq", "question", "ready to", "get started"]):
+        if any(skip in heading.lower()
+               for skip in ["faq", "question", "frequently", "conclusion",
+                            "summary", "ready", "get started"]):
             continue
 
         body_text = re.sub(r"<[^>]+>", " ", body_html).strip()
         body_text = re.sub(r"\s+", " ", body_text)
-        first_sentence = body_text.split(".")[0].strip() + "." if "." in body_text else body_text[:150]
+
+        # Just the first sentence — keep it punchy
+        first_sentence = body_text.split(".")[0].strip()
+        if first_sentence and not first_sentence.endswith("."):
+            first_sentence += "."
 
         slides.append({
             "type": "point",
-            "heading": f"#{point_num}: {heading}",
-            "body": first_sentence[:200],
+            "heading": heading,
+            "number": point_num,
+            "body": first_sentence[:180],
             "narration": f"Number {point_num}. {heading}. {first_sentence[:200]}",
         })
         point_num += 1
+
         if len(slides) >= 4:
             break
 
-    # Final slide: CTA
+    # ── Final slide: CTA ──────────────────────────────────────────
     slides.append({
         "type": "cta",
-        "heading": "Follow for more! 🔔",
-        "body": "Link in bio →",
-        "narration": "Follow for more tips and subscribe!",
+        "heading": "Follow for more!",
+        "body": "@techlife_insights",
+        "narration": "Follow for more insights and subscribe!",
     })
 
     return slides
 
 
 # ═══════════════════════════════════════════════════════════════════════════
-#  Frame rendering
+#  Frame composition (vertical, bold)
 # ═══════════════════════════════════════════════════════════════════════════
-def _build_short_slide(slide: dict, theme: dict, layout: str) -> np.ndarray:
-    """Build a 1080x1920 vertical slide image."""
-    bg = theme["bg"]
-    tc = theme["text"]
-    ac = theme["accent"]
-    sc = theme["sub"]
-    sep = theme["sep"]
+def _build_short_frame(
+    slide: dict,
+    bg_img: "Image.Image | None",
+    accent: dict,
+    slide_index: int,
+    total_slides: int,
+) -> Image.Image:
+    """Build a 1080×1920 vertical frame with image background."""
+    if bg_img:
+        frame = bg_img.copy().convert("RGB")
+    else:
+        frame = _generate_gradient_bg(WIDTH, HEIGHT, accent)
 
-    img = Image.new("RGB", (WIDTH, HEIGHT), color=bg)
-    draw = ImageDraw.Draw(img)
+    frame = _apply_dark_overlay(frame, slide["type"])
+    draw = ImageDraw.Draw(frame)
 
-    stype = slide.get("type", "point")
+    stype = slide["type"]
     heading = slide.get("heading", "")
     body = slide.get("body", "")
+    ac = accent["primary"]
 
-    fb = _get_font(64)   # big
-    fm = _get_font(44)   # medium
-    fs = _get_font(36)   # small
+    font_big = _get_font(72, "heavy")
+    font_med = _get_font(48, "bold")
+    font_body = _get_font(36, "medium")
+    font_small = _get_font(28, "regular")
+    font_num = _get_font(120, "heavy")
+    font_brand = _get_font(22, "demibold")
 
-    if layout == "bold_center":
-        _layout_bold_center(draw, stype, heading, body, fb, fm, fs, tc, ac, sc, sep)
-    elif layout == "numbered_card":
-        _layout_numbered_card(draw, stype, heading, body, fb, fm, fs, tc, ac, sc, sep)
-    elif layout == "side_stripe":
-        _layout_side_stripe(draw, stype, heading, body, fb, fm, fs, tc, ac, sc, sep)
-    elif layout == "top_gradient":
-        _layout_top_gradient(draw, img, stype, heading, body, fb, fm, fs, tc, ac, sc, sep)
+    # ── Progress dots (top center) ────────────────────────────────
+    dot_y = 100
+    dot_spacing = 24
+    total_w = total_slides * dot_spacing
+    start_x = (WIDTH - total_w) // 2
+    for d in range(total_slides):
+        cx = start_x + d * dot_spacing + 6
+        if d == slide_index:
+            draw.ellipse([(cx - 6, dot_y - 6), (cx + 6, dot_y + 6)], fill=ac)
+        else:
+            draw.ellipse([(cx - 4, dot_y - 4), (cx + 4, dot_y + 4)], fill=(100, 100, 100))
+
+    if stype == "hook":
+        # Big bold hook text, centered vertically
+        _draw_text_shadow(
+            draw, heading, font_big, ac, 60, 680, WIDTH - 120,
+            shadow_offset=3, line_spacing=18,
+        )
+
+    elif stype == "point":
+        # Big number in accent color
+        num_text = f"#{slide.get('number', slide_index)}"
+        nbbox = draw.textbbox((0, 0), num_text, font=font_num)
+        nw = nbbox[2] - nbbox[0]
+        draw.text(((WIDTH - nw) // 2 + 3, 400 + 3), num_text, font=font_num, fill=(0, 0, 0))
+        draw.text(((WIDTH - nw) // 2, 400), num_text, font=font_num, fill=ac)
+
+        # Heading below number
+        _draw_text_shadow(
+            draw, heading, font_med, (255, 255, 255), 60, 620, WIDTH - 120,
+            shadow_offset=3, line_spacing=14,
+        )
+
+        # Separator
+        draw.rectangle([(60, 830), (240, 833)], fill=ac)
+
+        # Body
+        if body:
+            _draw_text_shadow(
+                draw, body, font_body, (210, 215, 225), 60, 870, WIDTH - 120,
+                shadow_offset=2,
+            )
+
+    elif stype == "cta":
+        # Big CTA text
+        _draw_text_shadow(
+            draw, heading, font_big, (255, 255, 255), 60, 650, WIDTH - 120,
+            shadow_offset=3, line_spacing=18,
+        )
+
+        # Handle / username as button
+        if body:
+            bbox = draw.textbbox((0, 0), body, font=font_med)
+            bw = bbox[2] - bbox[0]
+            bh = bbox[3] - bbox[1]
+            btn_x = (WIDTH - bw - 60) // 2
+            btn_y = 880
+            draw.rounded_rectangle(
+                [(btn_x, btn_y), (btn_x + bw + 60, btn_y + bh + 30)],
+                radius=12, fill=ac,
+            )
+            draw.text(
+                (btn_x + 30, btn_y + 15), body,
+                font=font_med, fill=(15, 23, 42),
+            )
+
+    # ── Brand watermark (bottom) ──────────────────────────────────
+    brand = "TechLife Insights"
+    bbox = draw.textbbox((0, 0), brand, font=font_brand)
+    bw = bbox[2] - bbox[0]
+    _draw_text_shadow(
+        draw, brand, font_brand, (90, 100, 115),
+        (WIDTH - bw) // 2, HEIGHT - 120, WIDTH,
+    )
+
+    return frame
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+#  Image helpers
+# ═══════════════════════════════════════════════════════════════════════════
+def _apply_dark_overlay(img: Image.Image, slide_type: str = "point") -> Image.Image:
+    """Heavy dark overlay for vertical format — text must be very readable on phones."""
+    overlay = Image.new("RGBA", img.size, (0, 0, 0, 0))
+    draw = ImageDraw.Draw(overlay)
+    w, h = img.size
+
+    if slide_type == "hook":
+        top_alpha, mid_alpha, bot_alpha = 0.30, 0.65, 0.75
+    elif slide_type == "cta":
+        top_alpha, mid_alpha, bot_alpha = 0.50, 0.75, 0.85
     else:
-        _layout_bold_center(draw, stype, heading, body, fb, fm, fs, tc, ac, sc, sep)
+        top_alpha, mid_alpha, bot_alpha = 0.25, 0.60, 0.75
 
-    return np.array(img)
+    for y in range(h):
+        t = y / h
+        if t < 0.15:
+            alpha = top_alpha
+        elif t < 0.35:
+            alpha = top_alpha + (mid_alpha - top_alpha) * ((t - 0.15) / 0.20)
+        elif t < 0.60:
+            alpha = mid_alpha
+        else:
+            alpha = mid_alpha + (bot_alpha - mid_alpha) * ((t - 0.60) / 0.40)
+        draw.line([(0, y), (w, y)], fill=(0, 0, 0, int(255 * alpha)))
 
-
-# ── Layout renderers ──────────────────────────────────────────────────────
-def _layout_bold_center(draw, stype, heading, body, fb, fm, fs, tc, ac, sc, sep):
-    """Big bold text centered vertically."""
-    draw.rectangle([(0, 0), (WIDTH, 8)], fill=ac)
-    draw.rectangle([(0, HEIGHT - 8), (WIDTH, HEIGHT)], fill=ac)
-
-    if stype == "hook":
-        _draw_wrapped(draw, heading, fb, ac, 60, 700, WIDTH - 120, line_spacing=20)
-    elif stype == "point":
-        _draw_wrapped(draw, heading, fm, ac, 60, 600, WIDTH - 120, line_spacing=16)
-        if body:
-            draw.rectangle([(60, 800), (WIDTH - 60, 803)], fill=sep)
-            _draw_wrapped(draw, body, fs, tc, 60, 840, WIDTH - 120)
-    elif stype == "cta":
-        _draw_wrapped(draw, heading, fb, tc, 60, 700, WIDTH - 120, line_spacing=20)
-        draw.rounded_rectangle([(120, 920), (WIDTH - 120, 1000)], radius=12, fill=ac)
-        _draw_wrapped(draw, body, fm, (13, 17, 23), 180, 938, WIDTH - 360)
+    return Image.alpha_composite(img.convert("RGBA"), overlay).convert("RGB")
 
 
-def _layout_numbered_card(draw, stype, heading, body, fb, fm, fs, tc, ac, sc, sep):
-    """Card-style with rounded rectangle background for content."""
-    if stype == "hook":
-        draw.rectangle([(0, 0), (WIDTH, 8)], fill=ac)
-        _draw_wrapped(draw, heading, fb, ac, 60, 700, WIDTH - 120, line_spacing=20)
-    elif stype == "point":
-        # Card background
-        draw.rounded_rectangle([(40, 540), (WIDTH - 40, 1100)], radius=24, fill=sep)
-        _draw_wrapped(draw, heading, fm, ac, 80, 580, WIDTH - 160, line_spacing=16)
-        if body:
-            _draw_wrapped(draw, body, fs, tc, 80, 760, WIDTH - 160)
-    elif stype == "cta":
-        _draw_wrapped(draw, heading, fb, tc, 60, 650, WIDTH - 120, line_spacing=20)
-        draw.rounded_rectangle([(120, 900), (WIDTH - 120, 980)], radius=12, fill=ac)
-        _draw_wrapped(draw, body, fm, (13, 17, 23), 180, 918, WIDTH - 360)
+def _generate_gradient_bg(w: int, h: int, accent: dict) -> Image.Image:
+    """Gradient background fallback for vertical format."""
+    ac = accent["primary"]
+    dark = (15, 23, 42)
 
+    y_grad = np.linspace(0, 1, h).reshape(-1, 1)
+    x_grad = np.linspace(0, 1, w).reshape(1, -1)
+    t = np.clip((x_grad * 0.3 + y_grad * 0.7) * 0.30, 0, 1)
 
-def _layout_side_stripe(draw, stype, heading, body, fb, fm, fs, tc, ac, sc, sep):
-    """Thick accent stripe on the left side."""
-    draw.rectangle([(0, 0), (16, HEIGHT)], fill=ac)
-    x = 60
+    r = np.clip(dark[0] + (ac[0] - dark[0]) * t, 0, 255).astype(np.uint8)
+    g = np.clip(dark[1] + (ac[1] - dark[1]) * t, 0, 255).astype(np.uint8)
+    b = np.clip(dark[2] + (ac[2] - dark[2]) * t, 0, 255).astype(np.uint8)
 
-    if stype == "hook":
-        _draw_wrapped(draw, heading, fb, ac, x, 700, WIDTH - x - 60, line_spacing=20)
-    elif stype == "point":
-        _draw_wrapped(draw, heading, fm, ac, x, 600, WIDTH - x - 60, line_spacing=16)
-        if body:
-            draw.rectangle([(x, 800), (WIDTH - 60, 803)], fill=sep)
-            _draw_wrapped(draw, body, fs, tc, x, 840, WIDTH - x - 60)
-    elif stype == "cta":
-        _draw_wrapped(draw, heading, fb, tc, x, 700, WIDTH - x - 60, line_spacing=20)
-        if body:
-            _draw_wrapped(draw, body, fm, ac, x, 900, WIDTH - x - 60)
-
-
-def _layout_top_gradient(draw, img, stype, heading, body, fb, fm, fs, tc, ac, sc, sep):
-    """Gradient accent at top of frame."""
-    bg_pixel = img.getpixel((0, 0))
-    for y in range(200):
-        alpha = 1.0 - (y / 200)
-        r = int(ac[0] * alpha + bg_pixel[0] * (1 - alpha))
-        g = int(ac[1] * alpha + bg_pixel[1] * (1 - alpha))
-        b = int(ac[2] * alpha + bg_pixel[2] * (1 - alpha))
-        draw.line([(0, y), (WIDTH, y)], fill=(r, g, b))
-
-    if stype == "hook":
-        _draw_wrapped(draw, heading, fb, (255, 255, 255), 60, 50, WIDTH - 120, line_spacing=20)
-    elif stype == "point":
-        _draw_wrapped(draw, heading, fm, (255, 255, 255), 60, 40, WIDTH - 120, line_spacing=16)
-        if body:
-            _draw_wrapped(draw, body, fs, tc, 60, 700, WIDTH - 120)
-    elif stype == "cta":
-        _draw_wrapped(draw, heading, fb, (255, 255, 255), 60, 40, WIDTH - 120, line_spacing=20)
-        if body:
-            draw.rounded_rectangle([(120, 900), (WIDTH - 120, 980)], radius=12, fill=ac)
-            _draw_wrapped(draw, body, fm, (13, 17, 23), 180, 918, WIDTH - 360)
+    return Image.fromarray(np.stack([r, g, b], axis=-1))
 
 
 # ═══════════════════════════════════════════════════════════════════════════
-#  Drawing helpers
+#  Text helpers
 # ═══════════════════════════════════════════════════════════════════════════
-def _draw_wrapped(draw, text, font, color, x, y, max_width, line_spacing=12, max_lines=8):
-    """Draw word-wrapped text. Returns final y position."""
+def _draw_text_shadow(
+    draw, text: str, font, colour: tuple, x: int, y: int,
+    max_width: int, shadow_offset: int = 2, line_spacing: int = 12,
+) -> int:
+    """Draw word-wrapped text with drop shadow. Returns final Y."""
     words = text.split()
     lines, current = [], []
 
@@ -357,24 +499,36 @@ def _draw_wrapped(draw, text, font, color, x, y, max_width, line_spacing=12, max
         lines.append(" ".join(current))
 
     cy = y
-    for line in lines[:max_lines]:
-        draw.text((x, cy), line, font=font, fill=color)
+    for line in lines[:6]:
+        draw.text((x + shadow_offset, cy + shadow_offset), line, font=font, fill=(0, 0, 0))
+        draw.text((x, cy), line, font=font, fill=colour)
         bbox = draw.textbbox((x, cy), line, font=font)
         cy += (bbox[3] - bbox[1]) + line_spacing
+        if cy > HEIGHT - 140:
+            break
     return cy
 
 
-def _get_font(size: int):
-    """Load a PIL font with fallback."""
-    font_paths = [
+def _get_font(size: int, weight: str = "heavy"):
+    """Load Avenir Next at the specified weight."""
+    weight_map = {"regular": 0, "medium": 2, "demibold": 4, "bold": 6, "heavy": 8}
+    idx = weight_map.get(weight, 8)
+
+    for fp in [
+        "/System/Library/Fonts/Avenir Next.ttc",
+        "/System/Library/Fonts/Supplemental/Avenir Next.ttc",
+    ]:
+        try:
+            return ImageFont.truetype(fp, size, index=idx)
+        except (IOError, OSError):
+            continue
+
+    for fp in [
         "/System/Library/Fonts/Helvetica.ttc",
-        "/System/Library/Fonts/SFNSMono.ttf",
         "/System/Library/Fonts/Supplemental/Arial Bold.ttf",
         "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
-        "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf",
         "C:/Windows/Fonts/arialbd.ttf",
-    ]
-    for fp in font_paths:
+    ]:
         try:
             return ImageFont.truetype(fp, size)
         except (IOError, OSError):

@@ -1125,3 +1125,80 @@ python scripts/start_dashboard.py
 ```
 
 That's it. The system handles the rest. ✅
+
+---
+
+## Stock Photography Platform Setup
+
+The bot generates AI images and prepares them for stock platform submissions. **No platform offers an upload API** — you must upload via each platform's web portal. The bot generates optimized metadata for each platform.
+
+### Step 1: Register on Stock Platforms (All Free)
+
+| Platform | Apply Here | Commission | Notes |
+|---|---|---|---|
+| **Wirestock** (recommended first) | [contributor.wirestock.io](https://contributor.wirestock.io) | Varies | Distributes to 6+ platforms at once |
+| **Adobe Stock** | [contributor.stock.adobe.com](https://contributor.stock.adobe.com) | 33% | Requires Adobe ID |
+| **Shutterstock** | [submit.shutterstock.com](https://submit.shutterstock.com) | 15–40% | Largest marketplace |
+| **Freepik** | [contributor.freepik.com](https://contributor.freepik.com) | Up to 50% | Growing fast |
+| **Dreamstime** | [dreamstime.com/sell](https://www.dreamstime.com/sell) | 25–60% | Easy approval |
+| **Pond5** | [pond5.com/sell](https://www.pond5.com/sell) | 50–60% | Best for video + images |
+| **Depositphotos** | [depositphotos.com/sell](https://depositphotos.com/sell) | 34–42% | Solid marketplace |
+| **123RF** | [123rf.com/contributors](https://www.123rf.com/contributors) | 30–60% | Easy onboarding |
+
+### Step 2: Generate & Export Images
+
+1. Open dashboard → **🖼️ Stock Images**
+2. Click **🎨 Generate Stock Images** to create a batch
+3. Click **📦 Export for Stock Platforms** to prepare metadata
+4. Check `data/stock_exports/<platform>/` for files + metadata JSON
+
+### Step 3: Upload to Platforms
+
+1. Go to each platform's contributor portal
+2. Upload the images from `data/stock_exports/<platform>/`
+3. Copy title, description, and keywords from the JSON metadata file
+4. Mark as submitted in the dashboard
+
+### Step 4: Track Sales
+
+1. When a sale happens on a platform, go to **💰 Income** page
+2. Add the income entry with source = "stock_photos"
+3. Or use the stock image dashboard to record individual sales
+
+### Platforms That BAN AI Content (Do NOT Upload)
+
+- ❌ **Alamy** — Bans all AI content
+- ❌ **iStock / Getty Images** — Bans AI content
+- ❌ **Stocksy** — Bans AI content
+
+---
+
+## Income Tracking Setup
+
+The bot tracks **real income only** — no estimates or fake numbers.
+
+### Supported Revenue Sources
+
+1. **Google AdSense** — Manual entry from AdSense dashboard
+2. **Amazon Associates** — Manual entry from Associates reports
+3. **Stock Photos** — Auto-synced from recorded sales
+4. **YouTube** — Manual entry from YouTube Studio (requires monetization)
+5. **Other Affiliates** — Manual entry (CJ, ShareASale, etc.)
+
+### How to Use
+
+1. Go to **💰 Income** in the dashboard sidebar
+2. Select revenue source, enter amount, pick niche and period
+3. Click "Add Income"
+4. Track your real earnings over time
+
+---
+
+## Video Intelligence — Short-Form vs Landscape
+
+The trend intelligence now automatically selects the right video format based on content type:
+
+- **Short-Form (9:16)** — 7 formats for Shorts/Reels/TikTok (≤60 seconds)
+- **Landscape (16:9)** — 6 formats for YouTube long-form (5–20 minutes)
+
+View all formats on the **🧠 Intelligence** dashboard page.

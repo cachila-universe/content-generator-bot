@@ -3420,5 +3420,214 @@ If any social platform (Instagram, TikTok, Twitter) has **empty API credentials*
 
 ---
 
-*Manual Version 2.5 — June 2025*
+## §48 — Stock Platform Submission System
+
+### Overview
+
+The bot generates AI images using the Multi-API Cascade (Leonardo → Stability → HuggingFace). These images can be sold on stock photography platforms. **No stock platform offers a contributor upload API** — all submissions are done through each platform's web portal. The bot prepares your images with **platform-optimized metadata** (titles, descriptions, keywords, categories) for fast batch uploading.
+
+**File:** `core/stock_submitter.py`
+
+### Platforms That Accept AI-Generated Content
+
+| Platform | Commission | Max Keywords | Max Title | Signup URL |
+|---|---|---|---|---|
+| **Wirestock** | Varies (distributes to 6+) | 50 | 200 chars | contributor.wirestock.io |
+| **Adobe Stock** | 33% | 25 | 70 chars | contributor.stock.adobe.com |
+| **Shutterstock** | 15–40% | 50 | 200 chars | submit.shutterstock.com |
+| **Freepik** | Up to 50% | 50 | 100 chars | contributor.freepik.com |
+| **Dreamstime** | 25–60% | 50 | 100 chars | dreamstime.com/sell |
+| **Pond5** | 50–60% | 50 | 100 chars | pond5.com/sell |
+| **Depositphotos** | 34–42% | 50 | 200 chars | depositphotos.com/sell |
+| **123RF** | 30–60% | 25 | 120 chars | 123rf.com/contributors |
+
+### Platforms That BAN AI Content
+
+- ❌ **Alamy** — Strictly bans all AI-generated imagery
+- ❌ **iStock / Getty Images** — Prohibits AI content
+- ❌ **Stocksy** — No AI-generated work accepted
+
+### How It Works
+
+1. **Generate** — Bot creates images via Leonardo/Stability/HuggingFace
+2. **Export** — Click "Export for Stock Platforms" on dashboard or run via pipeline
+3. **Metadata** — Bot creates a JSON sidecar per platform with optimized title, description, keywords, category
+4. **Upload** — You upload manually via each platform's web portal using the prepared metadata
+5. **Track** — Mark images as submitted/approved/rejected/sold in the dashboard
+
+### Export Directory Structure
+
+```
+data/stock_exports/
+├── wirestock/
+│   ├── img_001.jpg
+│   ├── img_001_metadata.json
+├── adobe_stock/
+│   ├── img_001.jpg
+│   ├── img_001_metadata.json
+├── shutterstock/
+│   └── ...
+```
+
+### Metadata JSON Example
+
+```json
+{
+  "platform": "adobe_stock",
+  "title": "AI-Powered Productivity Dashboard 2025",
+  "description": "AI-generated digital illustration of a modern productivity dashboard...",
+  "keywords": ["ai generated", "productivity", "dashboard", "technology", ...],
+  "category": "Technology",
+  "ai_generated": true,
+  "original_file": "data/stock_images/img_001.jpg"
+}
+```
+
+### Dashboard Integration
+
+- **Stock Images** page → "Export for Stock Platforms" button
+- **Platform Submission Tracker** — per-platform stats (exported/submitted/approved/rejected/sales/earnings)
+- **Platform Setup Guide** — direct signup links for each platform
+- **Full pipeline** auto-exports after image generation
+
+### API Endpoints
+
+| Endpoint | Method | Description |
+|---|---|---|
+| `/api/stock-images/export` | POST | Export all unsubmitted images |
+| `/api/stock-images/<id>/submit` | POST | Mark image as submitted to platform |
+| `/api/stock-images/<id>/sale` | POST | Record a sale |
+| `/api/stock-images/submission-stats` | GET | Get per-platform stats |
+| `/api/stock-images/platforms` | GET | Get platform info |
+
+---
+
+## §49 — Real Income Tracking
+
+### Overview
+
+The dashboard tracks **real income only** — no estimated or fake numbers. Revenue from all monetization sources is tracked in a central `income_entries` database table.
+
+**File:** `core/income_tracker.py`
+
+### Revenue Sources
+
+| Source | Icon | Auto-Sync | How to Track |
+|---|---|---|---|
+| **Google AdSense** | 📊 | ❌ Manual | Login to AdSense → Reports → Enter monthly earnings |
+| **Amazon Associates** | 🛒 | ❌ Manual | Login to Amazon Associates → Reports → Enter commission |
+| **Stock Photos** | 📸 | ✅ Auto | Sales recorded via dashboard auto-sync from stock_submissions |
+| **YouTube** | ▶️ | ❌ Manual | YouTube Studio → Analytics → Revenue (requires monetization) |
+| **Other Affiliates** | 🤝 | ❌ Manual | CJ, ShareASale, etc. — enter from their dashboards |
+
+### Why Not Fully Automated?
+
+- **AdSense API** requires a verified, monetized publisher account
+- **Amazon Associates API** provides product data only, not commission reports
+- **YouTube Revenue API** requires YouTube Partner Program (1000 subs + 4000 watch hours)
+- **Stock platforms** have no reporting API — only web portal dashboards
+- **Stock photo sales** ARE auto-synced because we track them in our own database
+
+### Dashboard Income Page
+
+Navigate to **💰 Income** in the sidebar to:
+
+1. View total all-time income (big green number)
+2. See revenue breakdown by source (5 cards)
+3. Add income entries (source, amount, niche, period, description)
+4. Delete incorrect entries
+5. See a guide for tracking each revenue source
+
+### API Endpoints
+
+| Endpoint | Method | Description |
+|---|---|---|
+| `/income` | GET | Income tracker page |
+| `/api/income/add` | POST | Add income entry |
+| `/api/income/<id>/delete` | POST | Delete income entry |
+| `/api/income/summary` | GET | Full income summary JSON |
+| `/api/income/sync-stock` | POST | Sync stock photo earnings |
+
+### Important Changes from Previous Versions
+
+- **Removed fake income estimates** — `publisher.py` no longer calculates `estimated_income` from word count
+- **Dashboard shows $0.00** until you add real earnings
+- **Analytics page** shows real per-source income cards
+- **"Total Income"** replaces "Est. Monthly Income" on the home dashboard
+
+---
+
+## §50 — Affiliate Click Tracking
+
+### Overview
+
+Every article on the published website now tracks outbound affiliate link clicks client-side.
+
+### How It Works
+
+1. JavaScript in `site/templates/post.html` intercepts clicks on:
+   - All links with `rel="nofollow"` attribute
+   - Known affiliate domains: amazon.com, amzn.to, shareasale.com, anrdoezrs.net, tkqlhce.com, dpbolvw.net, jdoqocy.com, kqzyfj.com
+2. Sends a tracking ping via `navigator.sendBeacon` to `/track` endpoint
+3. Falls back to Image pixel if sendBeacon unavailable
+4. Passes `slug` (article identifier) and `niche` for per-article analytics
+
+### What This Enables
+
+- Know which articles drive the most affiliate clicks
+- Know which niches convert best
+- Track which affiliate programs get the most outbound traffic
+- Use data to optimize article placement and affiliate link strategy
+
+---
+
+## §51 — Video Intelligence: Short-Form vs Landscape
+
+### Overview
+
+The trend intelligence system now differentiates between **short-form vertical videos** (Shorts/Reels/TikTok) and **landscape horizontal videos** (YouTube long-form). Each format pool has separate recommendation logic.
+
+**File:** `core/trend_intelligence.py`
+
+### Short-Form Formats (9:16 Vertical, ≤60 seconds)
+
+| Format | Duration | Best For |
+|---|---|---|
+| ⚡ Quick Tips | 30–60s | Tips, tools, quick fixes, lists |
+| 🔀 Split Screen | 30–60s | Comparisons, vs, before/after |
+| 🪝 Hook + Story | 45–90s | Storytelling, surprising facts, mistakes |
+| 📐 Tutorial Steps | 30–60s | How-to, step-by-step, guides |
+| ✨ Text Reveal | 15–30s | Facts, secrets, ASMR-style reveals |
+| 👁️ POV Style | 15–45s | First-person, day-in-the-life |
+| 🔍 Myth Busting | 30–60s | Myths, misconceptions, debunking |
+
+### Landscape Formats (16:9 Horizontal, 5–20 minutes)
+
+| Format | Duration | Best For |
+|---|---|---|
+| 🔬 Deep Dive | 10–20 min | Complex topics, analysis, research |
+| 📋 Top List | 8–15 min | Rankings, best-of, recommendations |
+| 🎓 Tutorial | 10–20 min | Full walkthroughs, how-to, setup |
+| ⚖️ Comparison Review | 8–15 min | Product comparisons, vs, reviews |
+| 📰 News Roundup | 5–10 min | Weekly updates, news, announcements |
+| 📖 Story Documentary | 10–20 min | Narratives, history, stories |
+
+### Smart Format Selection
+
+The `get_recommended_video_format(niche_id, topic, video_type="short")` function:
+
+1. Accepts `video_type` parameter: `"short"` or `"landscape"`
+2. Selects only from the matching format pool
+3. Scores each format by matching topic keywords against `best_for` lists
+4. Returns the best-matching format with all metadata (aspect ratio, duration, etc.)
+
+### Intelligence Dashboard
+
+The **🧠 Intelligence** page now shows two separate tables:
+- **📱 Short-Form Video Formats** — 7 vertical formats
+- **🖥️ Landscape Video Formats** — 6 horizontal formats
+
+---
+
+*Manual Version 3.0 — June 2025*
 *For the latest updates, check the repository README.*

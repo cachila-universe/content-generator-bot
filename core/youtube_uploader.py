@@ -47,6 +47,7 @@ def upload_video(video_path: Path, article: dict, niche_config: dict, channel_na
         tags = _build_tags(article, niche_config)
 
         # Generate thumbnail
+        thumb_path = None
         thumb_path = _generate_thumbnail(article, niche_config)
 
         body = {
@@ -54,7 +55,7 @@ def upload_video(video_path: Path, article: dict, niche_config: dict, channel_na
                 "title": title,
                 "description": description,
                 "tags": tags,
-                "categoryId": "22",  # People & Blogs
+                "categoryId": "28",  # Science & Technology
             },
             "status": {
                 "privacyStatus": "public",
@@ -170,49 +171,105 @@ def _get_credentials(secrets_file: str):
 
 
 def _build_description(article: dict, niche_config: dict) -> str:
-    """Build YouTube video description."""
-    import re
-
+    """Build a professional YouTube video description with website, socials, and newsletter."""
     title = article.get("title", "")
     meta_desc = article.get("meta_description", "")
+    article_url = article.get("url", "")
+    niche_name = niche_config.get("name", "")
     affiliate_programs = niche_config.get("affiliate_programs", [])
 
     lines = [
-        title,
+        f"{meta_desc}" if meta_desc else f"In this video we dive deep into {title}.",
         "",
-        meta_desc,
+        f"📖 Read the full article: {article_url}" if article_url else "",
         "",
         "─────────────────────────────",
-        "🔗 LINKS MENTIONED:",
+        "⏱️ TIMESTAMPS:",
+        "0:00 — Introduction",
         "",
+        "─────────────────────────────",
     ]
 
-    for prog in affiliate_programs[:5]:
-        lines.append(f"• {prog.get('name', '')}: {prog.get('url', '')}")
+    # Affiliate links section (only if there are programs)
+    if affiliate_programs:
+        lines += [
+            "🔗 TOOLS & LINKS MENTIONED:",
+            "",
+        ]
+        for prog in affiliate_programs[:5]:
+            lines.append(f"▸ {prog.get('name', '')}: {prog.get('url', '')}")
+        lines += [
+            "",
+            "─────────────────────────────",
+        ]
 
+    # Connect section
     lines += [
+        "🌐 CONNECT WITH US:",
+        "",
+        "🖥️ Website: https://tech-life-insights.com",
+        "📺 YouTube: https://www.youtube.com/channel/UCV0XW2sQNv2TWqtz3wFAxhA",
+        "📸 Instagram: https://www.instagram.com/techlife_insights/",
+        "🎵 TikTok: https://www.tiktok.com/@techlife_insights",
+        "🐦 Twitter: https://x.com/techlifeinsight",
+        "",
+        "📬 Subscribe to our newsletter for weekly insights:",
+        "https://techlife-insights.kit.com/be266c00d5",
         "",
         "─────────────────────────────",
-        "⚠️ DISCLAIMER: This video may contain affiliate links. "
-        "We may earn a commission if you purchase through our links at no extra cost to you.",
         "",
-        "#affiliate #review #guide",
+        f"⚠️ DISCLAIMER: Some links in this description may be affiliate links. "
+        f"If you purchase through them, we may earn a small commission at no extra "
+        f"cost to you. This helps support the channel — thank you! 🙏",
+        "",
     ]
+
+    # Hashtags
+    niche_slug = niche_name.lower().replace("&", "").replace(" ", "")
+    seed_keywords = niche_config.get("seed_keywords", [])
+    hashtags = ["#TechLifeInsights", f"#{niche_slug}"]
+    for kw in seed_keywords[:3]:
+        tag = kw.replace(" ", "").replace("-", "")[:25]
+        hashtags.append(f"#{tag}")
+    lines.append(" ".join(hashtags))
 
     return "\n".join(lines)[:5000]
 
 
 def _build_tags(article: dict, niche_config: dict) -> list:
     """Build YouTube tags list (max 500 chars total)."""
-    tags = list(article.get("tags", []))
-    seed_keywords = niche_config.get("seed_keywords", [])
-    tags.extend(seed_keywords)
+    # Brand tags first
+    brand_tags = [
+        "TechLife Insights",
+        "tech life insights",
+    ]
 
-    # Deduplicate
+    # Niche name
+    niche_name = niche_config.get("name", "")
+    if niche_name:
+        brand_tags.append(niche_name)
+
+    # Article-specific tags (may be empty)
+    article_tags = list(article.get("tags", []))
+
+    # Extract key phrases from title
+    title = article.get("title", "")
+    if title:
+        # Add the full title as a tag and key 2-3 word phrases
+        clean_title = title.replace(":", "").replace("-", "").strip()
+        article_tags.append(clean_title[:50])
+
+    # Seed keywords from niche config
+    seed_keywords = niche_config.get("seed_keywords", [])
+
+    # Combine all
+    all_tags = brand_tags + article_tags + seed_keywords
+
+    # Deduplicate and enforce character limit
     seen = set()
     unique_tags = []
     total_chars = 0
-    for tag in tags:
+    for tag in all_tags:
         tag_clean = tag.strip()[:50]
         if tag_clean.lower() not in seen and total_chars + len(tag_clean) < 480:
             seen.add(tag_clean.lower())
@@ -223,38 +280,87 @@ def _build_tags(article: dict, niche_config: dict) -> list:
 
 
 def _generate_thumbnail(article: dict, niche_config: dict) -> "Path | None":
-    """Generate a 1280x720 thumbnail image with Pillow."""
+    """Generate a branded 1280x720 thumbnail image in TechLife Insights style."""
     try:
         from PIL import Image, ImageDraw, ImageFont
 
-        img = Image.new("RGB", (1280, 720), color=(13, 17, 23))
+        W, H = 1280, 720
+        BG = (15, 23, 42)          # dark navy
+        ACCENT = (96, 165, 250)     # brand blue
+        WHITE = (248, 250, 252)
+        MUTED = (148, 163, 184)     # slate-400
+
+        img = Image.new("RGB", (W, H), color=BG)
         draw = ImageDraw.Draw(img)
 
-        # Accent bar at top
-        draw.rectangle([(0, 0), (1280, 8)], fill=(0, 255, 136))
+        # ── Gradient overlay (subtle lighter at bottom) ───────────
+        for y in range(H):
+            opacity = int(18 * (y / H))
+            draw.line([(0, y), (W, y)], fill=(BG[0] + opacity, BG[1] + opacity, BG[2] + opacity))
+
+        # ── Top accent bar ────────────────────────────────────────
+        draw.rectangle([(0, 0), (W, 6)], fill=ACCENT)
+
+        # ── Bottom accent bar ─────────────────────────────────────
+        draw.rectangle([(0, H - 6), (W, H)], fill=ACCENT)
+
+        # ── Left accent strip ─────────────────────────────────────
+        draw.rectangle([(0, 0), (6, H)], fill=ACCENT)
+
+        # ── Decorative corner brackets ────────────────────────────
+        bracket_len = 50
+        bracket_w = 3
+        # Top-left
+        draw.rectangle([(30, 30), (30 + bracket_len, 30 + bracket_w)], fill=ACCENT)
+        draw.rectangle([(30, 30), (30 + bracket_w, 30 + bracket_len)], fill=ACCENT)
+        # Top-right
+        draw.rectangle([(W - 30 - bracket_len, 30), (W - 30, 30 + bracket_w)], fill=ACCENT)
+        draw.rectangle([(W - 30 - bracket_w, 30), (W - 30, 30 + bracket_len)], fill=ACCENT)
+        # Bottom-left
+        draw.rectangle([(30, H - 30 - bracket_w), (30 + bracket_len, H - 30)], fill=ACCENT)
+        draw.rectangle([(30, H - 30 - bracket_len), (30 + bracket_w, H - 30)], fill=ACCENT)
+        # Bottom-right
+        draw.rectangle([(W - 30 - bracket_len, H - 30 - bracket_w), (W - 30, H - 30)], fill=ACCENT)
+        draw.rectangle([(W - 30 - bracket_w, H - 30 - bracket_len), (W - 30, H - 30)], fill=ACCENT)
 
         title = article.get("title", "")[:80]
         niche_name = niche_config.get("name", "")
 
         # Load fonts
-        title_font = _get_thumbnail_font(60)
-        badge_font = _get_thumbnail_font(28)
+        title_font = _get_thumbnail_font(56)
+        badge_font = _get_thumbnail_font(24)
+        brand_font = _get_thumbnail_font(22)
 
-        # Draw title
-        _thumb_draw_wrapped(draw, title, title_font, (255, 255, 255), 80, 160, 1120)
+        # ── Niche badge (top) ─────────────────────────────────────
+        badge_text = f"  {niche_name.upper()}  "
+        bbox = draw.textbbox((0, 0), badge_text, font=badge_font)
+        badge_w = bbox[2] - bbox[0] + 20
+        badge_h = bbox[3] - bbox[1] + 16
+        badge_x = 80
+        badge_y = 100
+        draw.rounded_rectangle(
+            [(badge_x, badge_y), (badge_x + badge_w, badge_y + badge_h)],
+            radius=6,
+            fill=ACCENT,
+        )
+        draw.text((badge_x + 10, badge_y + 8), badge_text, font=badge_font, fill=BG)
 
-        # Niche badge
-        badge_text = f"  {niche_name}  "
-        draw.rectangle([(80, 600), (80 + len(badge_text) * 16, 645)], fill=(0, 255, 136))
-        draw.text((88, 607), badge_text, font=badge_font, fill=(13, 17, 23))
+        # ── Title (centered area) ─────────────────────────────────
+        _thumb_draw_wrapped(draw, title, title_font, WHITE, 80, 180, 1120)
 
-        # Accent bar at bottom
-        draw.rectangle([(0, 712), (1280, 720)], fill=(0, 255, 136))
+        # ── Brand footer ──────────────────────────────────────────
+        brand_text = "TECHLIFE INSIGHTS"
+        bbox = draw.textbbox((0, 0), brand_text, font=brand_font)
+        bw = bbox[2] - bbox[0]
+        draw.text((W - 80 - bw, H - 70), brand_text, font=brand_font, fill=ACCENT)
+
+        # ── Thin separator line above brand ───────────────────────
+        draw.line([(80, H - 100), (W - 80, H - 100)], fill=(51, 65, 85), width=1)
 
         tmp_fd, tmp_path = tempfile.mkstemp(suffix=".jpg")
         os.close(tmp_fd)
         tmp = Path(tmp_path)
-        img.save(str(tmp), "JPEG", quality=90)
+        img.save(str(tmp), "JPEG", quality=92)
         return tmp
     except Exception as exc:
         logger.warning("Thumbnail generation failed: %s", exc)
@@ -262,13 +368,20 @@ def _generate_thumbnail(article: dict, niche_config: dict) -> "Path | None":
 
 
 def _get_thumbnail_font(size: int):
-    """Load a PIL font for thumbnails."""
+    """Load a PIL font for thumbnails — prefers Avenir Next on macOS."""
     from PIL import ImageFont
 
     font_paths = [
+        # macOS — Avenir Next (brand font)
+        "/System/Library/Fonts/Avenir Next.ttc",
+        "/System/Library/Fonts/Supplemental/Avenir Next.ttc",
+        # macOS fallbacks
+        "/System/Library/Fonts/HelveticaNeue.ttc",
+        "/System/Library/Fonts/Helvetica.ttc",
+        # Linux
         "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
         "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf",
-        "/System/Library/Fonts/Helvetica.ttc",
+        # Windows
         "C:/Windows/Fonts/arialbd.ttf",
     ]
     for fp in font_paths:

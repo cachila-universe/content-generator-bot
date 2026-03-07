@@ -80,11 +80,12 @@ def posts():
 
 @app.route("/analytics")
 def analytics():
-    from core import analytics_tracker
+    from core import analytics_tracker, income_tracker
     db = _get_db()
     niche_stats = analytics_tracker.get_niche_stats(db)
+    income_summary = income_tracker.get_income_summary()
     settings = _load_settings()
-    return render_template("analytics.html", niche_stats=niche_stats, settings=settings)
+    return render_template("analytics.html", niche_stats=niche_stats, income_summary=income_summary, settings=settings)
 
 
 @app.route("/logs")
@@ -116,11 +117,15 @@ def niches():
 
 @app.route("/stock-images")
 def stock_images():
-    from core import stock_generator
+    from core import stock_generator, stock_submitter
     settings = _load_settings()
     images = stock_generator.get_all_stock_images()
     stats = stock_generator.get_stock_stats()
-    return render_template("stock_images.html", images=images, stats=stats, settings=settings)
+    submission_stats = stock_submitter.get_submission_stats()
+    platform_info = stock_submitter.get_platform_info()
+    return render_template("stock_images.html", images=images, stats=stats,
+                           submission_stats=submission_stats, platform_info=platform_info,
+                           settings=settings)
 
 
 @app.route("/settings")
@@ -471,6 +476,120 @@ def api_run_full_pipeline():
     except Exception as exc:
         logger.exception("Full pipeline run failed")
         return jsonify({"ok": False, "error": str(exc)}), 500
+
+
+# ── Income Tracker ────────────────────────────────────────────────────────────
+
+
+@app.route("/income")
+def income_page():
+    """Income tracker dashboard page."""
+    from core import income_tracker
+    from datetime import date
+    settings = _load_settings()
+    niches = _load_niches()
+    summary = income_tracker.get_income_summary()
+    current_month = date.today().strftime("%Y-%m")
+    return render_template("income.html", summary=summary, niches=niches,
+                           current_month=current_month, settings=settings)
+
+
+@app.route("/api/income/add", methods=["POST"])
+def api_income_add():
+    """Add an income entry."""
+    from core import income_tracker
+    data = request.get_json(force=True)
+    try:
+        entry_id = income_tracker.add_income(
+            source=data.get("source", ""),
+            amount=float(data.get("amount", 0)),
+            description=data.get("description", ""),
+            niche_id=data.get("niche_id", ""),
+            period_start=data.get("period_start", ""),
+            period_end=data.get("period_end", ""),
+        )
+        return jsonify({"ok": True, "id": entry_id})
+    except Exception as exc:
+        return jsonify({"ok": False, "error": str(exc)}), 400
+
+
+@app.route("/api/income/<int:entry_id>/delete", methods=["POST"])
+def api_income_delete(entry_id):
+    """Delete an income entry."""
+    from core import income_tracker
+    deleted = income_tracker.delete_income(entry_id)
+    return jsonify({"ok": deleted})
+
+
+@app.route("/api/income/summary")
+def api_income_summary():
+    """Return income summary."""
+    from core import income_tracker
+    return jsonify(income_tracker.get_income_summary())
+
+
+@app.route("/api/income/sync-stock", methods=["POST"])
+def api_income_sync_stock():
+    """Sync stock photo earnings."""
+    from core import income_tracker
+    diff = income_tracker.sync_stock_earnings()
+    return jsonify({"ok": True, "synced": diff})
+
+
+# ── Stock submission API ──────────────────────────────────────────────────────
+
+
+@app.route("/api/stock-images/export", methods=["POST"])
+def api_stock_export():
+    """Export unsubmitted images for all platforms."""
+    from core import stock_submitter
+    data = request.get_json(force=True) if request.is_json else {}
+    platform_ids = data.get("platforms", None)
+
+    try:
+        results = stock_submitter.export_unsubmitted(platform_ids)
+        return jsonify({"ok": True, "exported": len(results)})
+    except Exception as exc:
+        return jsonify({"ok": False, "error": str(exc)}), 500
+
+
+@app.route("/api/stock-images/<int:image_id>/submit", methods=["POST"])
+def api_stock_mark_submitted(image_id):
+    """Mark an image as submitted to a platform."""
+    from core import stock_submitter
+    data = request.get_json(force=True)
+    platform = data.get("platform", "")
+    if not platform:
+        return jsonify({"ok": False, "error": "platform required"}), 400
+    stock_submitter.mark_submitted(image_id, platform)
+    return jsonify({"ok": True})
+
+
+@app.route("/api/stock-images/<int:image_id>/sale", methods=["POST"])
+def api_stock_record_sale(image_id):
+    """Record a sale for an image."""
+    from core import stock_submitter
+    data = request.get_json(force=True)
+    platform = data.get("platform", "")
+    amount = float(data.get("amount", 0))
+    if not platform or amount <= 0:
+        return jsonify({"ok": False, "error": "platform and amount required"}), 400
+    stock_submitter.record_sale(image_id, platform, amount)
+    return jsonify({"ok": True})
+
+
+@app.route("/api/stock-images/submission-stats")
+def api_stock_submission_stats():
+    """Return stock submission statistics."""
+    from core import stock_submitter
+    return jsonify(stock_submitter.get_submission_stats())
+
+
+@app.route("/api/stock-images/platforms")
+def api_stock_platforms():
+    """Return platform information."""
+    from core import stock_submitter
+    return jsonify(stock_submitter.get_platform_info())
 
 if __name__ == "__main__":
     port = int(os.getenv("DASHBOARD_PORT", 5002))

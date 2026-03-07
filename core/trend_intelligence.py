@@ -112,50 +112,133 @@ WRITING_STYLES = {
 }
 
 # ── Video format templates ───────────────────────────────────────────────
-VIDEO_FORMATS = {
+# SHORT-FORM: YouTube Shorts, Instagram Reels, TikTok (9:16 vertical, ≤60s)
+SHORT_FORM_FORMATS = {
     "quick_tips": {
         "name": "Quick Tips / Top 5",
+        "video_type": "short",
+        "aspect_ratio": "9:16",
         "duration": "30-60s",
-        "description": "Fast-paced numbered tips with text overlay — highest engagement",
+        "description": "Fast-paced numbered tips with text overlay — highest engagement on Shorts",
         "style_notes": "Quick cuts, progress counter, bold text, upbeat music",
+        "best_for": ["tips", "hacks", "best", "top"],
     },
     "split_screen": {
         "name": "Split Screen",
+        "video_type": "short",
+        "aspect_ratio": "9:16",
         "duration": "30-60s",
         "description": "Side-by-side comparison (before/after, good/bad) — very trending on Reels",
         "style_notes": "Two parallel scenes, comparison text, dramatic reveal",
+        "best_for": ["vs", "compare", "before", "after"],
     },
     "hook_story": {
         "name": "Hook + Story",
-        "duration": "45-90s",
-        "description": "Opens with provocative hook, then delivers value — best retention",
+        "video_type": "short",
+        "aspect_ratio": "9:16",
+        "duration": "45-60s",
+        "description": "Opens with provocative hook, then delivers value — best retention on TikTok",
         "style_notes": "First 3 seconds = hook text, then narration with images",
+        "best_for": ["secret", "nobody", "shocking", "truth"],
     },
     "tutorial_steps": {
         "name": "Tutorial Steps",
+        "video_type": "short",
+        "aspect_ratio": "9:16",
         "duration": "30-60s",
         "description": "Step-by-step walkthrough with numbered captions — educational shorts",
         "style_notes": "Step counter, clear captions, screen recordings or images",
+        "best_for": ["how", "tutorial", "step", "guide"],
     },
     "text_reveal": {
         "name": "Text Reveal / ASMR Text",
+        "video_type": "short",
+        "aspect_ratio": "9:16",
         "description": "Text appears word-by-word or line-by-line with satisfying effects",
         "duration": "15-30s",
         "style_notes": "Typewriter effect, minimal background, trending on TikTok",
+        "best_for": ["fact", "did you know", "mind", "amazing"],
     },
     "pov_style": {
         "name": "POV Style",
+        "video_type": "short",
+        "aspect_ratio": "9:16",
         "duration": "15-45s",
         "description": "POV: You discover {topic} — first-person framing trending on TikTok/Reels",
         "style_notes": "Starts with 'POV:' text, immersive visuals, emotional hook",
+        "best_for": ["pov", "when you", "imagine", "discover"],
     },
     "myth_bust": {
         "name": "Myth Busting",
+        "video_type": "short",
+        "aspect_ratio": "9:16",
         "duration": "30-60s",
-        "description": "Myth vs Reality format — drives comments and shares",
+        "description": "Myth vs Reality format — drives comments and shares on Shorts",
         "style_notes": "'MYTH:' screen → dramatic pause → 'REALITY:' screen",
+        "best_for": ["myth", "wrong", "lie", "actually"],
     },
 }
+
+# LANDSCAPE: YouTube long-form (16:9 horizontal, 5-15min)
+LANDSCAPE_FORMATS = {
+    "deep_dive": {
+        "name": "Deep Dive / Explainer",
+        "video_type": "landscape",
+        "aspect_ratio": "16:9",
+        "duration": "8-15min",
+        "description": "Comprehensive topic exploration with visuals — best for watch time & ads",
+        "style_notes": "Intro hook (30s), structured sections, B-roll images, smooth transitions, outro CTA",
+        "best_for": ["guide", "complete", "everything", "explained"],
+    },
+    "top_list": {
+        "name": "Top 10 / Ranked List",
+        "video_type": "landscape",
+        "aspect_ratio": "16:9",
+        "duration": "8-12min",
+        "description": "Countdown/ranked list — highest CTR and ad revenue on YouTube",
+        "style_notes": "Numbered segments, countdown graphics, each item = 45-90s, suspense before #1",
+        "best_for": ["top", "best", "ranked", "worst"],
+    },
+    "tutorial": {
+        "name": "Full Tutorial",
+        "video_type": "landscape",
+        "aspect_ratio": "16:9",
+        "duration": "10-20min",
+        "description": "Step-by-step tutorial with screen share or demos — high retention",
+        "style_notes": "Intro problem, outline steps, show each step with visuals, recap + CTA",
+        "best_for": ["how to", "tutorial", "setup", "install", "configure"],
+    },
+    "comparison_review": {
+        "name": "Comparison / Review",
+        "video_type": "landscape",
+        "aspect_ratio": "16:9",
+        "duration": "8-12min",
+        "description": "Product comparison or in-depth review — best for affiliate revenue",
+        "style_notes": "Intro both products, compare features point-by-point, verdict, affiliate links in description",
+        "best_for": ["vs", "compare", "review", "alternative", "which"],
+    },
+    "news_roundup": {
+        "name": "News / Weekly Roundup",
+        "video_type": "landscape",
+        "aspect_ratio": "16:9",
+        "duration": "5-10min",
+        "description": "Weekly news digest — builds subscriber habit, good for trending topics",
+        "style_notes": "Intro teaser, 3-5 news items with images, brief analysis each, outro teaser for next week",
+        "best_for": ["news", "update", "this week", "latest", "announcement"],
+    },
+    "story_documentary": {
+        "name": "Story / Mini-Documentary",
+        "video_type": "landscape",
+        "aspect_ratio": "16:9",
+        "duration": "10-20min",
+        "description": "Narrative storytelling format — highest engagement when done well",
+        "style_notes": "Hook with mystery/problem, build context, reveal, analysis, conclusion",
+        "best_for": ["story", "history", "rise", "fall", "journey"],
+    },
+}
+
+# Combined for backward compatibility
+VIDEO_FORMATS = {**SHORT_FORM_FORMATS, **LANDSCAPE_FORMATS}
 
 # ── Stock image demand signals ───────────────────────────────────────────
 IMAGE_DEMAND_CATEGORIES = {
@@ -623,36 +706,51 @@ def record_style_performance(style_id: str, style_type: str, niche_id: str, scor
 #  Video Format Intelligence
 # ═══════════════════════════════════════════════════════════════════════════
 
-def get_recommended_video_format(niche_id: str, topic: str) -> dict:
+def get_recommended_video_format(niche_id: str, topic: str, video_type: str = "short") -> dict:
     """
     Recommend the best video format for a topic.
     Uses DB performance data + topic heuristics.
+
+    Args:
+        niche_id: the niche to recommend for
+        topic: the article/video topic
+        video_type: "short" for Shorts/Reels/TikTok (9:16) or "landscape" for YouTube long-form (16:9)
     """
     _ensure_tables()
 
-    # Default format weights (from YouTube/TikTok analytics research)
-    format_scores = {
-        "quick_tips": 90,
-        "hook_story": 85,
-        "split_screen": 80,
-        "tutorial_steps": 75,
-        "text_reveal": 70,
-        "pov_style": 65,
-        "myth_bust": 60,
-    }
+    # Select format pool based on video type
+    if video_type == "landscape":
+        format_pool = LANDSCAPE_FORMATS
+        default_scores = {
+            "deep_dive": 85,
+            "top_list": 90,
+            "tutorial": 80,
+            "comparison_review": 85,
+            "news_roundup": 70,
+            "story_documentary": 65,
+        }
+    else:
+        format_pool = SHORT_FORM_FORMATS
+        default_scores = {
+            "quick_tips": 90,
+            "hook_story": 85,
+            "split_screen": 80,
+            "tutorial_steps": 75,
+            "text_reveal": 70,
+            "pov_style": 65,
+            "myth_bust": 60,
+        }
 
-    # Topic-based boosts
+    format_scores = dict(default_scores)
+
+    # Topic-based boosts using format best_for keywords
     topic_lower = topic.lower()
-    if any(w in topic_lower for w in ["top", "best", "tip", "hack"]):
-        format_scores["quick_tips"] += 20
-    if any(w in topic_lower for w in ["vs", "compare", "better", "versus"]):
-        format_scores["split_screen"] += 25
-    if any(w in topic_lower for w in ["how", "tutorial", "step", "guide"]):
-        format_scores["tutorial_steps"] += 20
-    if any(w in topic_lower for w in ["myth", "wrong", "lie", "truth"]):
-        format_scores["myth_bust"] += 25
-    if any(w in topic_lower for w in ["secret", "hidden", "nobody", "pov"]):
-        format_scores["pov_style"] += 20
+    for fmt_id, fmt_info in format_pool.items():
+        best_for = fmt_info.get("best_for", [])
+        for keyword in best_for:
+            if keyword in topic_lower:
+                format_scores[fmt_id] = format_scores.get(fmt_id, 50) + 20
+                break
 
     # Override with DB data
     conn = sqlite3.connect(str(_DB_PATH))
@@ -682,9 +780,10 @@ def get_recommended_video_format(niche_id: str, topic: str) -> dict:
             chosen_id = fid
             break
 
-    fmt = VIDEO_FORMATS.get(chosen_id, VIDEO_FORMATS["quick_tips"])
+    fmt = format_pool.get(chosen_id, list(format_pool.values())[0])
     return {
         "format_id": chosen_id,
+        "video_type": video_type,
         **fmt,
         "effectiveness_score": format_scores.get(chosen_id, 50),
     }
@@ -792,5 +891,7 @@ def get_intelligence_summary() -> dict:
         "top_styles": [dict(s) for s in styles],
         "last_refresh": latest["last_refresh"] if latest else None,
         "writing_styles": list(WRITING_STYLES.keys()),
+        "short_form_formats": list(SHORT_FORM_FORMATS.keys()),
+        "landscape_formats": list(LANDSCAPE_FORMATS.keys()),
         "video_formats": list(VIDEO_FORMATS.keys()),
     }

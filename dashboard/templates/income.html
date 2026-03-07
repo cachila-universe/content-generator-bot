@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+{% block title %}Income Tracker{% endblock %}
+{% block page_title %}💰 Income Tracker{% endblock %}
+
+{% block content %}
+<!-- Total income -->
+<div class="card" style="margin-bottom:24px; text-align:center;">
+  <div style="font-size:48px; font-weight:800; color:#059669;">
+    ${{ "%.2f"|format(summary.total_income) }}
+  </div>
+  <div style="color:#71717a; font-size:14px; margin-top:4px;">Total All-Time Income</div>
+  {% if summary.total_income == 0 %}
+  <p style="margin-top:12px; color:#92400e; font-size:13px;">
+    No income recorded yet. Use the form below to add your first earnings.
+  </p>
+  {% endif %}
+</div>
+
+<!-- Revenue by source -->
+<div class="metrics-grid" style="grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); margin-bottom:24px;">
+  {% for src_id, src in summary.by_source.items() %}
+  <div class="metric-card">
+    <div class="metric-icon">{{ src.icon }}</div>
+    <div class="metric-value">${{ "%.2f"|format(src.total) }}</div>
+    <div class="metric-label">{{ src.name }}</div>
+    <div style="font-size:11px; color:#71717a; margin-top:4px;">{{ src.entries }} entries</div>
+  </div>
+  {% endfor %}
+</div>
+
+<!-- Add income form -->
+<div class="card" style="margin-bottom:24px;">
+  <h3 class="card-title">➕ Add Income Entry</h3>
+  <p style="color:#71717a; font-size:13px; margin-bottom:16px;">
+    Record real income from your revenue sources. Stock photo earnings are auto-synced.
+  </p>
+  <form id="incomeForm" style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; max-width:600px;">
+    <div>
+      <label style="font-size:13px; font-weight:600; display:block; margin-bottom:4px;">Source</label>
+      <select id="incomeSource" class="form-select" required>
+        {% for src_id, src in summary.revenue_sources.items() %}
+        <option value="{{ src_id }}">{{ src.icon }} {{ src.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <label style="font-size:13px; font-weight:600; display:block; margin-bottom:4px;">Amount ($)</label>
+      <input type="number" id="incomeAmount" step="0.01" min="0.01" placeholder="0.00" class="form-select" required>
+    </div>
+    <div>
+      <label style="font-size:13px; font-weight:600; display:block; margin-bottom:4px;">Niche (optional)</label>
+      <select id="incomeNiche" class="form-select">
+        <option value="">All / General</option>
+        {% for niche_id, niche in niches.items() %}
+        <option value="{{ niche_id }}">{{ niche.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <label style="font-size:13px; font-weight:600; display:block; margin-bottom:4px;">Period</label>
+      <input type="month" id="incomePeriod" class="form-select" value="{{ current_month }}">
+    </div>
+    <div style="grid-column: 1 / -1;">
+      <label style="font-size:13px; font-weight:600; display:block; margin-bottom:4px;">Description (optional)</label>
+      <input type="text" id="incomeDesc" placeholder="e.g. March AdSense payout" class="form-select" style="width:100%;">
+    </div>
+    <div style="grid-column: 1 / -1;">
+      <button type="submit" class="btn" style="background:#059669; color:#fff; border:none; padding:10px 24px; border-radius:8px; font-weight:600; cursor:pointer;">
+        💰 Add Income
+      </button>
+      <span id="incomeStatus" style="margin-left:12px; font-size:13px;"></span>
+    </div>
+  </form>
+</div>
+
+<!-- Recent entries -->
+<div class="card">
+  <h3 class="card-title">Recent Entries</h3>
+  <div class="table-wrapper">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Source</th>
+          <th>Amount</th>
+          <th>Niche</th>
+          <th>Description</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="incomeEntries">
+        {% for entry in summary.recent_entries %}
+        <tr id="income-row-{{ entry.id }}">
+          <td class="text-muted">{{ entry.period_start }}</td>
+          <td>{{ summary.revenue_sources.get(entry.source, {}).get('icon', '') }} {{ summary.revenue_sources.get(entry.source, {}).get('name', entry.source) }}</td>
+          <td class="income-cell">${{ "%.2f"|format(entry.amount) }}</td>
+          <td>{{ entry.niche_id or '—' }}</td>
+          <td>{{ entry.description or '—' }}{% if entry.auto_synced %} <span style="font-size:11px; color:#059669;">⚡auto</span>{% endif %}</td>
+          <td>
+            <button class="btn" style="font-size:12px; padding:4px 8px; background:#ef4444; color:#fff; border:none; border-radius:4px; cursor:pointer;"
+                    onclick="deleteIncome({{ entry.id }})">🗑️</button>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6" class="text-muted text-center">No income entries yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- How to sync each source -->
+<div class="card" style="margin-top:24px;">
+  <h3 class="card-title">📖 How to Track Each Revenue Source</h3>
+  <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap:16px; margin-top:12px;">
+    {% for src_id, src in summary.revenue_sources.items() %}
+    <div style="border:1px solid #e4e4e7; border-radius:8px; padding:16px;">
+      <div style="font-size:24px; margin-bottom:8px;">{{ src.icon }}</div>
+      <div style="font-weight:700; font-size:14px;">{{ src.name }}</div>
+      <div style="font-size:12px; color:#71717a; margin-top:4px;">{{ src.description }}</div>
+      <div style="font-size:12px; margin-top:8px; padding:8px; background:#f8f9fb; border-radius:4px;">
+        {% if src.auto_sync %}
+        <span style="color:#059669;">⚡ Auto-synced</span> — {{ src.sync_note }}
+        {% else %}
+        📝 {{ src.sync_note }}
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<script>
+document.getElementById('incomeForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  var source = document.getElementById('incomeSource').value;
+  var amount = parseFloat(document.getElementById('incomeAmount').value);
+  var niche = document.getElementById('incomeNiche').value;
+  var period = document.getElementById('incomePeriod').value;
+  var desc = document.getElementById('incomeDesc').value;
+
+  var periodStart = period ? period + '-01' : '';
+  var periodEnd = period ? period + '-28' : '';
+
+  fetch('/api/income/add', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({
+      source: source, amount: amount, description: desc,
+      niche_id: niche, period_start: periodStart, period_end: periodEnd
+    })
+  }).then(r => r.json()).then(data => {
+    if(data.ok) {
+      document.getElementById('incomeStatus').textContent = '✅ Added $' + amount.toFixed(2);
+      document.getElementById('incomeStatus').style.color = '#059669';
+      setTimeout(function(){ location.reload(); }, 1000);
+    } else {
+      document.getElementById('incomeStatus').textContent = '❌ ' + (data.error || 'Failed');
+      document.getElementById('incomeStatus').style.color = '#ef4444';
+    }
+  });
+});
+
+function deleteIncome(id) {
+  if(!confirm('Delete this income entry?')) return;
+  fetch('/api/income/' + id + '/delete', {method: 'POST'})
+    .then(r => r.json()).then(data => {
+      if(data.ok) {
+        var row = document.getElementById('income-row-' + id);
+        if(row) row.remove();
+      }
+    });
+}
+</script>
+{% endblock %}

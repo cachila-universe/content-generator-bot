@@ -1,12 +1,15 @@
 """
-Video generator — creates YouTube-style 16:9 videos from article content.
+Video generator — YouTube landscape (16:9) with image backgrounds & TTS.
 
-Features:
-  • Microsoft Edge TTS neural voices (free, high-quality, no API key)
-  • Voice rotation — different voice each video
-  • Visual theme rotation — varied color schemes, layouts, accent styles
-  • Pillow-based frame rendering (no ImageMagick needed)
-  • MoviePy composition with fade transitions
+Upgrade over the old text-on-color approach:
+  • Relevant stock images from Pexels on every slide
+  • Dark gradient overlays for text readability
+  • Ken Burns subtle zoom/pan for motion (not a static slideshow)
+  • Professional text layout with drop shadows (Avenir Next)
+  • Slide counter, progress bar, TechLife Insights watermark
+  • Edge TTS neural voice rotation
+
+If no Pexels API key is configured, falls back to gradient backgrounds.
 """
 
 import os
@@ -16,6 +19,7 @@ import logging
 import tempfile
 import shutil
 import hashlib
+import yaml
 import numpy as np
 from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
@@ -24,8 +28,9 @@ logger = logging.getLogger(__name__)
 
 WIDTH, HEIGHT = 1280, 720
 FPS = 24
+_PROJECT_ROOT = Path(__file__).parent.parent
 
-# ── Voice pool (Edge TTS neural voices, all English) ──────────────────────
+# ── Voice pool (Edge TTS, all English) ────────────────────────────────────
 VOICES = [
     "en-US-GuyNeural",
     "en-US-JennyNeural",
@@ -45,92 +50,49 @@ VOICES = [
     "en-CA-LiamNeural",
 ]
 
-# ── Visual theme pool ─────────────────────────────────────────────────────
-THEMES = [
-    {
-        "name": "cyber_green",
-        "bg": (13, 17, 23),
-        "text": (255, 255, 255),
-        "accent": (0, 255, 136),
-        "subtitle": (180, 180, 180),
-        "separator": (48, 54, 61),
-    },
-    {
-        "name": "royal_blue",
-        "bg": (15, 23, 42),
-        "text": (248, 250, 252),
-        "accent": (96, 165, 250),
-        "subtitle": (148, 163, 184),
-        "separator": (51, 65, 85),
-    },
-    {
-        "name": "sunset_orange",
-        "bg": (28, 12, 8),
-        "text": (255, 247, 237),
-        "accent": (251, 146, 60),
-        "subtitle": (194, 165, 148),
-        "separator": (68, 45, 32),
-    },
-    {
-        "name": "electric_purple",
-        "bg": (20, 10, 32),
-        "text": (250, 245, 255),
-        "accent": (192, 132, 252),
-        "subtitle": (168, 148, 194),
-        "separator": (55, 35, 75),
-    },
-    {
-        "name": "crimson_fire",
-        "bg": (24, 10, 12),
-        "text": (255, 241, 242),
-        "accent": (251, 113, 133),
-        "subtitle": (190, 150, 155),
-        "separator": (65, 30, 38),
-    },
-    {
-        "name": "teal_wave",
-        "bg": (10, 25, 28),
-        "text": (240, 253, 250),
-        "accent": (45, 212, 191),
-        "subtitle": (148, 194, 188),
-        "separator": (35, 65, 60),
-    },
-    {
-        "name": "golden_dark",
-        "bg": (22, 18, 10),
-        "text": (255, 251, 235),
-        "accent": (250, 204, 21),
-        "subtitle": (194, 180, 148),
-        "separator": (55, 48, 28),
-    },
-    {
-        "name": "ice_slate",
-        "bg": (15, 23, 36),
-        "text": (226, 232, 240),
-        "accent": (125, 211, 252),
-        "subtitle": (148, 163, 184),
-        "separator": (45, 55, 72),
-    },
+# ── Accent colour palette (picked per video via slug hash) ────────────────
+ACCENTS = [
+    {"name": "blue",   "primary": (96, 165, 250),  "dark": (37, 99, 235)},
+    {"name": "green",  "primary": (52, 211, 153),  "dark": (16, 185, 129)},
+    {"name": "amber",  "primary": (251, 191, 36),  "dark": (217, 119, 6)},
+    {"name": "purple", "primary": (192, 132, 252), "dark": (139, 92, 246)},
+    {"name": "rose",   "primary": (251, 113, 133), "dark": (225, 29, 72)},
+    {"name": "teal",   "primary": (45, 212, 191),  "dark": (20, 184, 166)},
 ]
 
-# ── Layout pool (slide arrangements) ──────────────────────────────────────
-LAYOUTS = ["classic", "centered", "left_bar", "gradient_banner"]
+# ── Ken Burns motion styles (cycled per slide) ───────────────────────────
+KB_STYLES = ["zoom_in", "zoom_out", "pan_left", "pan_right"]
 
 
-# ── Deterministic selection from article slug ─────────────────────────────
+# ═══════════════════════════════════════════════════════════════════════════
+#  Deterministic picks
+# ═══════════════════════════════════════════════════════════════════════════
 def _pick(pool: list, seed: str, offset: int = 0):
-    """Pick an item from pool based on a hash seed."""
     h = int(hashlib.md5((seed + str(offset)).encode()).hexdigest(), 16)
     return pool[h % len(pool)]
 
 
-def _tts_generate(text: str, voice: str, out_path: Path) -> "Path | None":
-    """Sync wrapper around Edge TTS with gTTS fallback."""
+# ═══════════════════════════════════════════════════════════════════════════
+#  Settings helper
+# ═══════════════════════════════════════════════════════════════════════════
+def _load_pexels_key() -> str:
+    try:
+        cfg = yaml.safe_load((_PROJECT_ROOT / "config" / "settings.yaml").read_text())
+        return cfg.get("video", {}).get("pexels_api_key", "") or ""
+    except Exception:
+        return ""
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+#  TTS
+# ═══════════════════════════════════════════════════════════════════════════
+def _tts_generate(text: str, voice: str, out_path: Path, rate: str = "+0%") -> "Path | None":
+    """Generate speech audio using Edge TTS with gTTS fallback."""
     try:
         import edge_tts
 
         async def _gen():
-            communicate = edge_tts.Communicate(text, voice)
+            communicate = edge_tts.Communicate(text, voice, rate=rate)
             await communicate.save(str(out_path))
 
         loop = asyncio.new_event_loop()
@@ -142,17 +104,13 @@ def _tts_generate(text: str, voice: str, out_path: Path) -> "Path | None":
         if out_path.exists() and out_path.stat().st_size > 0:
             return out_path
     except Exception as exc:
-        logger.warning("Edge TTS failed (%s): %s — falling back to gTTS", voice, exc)
+        logger.warning("Edge TTS failed (%s): %s — trying gTTS", voice, exc)
 
-    # Fallback: gTTS
     try:
         from gtts import gTTS
-
-        tts = gTTS(text=text, lang="en", slow=False)
-        tts.save(str(out_path))
+        gTTS(text=text, lang="en", slow=False).save(str(out_path))
         return out_path
-    except Exception as exc:
-        logger.warning("gTTS also failed: %s", exc)
+    except Exception:
         return None
 
 
@@ -161,27 +119,27 @@ def _tts_generate(text: str, voice: str, out_path: Path) -> "Path | None":
 # ═══════════════════════════════════════════════════════════════════════════
 def generate_video(article: dict, output_path: Path) -> "Path | None":
     """
-    Generate a 16:9 YouTube video from article content.
+    Generate a 16:9 YouTube video with image backgrounds and TTS narration.
 
-    Uses Edge TTS neural voices with automatic rotation and varied visual themes.
     Returns output_path on success, None on failure.
     """
     try:
-        from moviepy import (
-            ImageClip,
-            AudioFileClip,
-            concatenate_videoclips,
-            vfx,
-        )
+        from moviepy import VideoClip, ImageClip, AudioFileClip, concatenate_videoclips, vfx
     except ImportError as exc:
         logger.error("Missing moviepy: %s", exc)
         return None
 
     slug = article.get("slug", "video")
+    niche_name = article.get("niche_name", "")
+    niche_id = article.get("niche_id", "")
     voice = _pick(VOICES, slug, offset=0)
-    theme = _pick(THEMES, slug, offset=1)
-    layout = _pick(LAYOUTS, slug, offset=2)
-    logger.info("Video style → voice=%s  theme=%s  layout=%s", voice, theme["name"], layout)
+    accent = _pick(ACCENTS, slug, offset=1)
+    pexels_key = _load_pexels_key()
+
+    logger.info(
+        "Video style → voice=%s  accent=%s  images=%s",
+        voice, accent["name"], "ai-stock+pexels" if niche_id else ("pexels" if pexels_key else "gradient-fallback"),
+    )
 
     tmp_dir = Path(tempfile.mkdtemp(prefix="videogen_"))
     try:
@@ -190,25 +148,43 @@ def generate_video(article: dict, output_path: Path) -> "Path | None":
             logger.error("No slides could be extracted from article")
             return None
 
+        total_slides = len(slides)
         clips = []
+
         for i, slide in enumerate(slides):
+            # 1. Fetch relevant image for this slide
+            from core.image_fetcher import fetch_image, extract_search_query
+
+            query = extract_search_query(slide["heading"], niche_name)
+            bg_img = fetch_image(
+                query, pexels_key, "landscape", WIDTH, HEIGHT, photo_index=i,
+                niche_id=niche_id,
+            )
+            if bg_img:
+                logger.info("  Slide %d/%d: image fetched for '%s'", i + 1, total_slides, query)
+            else:
+                logger.info("  Slide %d/%d: using gradient fallback", i + 1, total_slides)
+
+            # 2. Compose the frame (image + overlay + text + decorations)
+            frame = _build_frame(slide, bg_img, accent, i, total_slides)
+            frame_array = np.array(frame)
+
+            # 3. TTS audio
             audio_path = tmp_dir / f"audio_{i}.mp3"
             audio_file = _tts_generate(slide["narration"], voice, audio_path)
 
-            img_array = _build_slide_image(slide, theme, layout)
+            # 4. Create video clip with Ken Burns motion
             if audio_file and audio_file.exists():
                 audio_clip = AudioFileClip(str(audio_file))
                 duration = audio_clip.duration + 0.5
-                video_clip = (
-                    ImageClip(img_array, duration=duration)
-                    .with_audio(audio_clip)
-                )
+                clip = _make_ken_burns_clip(frame_array, duration, FPS, i)
+                clip = clip.with_audio(audio_clip)
             else:
                 duration = max(4.0, len(slide["narration"]) / 15)
-                video_clip = ImageClip(img_array, duration=duration)
+                clip = _make_ken_burns_clip(frame_array, duration, FPS, i)
 
-            video_clip = video_clip.with_effects([vfx.FadeIn(0.3), vfx.FadeOut(0.3)])
-            clips.append(video_clip)
+            clip = clip.with_effects([vfx.FadeIn(0.3), vfx.FadeOut(0.3)])
+            clips.append(clip)
 
         if not clips:
             logger.error("No clips generated")
@@ -217,12 +193,9 @@ def generate_video(article: dict, output_path: Path) -> "Path | None":
         output_path.parent.mkdir(parents=True, exist_ok=True)
         final = concatenate_videoclips(clips, method="compose")
         final.write_videofile(
-            str(output_path),
-            fps=FPS,
-            codec="libx264",
-            audio_codec="aac",
+            str(output_path), fps=FPS, codec="libx264", audio_codec="aac",
         )
-        logger.info("Video generated: %s (voice=%s, theme=%s)", output_path, voice, theme["name"])
+        logger.info("Video generated: %s (voice=%s, accent=%s)", output_path, voice, accent["name"])
         return output_path
 
     except Exception as exc:
@@ -233,194 +206,274 @@ def generate_video(article: dict, output_path: Path) -> "Path | None":
 
 
 # ═══════════════════════════════════════════════════════════════════════════
+#  Ken Burns (subtle zoom / pan on each slide)
+# ═══════════════════════════════════════════════════════════════════════════
+def _make_ken_burns_clip(frame_array: np.ndarray, duration: float, fps: int,
+                         slide_index: int, amount: float = 0.06):
+    """
+    Create a clip with subtle Ken Burns zoom / pan for motion.
+
+    Falls back to a static ImageClip if VideoClip creation fails.
+    """
+    try:
+        from moviepy import VideoClip
+
+        h, w = frame_array.shape[:2]
+        pil_source = Image.fromarray(frame_array)
+        style = KB_STYLES[slide_index % len(KB_STYLES)]
+
+        def make_frame(t):
+            progress = max(0.0, min(1.0, t / max(duration, 0.01)))
+
+            if style == "zoom_in":
+                zoom = 1.0 + amount * progress
+                cx, cy = w // 2, h // 2
+            elif style == "zoom_out":
+                zoom = 1.0 + amount * (1 - progress)
+                cx, cy = w // 2, h // 2
+            elif style == "pan_left":
+                zoom = 1.0 + amount
+                cx = int(w * (0.55 - 0.10 * progress))
+                cy = h // 2
+            else:  # pan_right
+                zoom = 1.0 + amount
+                cx = int(w * (0.45 + 0.10 * progress))
+                cy = h // 2
+
+            crop_w = min(int(w / zoom), w)
+            crop_h = min(int(h / zoom), h)
+            x1 = max(0, min(cx - crop_w // 2, w - crop_w))
+            y1 = max(0, min(cy - crop_h // 2, h - crop_h))
+
+            cropped = pil_source.crop((x1, y1, x1 + crop_w, y1 + crop_h))
+            resized = cropped.resize((w, h), Image.LANCZOS)
+            return np.array(resized)
+
+        clip = VideoClip(make_frame, duration=duration)
+        clip.fps = fps
+        return clip
+
+    except Exception as exc:
+        logger.debug("Ken Burns unavailable (%s) — using static frame", exc)
+        from moviepy import ImageClip
+        return ImageClip(frame_array, duration=duration)
+
+
+# ═══════════════════════════════════════════════════════════════════════════
 #  Slide extraction
 # ═══════════════════════════════════════════════════════════════════════════
 def _extract_slides(article: dict) -> list:
-    """Extract slide content from article HTML."""
+    """Extract slides from article HTML for the landscape video."""
     html = article.get("html_content", "")
     title = article.get("title", "Untitled")
-    site_url = os.getenv("SITE_URL", "https://tech-life-insights.com")
+    niche_name = article.get("niche_name", "")
 
     slides = []
 
-    # Title slide
-    intro_match = re.search(r"<p>(.*?)</p>", html, re.DOTALL)
-    intro_text = re.sub(r"<[^>]+>", "", intro_match.group(1)).strip() if intro_match else ""
+    # ── Title slide ───────────────────────────────────────────────
+    intro_match = re.search(r"<p[^>]*>(.*?)</p>", html, re.DOTALL)
+    intro = re.sub(r"<[^>]+>", "", intro_match.group(1)).strip() if intro_match else ""
     slides.append({
         "type": "title",
         "heading": title,
-        "body": intro_text[:200] if intro_text else "",
-        "narration": f"{title}. {intro_text[:300]}" if intro_text else title,
+        "body": intro[:220] if intro else "",
+        "niche": niche_name,
+        "narration": f"{title}. {intro[:350]}" if intro else title,
     })
 
-    # Content slides from H2 sections
-    h2_pattern = re.compile(r"<h2>(.*?)</h2>(.*?)(?=<h2>|$)", re.DOTALL)
+    # ── Content slides from H2 sections ───────────────────────────
+    h2_pattern = re.compile(r"<h2[^>]*>(.*?)</h2>(.*?)(?=<h2|$)", re.DOTALL)
     for match in h2_pattern.finditer(html):
         heading = re.sub(r"<[^>]+>", "", match.group(1)).strip()
         body_html = match.group(2)
 
-        if any(skip in heading.lower() for skip in ["faq", "question", "frequently"]):
+        if any(skip in heading.lower()
+               for skip in ["faq", "question", "frequently", "conclusion", "summary"]):
             continue
 
         body_text = re.sub(r"<[^>]+>", " ", body_html).strip()
         body_text = re.sub(r"\s+", " ", body_text)
-        first_sentence = (
-            body_text.split(".")[0].strip() + "." if "." in body_text else body_text[:200]
-        )
+
+        sentences = [s.strip() for s in body_text.split(".") if s.strip()]
+        body_short = ". ".join(sentences[:2]) + "." if sentences else body_text[:250]
+        narration = ". ".join(sentences[:4]) + "." if sentences else body_text[:500]
 
         slides.append({
             "type": "content",
             "heading": heading,
-            "body": first_sentence[:300],
-            "narration": f"{heading}. {body_text[:400]}",
+            "body": body_short[:300],
+            "narration": f"{heading}. {narration[:500]}",
         })
 
-        if len(slides) >= 6:
+        if len(slides) >= 7:
             break
 
-    # CTA slide
+    # ── CTA slide ─────────────────────────────────────────────────
     slides.append({
         "type": "cta",
-        "heading": "Want to Learn More?",
-        "body": f"Visit tech-life-insights.com",
-        "narration": f"For more tips and guides, visit us at tech life insights dot com. "
-                     f"Don't forget to like and subscribe!",
+        "heading": "Read the Full Article",
+        "body": "tech-life-insights.com",
+        "narration": (
+            "For the complete article and more insights, "
+            "visit tech life insights dot com. "
+            "Don't forget to like and subscribe for more!"
+        ),
     })
 
     return slides
 
 
 # ═══════════════════════════════════════════════════════════════════════════
-#  Frame rendering (Pillow)
+#  Frame composition
 # ═══════════════════════════════════════════════════════════════════════════
-def _build_slide_image(slide: dict, theme: dict, layout: str) -> np.ndarray:
-    """Build a 1280x720 slide image with the given theme and layout."""
-    bg = theme["bg"]
-    text_color = theme["text"]
-    accent = theme["accent"]
-    subtitle = theme["subtitle"]
-    separator = theme["separator"]
+def _build_frame(
+    slide: dict,
+    bg_img: "Image.Image | None",
+    accent: dict,
+    slide_index: int,
+    total_slides: int,
+) -> Image.Image:
+    """Compose a complete slide frame with image background, overlay, text, decorations."""
+    if bg_img:
+        frame = bg_img.copy().convert("RGB")
+    else:
+        frame = _generate_gradient_bg(WIDTH, HEIGHT, accent)
 
-    img = Image.new("RGB", (WIDTH, HEIGHT), color=bg)
-    draw = ImageDraw.Draw(img)
+    frame = _apply_dark_overlay(frame, slide["type"])
+    draw = ImageDraw.Draw(frame)
 
-    slide_type = slide.get("type", "content")
+    stype = slide["type"]
     heading = slide.get("heading", "")
     body = slide.get("body", "")
+    ac = accent["primary"]
 
-    font_title = _get_font(54)
-    font_h2 = _get_font(44)
-    font_body = _get_font(32)
-    font_small = _get_font(24)
-
-    if layout == "classic":
-        _render_classic(draw, slide_type, heading, body, font_title, font_h2, font_body,
-                        text_color, accent, subtitle, separator)
-    elif layout == "centered":
-        _render_centered(draw, slide_type, heading, body, font_title, font_h2, font_body,
-                         text_color, accent, subtitle, separator)
-    elif layout == "left_bar":
-        _render_left_bar(draw, slide_type, heading, body, font_title, font_h2, font_body,
-                         text_color, accent, subtitle, separator)
-    elif layout == "gradient_banner":
-        _render_gradient_banner(draw, img, slide_type, heading, body, font_title, font_h2, font_body,
-                                text_color, accent, subtitle, separator)
-    else:
-        _render_classic(draw, slide_type, heading, body, font_title, font_h2, font_body,
-                        text_color, accent, subtitle, separator)
-
-    return np.array(img)
-
-
-def _render_classic(draw, stype, heading, body, ft, fh, fb, tc, ac, sc, sep):
-    """Classic layout: accent bar top/bottom, content in middle."""
-    draw.rectangle([(0, 0), (WIDTH, 6)], fill=ac)
-    draw.rectangle([(0, HEIGHT - 6), (WIDTH, HEIGHT)], fill=ac)
+    font_title = _get_font(50, "heavy")
+    font_h2 = _get_font(38, "bold")
+    font_body = _get_font(26, "medium")
+    font_small = _get_font(18, "regular")
+    font_brand = _get_font(16, "demibold")
 
     if stype == "title":
-        _draw_wrapped_text(draw, heading, ft, tc, 80, 160, WIDTH - 160)
+        # Niche badge top-left
+        niche = slide.get("niche", "")
+        if niche:
+            _draw_badge(draw, niche.upper(), font_small, ac, 80, 100)
+
+        # Big title
+        _draw_text_shadow(draw, heading, font_title, (255, 255, 255), 80, 180, WIDTH - 160)
+
+        # Intro text
         if body:
-            _draw_wrapped_text(draw, body, fb, sc, 80, 380, WIDTH - 160)
+            _draw_text_shadow(draw, body, font_body, (200, 210, 225), 80, 420, WIDTH - 160)
+
+    elif stype == "content":
+        # Slide counter top-right
+        counter = f"{slide_index + 1} / {total_slides}"
+        cbox = draw.textbbox((0, 0), counter, font=font_small)
+        cw = cbox[2] - cbox[0]
+        _draw_text_shadow(draw, counter, font_small, (150, 160, 175), WIDTH - 80 - cw, 40, 200)
+
+        # Heading in accent colour
+        _draw_text_shadow(draw, heading, font_h2, ac, 80, 120, WIDTH - 160)
+
+        # Short accent line separator
+        draw.rectangle([(80, 265), (260, 268)], fill=ac)
+
+        # Body text
+        if body:
+            _draw_text_shadow(draw, body, font_body, (225, 230, 240), 80, 295, WIDTH - 160)
+
     elif stype == "cta":
-        _draw_wrapped_text(draw, heading, fh, ac, 80, 220, WIDTH - 160)
+        _draw_text_shadow(draw, heading, font_h2, (255, 255, 255), 80, 200, WIDTH - 160)
         if body:
-            _draw_wrapped_text(draw, body, fb, tc, 80, 380, WIDTH - 160)
-    else:
-        _draw_wrapped_text(draw, heading, fh, ac, 80, 100, WIDTH - 160)
-        draw.rectangle([(80, 210), (WIDTH - 80, 213)], fill=sep)
-        if body:
-            _draw_wrapped_text(draw, body, fb, tc, 80, 240, WIDTH - 160)
+            _draw_text_shadow(draw, body, font_body, ac, 80, 320, WIDTH - 160)
 
+        _draw_text_shadow(
+            draw, "Like & Subscribe for more!",
+            font_small, (180, 190, 200), 80, 420, WIDTH - 160,
+        )
 
-def _render_centered(draw, stype, heading, body, ft, fh, fb, tc, ac, sc, sep):
-    """Centered layout: content vertically centered, subtle accent circle."""
-    cx, cy_center = WIDTH // 2, HEIGHT // 2
-    draw.ellipse([(cx - 260, cy_center - 260), (cx + 260, cy_center + 260)],
-                 outline=ac, width=2)
+    # ── Progress bar (bottom) ─────────────────────────────────────
+    progress = (slide_index + 1) / total_slides
+    bar_y = HEIGHT - 4
+    draw.rectangle([(0, bar_y), (int(WIDTH * progress), HEIGHT)], fill=ac)
+    draw.rectangle([(int(WIDTH * progress), bar_y), (WIDTH, HEIGHT)], fill=(20, 20, 20))
 
-    if stype == "title":
-        _draw_wrapped_text(draw, heading, ft, tc, 120, cy_center - 100, WIDTH - 240)
-        if body:
-            _draw_wrapped_text(draw, body, fb, sc, 120, cy_center + 60, WIDTH - 240)
-    elif stype == "cta":
-        _draw_wrapped_text(draw, heading, fh, ac, 120, cy_center - 60, WIDTH - 240)
-        if body:
-            _draw_wrapped_text(draw, body, fb, tc, 120, cy_center + 60, WIDTH - 240)
-    else:
-        _draw_wrapped_text(draw, heading, fh, ac, 120, cy_center - 120, WIDTH - 240)
-        if body:
-            _draw_wrapped_text(draw, body, fb, tc, 120, cy_center + 20, WIDTH - 240)
+    # ── Brand watermark (bottom-right) ────────────────────────────
+    brand = "TechLife Insights"
+    bbox = draw.textbbox((0, 0), brand, font=font_brand)
+    bw = bbox[2] - bbox[0]
+    _draw_text_shadow(draw, brand, font_brand, (100, 110, 125), WIDTH - 80 - bw, HEIGHT - 35, 300)
 
-
-def _render_left_bar(draw, stype, heading, body, ft, fh, fb, tc, ac, sc, sep):
-    """Left accent bar layout: thick colored bar on the left."""
-    draw.rectangle([(0, 0), (12, HEIGHT)], fill=ac)
-    x_offset = 60
-
-    if stype == "title":
-        _draw_wrapped_text(draw, heading, ft, tc, x_offset, 140, WIDTH - x_offset - 80)
-        if body:
-            _draw_wrapped_text(draw, body, fb, sc, x_offset, 360, WIDTH - x_offset - 80)
-    elif stype == "cta":
-        _draw_wrapped_text(draw, heading, fh, ac, x_offset, 200, WIDTH - x_offset - 80)
-        if body:
-            _draw_wrapped_text(draw, body, fb, tc, x_offset, 380, WIDTH - x_offset - 80)
-    else:
-        _draw_wrapped_text(draw, heading, fh, ac, x_offset, 100, WIDTH - x_offset - 80)
-        draw.rectangle([(x_offset, 210), (WIDTH - 80, 213)], fill=sep)
-        if body:
-            _draw_wrapped_text(draw, body, fb, tc, x_offset, 240, WIDTH - x_offset - 80)
-
-
-def _render_gradient_banner(draw, img, stype, heading, body, ft, fh, fb, tc, ac, sc, sep):
-    """Top gradient banner with accent color fade."""
-    bg_pixel = img.getpixel((0, 0))
-    for y in range(120):
-        alpha = 1.0 - (y / 120)
-        r = int(ac[0] * alpha + bg_pixel[0] * (1 - alpha))
-        g = int(ac[1] * alpha + bg_pixel[1] * (1 - alpha))
-        b = int(ac[2] * alpha + bg_pixel[2] * (1 - alpha))
-        draw.line([(0, y), (WIDTH, y)], fill=(r, g, b))
-
-    if stype == "title":
-        _draw_wrapped_text(draw, heading, ft, tc, 80, 180, WIDTH - 160)
-        if body:
-            _draw_wrapped_text(draw, body, fb, sc, 80, 400, WIDTH - 160)
-    elif stype == "cta":
-        _draw_wrapped_text(draw, heading, fh, (255, 255, 255), 80, 30, WIDTH - 160)
-        if body:
-            _draw_wrapped_text(draw, body, fb, tc, 80, 380, WIDTH - 160)
-    else:
-        _draw_wrapped_text(draw, heading, fh, (255, 255, 255), 80, 30, WIDTH - 160)
-        if body:
-            _draw_wrapped_text(draw, body, fb, tc, 80, 250, WIDTH - 160)
+    return frame
 
 
 # ═══════════════════════════════════════════════════════════════════════════
-#  Drawing helpers
+#  Image processing helpers
 # ═══════════════════════════════════════════════════════════════════════════
-def _draw_wrapped_text(draw, text, font, color, x, y, max_width, line_spacing=12):
-    """Draw word-wrapped text onto a PIL ImageDraw object."""
+def _apply_dark_overlay(img: Image.Image, slide_type: str = "content") -> Image.Image:
+    """Apply a gradient dark overlay — lighter at top, darker at bottom for text."""
+    overlay = Image.new("RGBA", img.size, (0, 0, 0, 0))
+    draw = ImageDraw.Draw(overlay)
+    w, h = img.size
+
+    if slide_type == "title":
+        top_alpha, bot_alpha = 0.40, 0.75
+    elif slide_type == "cta":
+        top_alpha, bot_alpha = 0.55, 0.80
+    else:
+        top_alpha, bot_alpha = 0.35, 0.72
+
+    for y in range(h):
+        t = y / h
+        if t < 0.15:
+            alpha = top_alpha
+        elif t < 0.45:
+            alpha = top_alpha + (bot_alpha - top_alpha) * ((t - 0.15) / 0.30)
+        else:
+            alpha = bot_alpha
+        draw.line([(0, y), (w, y)], fill=(0, 0, 0, int(255 * alpha)))
+
+    return Image.alpha_composite(img.convert("RGBA"), overlay).convert("RGB")
+
+
+def _generate_gradient_bg(w: int, h: int, accent: dict) -> Image.Image:
+    """Beautiful gradient background as fallback when no Pexels image is available."""
+    ac = accent["primary"]
+    dark = (15, 23, 42)
+
+    y_grad = np.linspace(0, 1, h).reshape(-1, 1)
+    x_grad = np.linspace(0, 1, w).reshape(1, -1)
+    t = np.clip((x_grad * 0.4 + y_grad * 0.6) * 0.35, 0, 1)
+
+    r = np.clip(dark[0] + (ac[0] - dark[0]) * t, 0, 255).astype(np.uint8)
+    g = np.clip(dark[1] + (ac[1] - dark[1]) * t, 0, 255).astype(np.uint8)
+    b = np.clip(dark[2] + (ac[2] - dark[2]) * t, 0, 255).astype(np.uint8)
+
+    img = Image.fromarray(np.stack([r, g, b], axis=-1))
+    draw = ImageDraw.Draw(img)
+
+    # Subtle decorative circles
+    for cx_f, cy_f, radius, opacity in [
+        (0.75, 0.3, 180, 15), (0.2, 0.7, 120, 12), (0.5, 0.5, 250, 8),
+    ]:
+        cx_i, cy_i = int(w * cx_f), int(h * cy_f)
+        draw.ellipse(
+            [(cx_i - radius, cy_i - radius), (cx_i + radius, cy_i + radius)],
+            outline=(*ac, opacity), width=2,
+        )
+
+    return img
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+#  Text drawing helpers
+# ═══════════════════════════════════════════════════════════════════════════
+def _draw_text_shadow(
+    draw, text: str, font, colour: tuple, x: int, y: int,
+    max_width: int, shadow_offset: int = 2, line_spacing: int = 10,
+) -> int:
+    """Draw word-wrapped text with a subtle drop shadow. Returns final Y."""
     words = text.split()
     lines, current = [], []
 
@@ -437,25 +490,53 @@ def _draw_wrapped_text(draw, text, font, color, x, y, max_width, line_spacing=12
         lines.append(" ".join(current))
 
     cy = y
-    for line in lines:
-        draw.text((x, cy), line, font=font, fill=color)
+    for line in lines[:6]:
+        draw.text((x + shadow_offset, cy + shadow_offset), line, font=font, fill=(0, 0, 0))
+        draw.text((x, cy), line, font=font, fill=colour)
         bbox = draw.textbbox((x, cy), line, font=font)
         cy += (bbox[3] - bbox[1]) + line_spacing
-        if cy > HEIGHT - 80:
+        if cy > HEIGHT - 50:
             break
+    return cy
 
 
-def _get_font(size: int):
-    """Load a system font with fallback."""
-    font_paths = [
+def _draw_badge(draw, text: str, font, colour: tuple, x: int, y: int):
+    """Draw a rounded accent-colour badge/pill."""
+    bbox = draw.textbbox((0, 0), text, font=font)
+    tw = bbox[2] - bbox[0]
+    th = bbox[3] - bbox[1]
+    pad_x, pad_y = 14, 7
+    draw.rounded_rectangle(
+        [(x, y), (x + tw + pad_x * 2, y + th + pad_y * 2)],
+        radius=6, fill=colour,
+    )
+    draw.text((x + pad_x, y + pad_y), text, font=font, fill=(15, 23, 42))
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+#  Font loader
+# ═══════════════════════════════════════════════════════════════════════════
+def _get_font(size: int, weight: str = "heavy"):
+    """Load Avenir Next at the specified weight, with cross-platform fallbacks."""
+    weight_map = {"regular": 0, "medium": 2, "demibold": 4, "bold": 6, "heavy": 8}
+    idx = weight_map.get(weight, 8)
+
+    for fp in [
+        "/System/Library/Fonts/Avenir Next.ttc",
+        "/System/Library/Fonts/Supplemental/Avenir Next.ttc",
+    ]:
+        try:
+            return ImageFont.truetype(fp, size, index=idx)
+        except (IOError, OSError):
+            continue
+
+    for fp in [
         "/System/Library/Fonts/Helvetica.ttc",
-        "/System/Library/Fonts/SFNSMono.ttf",
         "/System/Library/Fonts/Supplemental/Arial Bold.ttf",
         "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
         "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf",
         "C:/Windows/Fonts/arialbd.ttf",
-    ]
-    for fp in font_paths:
+    ]:
         try:
             return ImageFont.truetype(fp, size)
         except (IOError, OSError):

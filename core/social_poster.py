@@ -30,9 +30,10 @@ class TwitterPoster:
         config keys (from settings.yaml → social.twitter):
           api_key, api_secret, access_token, access_token_secret, bearer_token
         """
-        self.enabled = bool(config.get("api_key"))
+        required = ["api_key", "api_secret", "access_token", "access_token_secret"]
+        self.enabled = all(config.get(k, "").strip() for k in required)
         if not self.enabled:
-            logger.info("Twitter poster disabled — no API key configured")
+            logger.info("Twitter poster disabled — missing credentials (need api_key, api_secret, access_token, access_token_secret)")
             return
 
         try:
@@ -162,12 +163,12 @@ class InstagramPoster:
         config keys (from settings.yaml → social.instagram):
           access_token, ig_user_id
         """
-        self.access_token = config.get("access_token", "")
-        self.ig_user_id = config.get("ig_user_id", "")
+        self.access_token = (config.get("access_token") or "").strip()
+        self.ig_user_id = (config.get("ig_user_id") or "").strip()
         self.enabled = bool(self.access_token and self.ig_user_id)
 
         if not self.enabled:
-            logger.info("Instagram poster disabled — no credentials configured")
+            logger.info("Instagram poster disabled — no credentials configured (need access_token + ig_user_id)")
         else:
             logger.info("Instagram poster initialised ✓")
 
@@ -255,6 +256,11 @@ class TikTokPoster:
       • TikTok Developer account with approved app
       • OAuth access token with video.publish scope
       • Video must be hosted at a public URL
+
+    Token lifecycle:
+      • access_token expires every 24 hours
+      • refresh_token is valid for 365 days
+      • Call refresh_access_token() daily via the scheduler
     """
 
     API_URL = "https://open.tiktokapis.com/v2"
@@ -262,15 +268,61 @@ class TikTokPoster:
     def __init__(self, config: dict):
         """
         config keys (from settings.yaml → social.tiktok):
-          access_token
+          client_key, client_secret, access_token, refresh_token
         """
-        self.access_token = config.get("access_token", "")
+        self.access_token = (config.get("access_token") or "").strip()
+        self.refresh_token = (config.get("refresh_token") or "").strip()
+        self.client_key = (config.get("client_key") or "").strip()
+        self.client_secret = (config.get("client_secret") or "").strip()
         self.enabled = bool(self.access_token)
 
         if not self.enabled:
             logger.info("TikTok poster disabled — no access token configured")
         else:
             logger.info("TikTok poster initialised ✓")
+
+    def refresh_access_token(self) -> bool:
+        """
+        Use the refresh_token to get a new access_token.
+        Call this daily (access tokens expire every 24 hours).
+
+        Returns True on success. Updates self.access_token in-place.
+        """
+        if not self.refresh_token or not self.client_key:
+            logger.warning("TikTok: cannot refresh — missing refresh_token or client_key")
+            return False
+
+        try:
+            import httpx
+
+            resp = httpx.post(
+                f"{self.API_URL}/oauth/token/",
+                data={
+                    "client_key": self.client_key,
+                    "client_secret": self.client_secret,
+                    "grant_type": "refresh_token",
+                    "refresh_token": self.refresh_token,
+                },
+                timeout=30,
+            )
+            resp.raise_for_status()
+            data = resp.json()
+            new_token = data.get("access_token", "")
+            new_refresh = data.get("refresh_token", "")
+
+            if new_token:
+                self.access_token = new_token
+                if new_refresh:
+                    self.refresh_token = new_refresh
+                logger.info("TikTok access token refreshed successfully")
+                return True
+            else:
+                logger.error("TikTok token refresh returned no access_token: %s", data)
+                return False
+
+        except Exception as exc:
+            logger.error("TikTok token refresh failed: %s", exc)
+            return False
 
     def post_video(self, video_url: str, caption: str) -> str | None:
         """
