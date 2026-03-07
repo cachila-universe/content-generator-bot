@@ -133,6 +133,20 @@ if link_count is not None:
     print(f"     Links injected: {link_count}")
 
 
+# ── Step 3b: Internal Linking ─────────────────────────────────────────────
+from core import internal_linker
+
+def add_internal_links():
+    all_posts = analytics_tracker.get_all_posts(db_path)
+    slug = article.get("slug", "")
+    article["html_content"] = internal_linker.inject_internal_links(
+        article["html_content"], slug, all_posts, site_url
+    )
+    return True
+
+run_step("Adding internal links", add_internal_links)
+
+
 # ── Step 4: SEO Optimizer ─────────────────────────────────────────────────
 from core import seo_optimizer
 output_dir = PROJECT_ROOT / "site" / "output"

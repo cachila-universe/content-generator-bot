@@ -112,6 +112,8 @@ def publish(article: dict, niche_id: str, niche_name: str, settings: dict, db_pa
     # Rebuild homepage and niche index pages
     _rebuild_index(env, settings, db_path, site_url)
     _rebuild_niche_indexes(env, settings, db_path, site_url)
+    _rebuild_best_of_pages(env, settings, db_path, site_url)
+    _rebuild_legal_pages(env, settings, site_url)
 
     return url_path
 
@@ -170,3 +172,54 @@ def _rebuild_niche_indexes(env: Environment, settings: dict, db_path: Path, site
 
     except Exception as exc:
         logger.warning("Could not rebuild niche indexes: %s", exc)
+
+
+def _rebuild_best_of_pages(env: Environment, settings: dict, db_path: Path, site_url: str) -> None:
+    """Rebuild per-niche 'Best Of' roundup pages."""
+    try:
+        niches = _load_niches()
+        all_posts = analytics_tracker.get_all_posts(db_path)
+        template = env.get_template("best_of.html")
+        site_title = settings.get("site", {}).get("title", "TechLife Insights")
+        tagline = settings.get("site", {}).get("tagline", "Smart Guides for Modern Living")
+
+        for niche_id, niche_cfg in niches.items():
+            if not niche_cfg.get("enabled", False):
+                continue
+            niche_posts = [p for p in all_posts if p.get("niche_id") == niche_id]
+            if not niche_posts:
+                continue
+            niche_output_dir = _OUTPUT_DIR / niche_id
+            niche_output_dir.mkdir(parents=True, exist_ok=True)
+            rendered = template.render(
+                niche_id=niche_id, niche_name=niche_cfg.get("name", niche_id),
+                posts=niche_posts, niches=niches, settings=settings,
+                site_url=site_url, site_title=site_title, tagline=tagline,
+            )
+            (niche_output_dir / "best-of.html").write_text(rendered, encoding="utf-8")
+    except Exception as exc:
+        logger.warning("Could not rebuild best-of pages: %s", exc)
+
+
+def _rebuild_legal_pages(env: Environment, settings: dict, site_url: str) -> None:
+    """Rebuild static legal pages (privacy, about, contact)."""
+    try:
+        niches = _load_niches()
+        site_title = settings.get("site", {}).get("title", "TechLife Insights")
+        tagline = settings.get("site", {}).get("tagline", "Smart Guides for Modern Living")
+        current_date = datetime.now(timezone.utc).strftime("%B %d, %Y")
+
+        for page in ["privacy.html", "about.html", "contact.html"]:
+            try:
+                template = env.get_template(page)
+                rendered = template.render(
+                    niches=niches, settings=settings, site_url=site_url,
+                    site_title=site_title, tagline=tagline,
+                    current_date=current_date,
+                )
+                _OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+                (_OUTPUT_DIR / page).write_text(rendered, encoding="utf-8")
+            except Exception:
+                pass  # Template may not exist yet
+    except Exception as exc:
+        logger.warning("Could not rebuild legal pages: %s", exc)

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Privacy Policy — {{ site_title }}</title>
+  <meta name="description" content="Privacy Policy for {{ site_title }}. Learn how we handle your data.">
+  <link rel="canonical" href="{{ site_url }}/privacy.html">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #ffffff; --surface: #f9fafb; --text: #111827; --text-secondary: #6b7280;
+      --accent: #2563eb; --accent-hover: #1d4ed8; --accent-light: #eff6ff;
+      --border: #e5e7eb; --radius: 8px; --max-width: 800px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'Inter', -apple-system, sans-serif; font-size: 16px; line-height: 1.7; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { color: var(--accent-hover); text-decoration: underline; }
+
+    .header { position: sticky; top: 0; z-index: 50; background: rgba(255,255,255,0.97); border-bottom: 1px solid var(--border); backdrop-filter: blur(8px); }
+    .header-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; padding: 14px 24px; }
+    .logo { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 18px; color: var(--text); text-decoration: none; }
+    .logo-icon { width: 28px; height: 28px; border-radius: 6px; background: var(--accent); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800; }
+    .nav-links { display: flex; gap: 4px; flex-wrap: wrap; }
+    .nav-link { padding: 6px 12px; border-radius: 6px; font-size: 14px; font-weight: 500; color: var(--text-secondary); transition: all 0.15s; }
+    .nav-link:hover { color: var(--text); background: var(--surface); text-decoration: none; }
+
+    .container { max-width: var(--max-width); margin: 0 auto; padding: 0 24px; }
+    .page-header { padding: 48px 0 32px; border-bottom: 1px solid var(--border); margin-bottom: 40px; }
+    .page-header h1 { font-size: 32px; font-weight: 800; margin-bottom: 8px; }
+    .page-header p { color: var(--text-secondary); font-size: 15px; }
+
+    .content h2 { font-size: 22px; font-weight: 700; margin: 36px 0 12px; padding-bottom: 8px; border-bottom: 2px solid var(--border); }
+    .content h3 { font-size: 18px; font-weight: 600; margin: 24px 0 8px; }
+    .content p { margin-bottom: 16px; color: var(--text); }
+    .content ul { margin: 0 0 16px 24px; }
+    .content li { margin-bottom: 6px; }
+
+    .footer { background: var(--surface); border-top: 1px solid var(--border); padding: 24px; margin-top: 64px; text-align: center; font-size: 13px; color: var(--text-secondary); }
+    .footer a { color: var(--text-secondary); margin: 0 8px; }
+    .footer a:hover { color: var(--accent); }
+
+    @media (max-width: 640px) {
+      .page-header h1 { font-size: 24px; }
+      .nav-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <div class="header-inner">
+      <a href="/" class="logo">
+        <div class="logo-icon">T</div>
+        <span>{{ site_title }}</span>
+      </a>
+      <nav class="nav-links">
+        <a href="/" class="nav-link">Home</a>
+        {% for nid, niche in niches.items() %}
+          {% if niche.enabled %}
+          <a href="/{{ nid }}/" class="nav-link">{{ niche.name }}</a>
+          {% endif %}
+        {% endfor %}
+      </nav>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="page-header">
+      <h1>Privacy Policy</h1>
+      <p>Last updated: {{ current_date }}</p>
+    </div>
+
+    <div class="content">
+      <h2>Introduction</h2>
+      <p>{{ site_title }} ("we," "our," or "us") respects your privacy. This Privacy Policy explains how we collect, use, and protect information when you visit our website at <a href="{{ site_url }}">{{ site_url }}</a>.</p>
+
+      <h2>Information We Collect</h2>
+      <h3>Automatically Collected Information</h3>
+      <p>When you visit our site, we may automatically collect:</p>
+      <ul>
+        <li>IP address and approximate location</li>
+        <li>Browser type and operating system</li>
+        <li>Pages visited and time spent on each page</li>
+        <li>Referring website or search terms</li>
+      </ul>
+
+      <h3>Cookies and Tracking Technologies</h3>
+      <p>We use cookies and similar technologies to:</p>
+      <ul>
+        <li>Analyze website traffic (via Google Analytics)</li>
+        <li>Display relevant advertisements (via Google AdSense)</li>
+        <li>Remember user preferences</li>
+      </ul>
+      <p>You can control cookies through your browser settings. Disabling cookies may limit some website functionality.</p>
+
+      <h2>How We Use Information</h2>
+      <p>We use collected information to:</p>
+      <ul>
+        <li>Improve our content and website experience</li>
+        <li>Analyze traffic patterns and user behavior</li>
+        <li>Display personalized advertisements</li>
+        <li>Prevent fraud and ensure security</li>
+      </ul>
+
+      <h2>Third-Party Services</h2>
+      <p>We may use the following third-party services that collect data independently:</p>
+      <ul>
+        <li><strong>Google Analytics</strong> — Website traffic analysis. <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google Privacy Policy</a></li>
+        <li><strong>Google AdSense</strong> — Display advertising. <a href="https://policies.google.com/technologies/ads" target="_blank" rel="noopener">Google Ads Policy</a></li>
+        <li><strong>Amazon Associates</strong> — Affiliate links. <a href="https://www.amazon.com/gp/help/customer/display.html?nodeId=468496" target="_blank" rel="noopener">Amazon Privacy Notice</a></li>
+      </ul>
+
+      <h2>Affiliate Links Disclosure</h2>
+      <p>Some articles contain affiliate links. When you click these links and make a purchase, we may earn a commission at no additional cost to you. This helps support the creation of free content on this website.</p>
+      <p>We only recommend products and services we believe provide value. Our editorial content is not influenced by affiliate partnerships.</p>
+
+      <h2>Data Retention</h2>
+      <p>We retain automatically collected data for up to 26 months via Google Analytics. We do not store personally identifiable information beyond what is necessary for website operations.</p>
+
+      <h2>Your Rights</h2>
+      <p>Depending on your location, you may have the right to:</p>
+      <ul>
+        <li>Access, correct, or delete your personal data</li>
+        <li>Opt out of data collection (via browser settings or opt-out tools)</li>
+        <li>Request information about how your data is used</li>
+      </ul>
+      <p>For EU/EEA residents: You have rights under the General Data Protection Regulation (GDPR). For California residents: You have rights under the California Consumer Privacy Act (CCPA).</p>
+
+      <h2>Children's Privacy</h2>
+      <p>Our website is not directed at children under 13. We do not knowingly collect personal information from children.</p>
+
+      <h2>Changes to This Policy</h2>
+      <p>We may update this Privacy Policy periodically. Changes will be posted on this page with an updated "Last updated" date.</p>
+
+      <h2>Contact Us</h2>
+      <p>If you have questions about this Privacy Policy, please visit our <a href="/contact.html">Contact page</a>.</p>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div>
+      <a href="/">Home</a> · <a href="/privacy.html">Privacy</a> · <a href="/about.html">About</a> · <a href="/contact.html">Contact</a>
+    </div>
+    <p style="margin-top: 8px;">&copy; 2026 {{ site_title }}. All rights reserved.</p>
+  </footer>
+
+</body>
+</html>

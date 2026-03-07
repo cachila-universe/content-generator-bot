@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact — {{ site_title }}</title>
+  <meta name="description" content="Get in touch with {{ site_title }}. Questions, feedback, or partnership inquiries — we'd love to hear from you.">
+  <link rel="canonical" href="{{ site_url }}/contact.html">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #ffffff; --surface: #f9fafb; --text: #111827; --text-secondary: #6b7280;
+      --accent: #2563eb; --accent-hover: #1d4ed8; --accent-light: #eff6ff;
+      --border: #e5e7eb; --radius: 8px; --max-width: 800px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'Inter', -apple-system, sans-serif; font-size: 16px; line-height: 1.7; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { color: var(--accent-hover); text-decoration: underline; }
+
+    .header { position: sticky; top: 0; z-index: 50; background: rgba(255,255,255,0.97); border-bottom: 1px solid var(--border); backdrop-filter: blur(8px); }
+    .header-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; padding: 14px 24px; }
+    .logo { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 18px; color: var(--text); text-decoration: none; }
+    .logo-icon { width: 28px; height: 28px; border-radius: 6px; background: var(--accent); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800; }
+    .nav-links { display: flex; gap: 4px; flex-wrap: wrap; }
+    .nav-link { padding: 6px 12px; border-radius: 6px; font-size: 14px; font-weight: 500; color: var(--text-secondary); transition: all 0.15s; }
+    .nav-link:hover { color: var(--text); background: var(--surface); text-decoration: none; }
+
+    .container { max-width: var(--max-width); margin: 0 auto; padding: 0 24px; }
+    .page-header { padding: 48px 0 32px; border-bottom: 1px solid var(--border); margin-bottom: 40px; }
+    .page-header h1 { font-size: 32px; font-weight: 800; margin-bottom: 8px; }
+    .page-header p { color: var(--text-secondary); font-size: 17px; }
+
+    .content h2 { font-size: 22px; font-weight: 700; margin: 36px 0 12px; padding-bottom: 8px; border-bottom: 2px solid var(--border); }
+    .content p { margin-bottom: 16px; }
+
+    .contact-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; margin: 24px 0; }
+    .contact-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; text-align: center; }
+    .contact-card .icon { font-size: 32px; margin-bottom: 12px; }
+    .contact-card h3 { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+    .contact-card p { font-size: 14px; color: var(--text-secondary); margin: 0; }
+    .contact-card a { font-weight: 600; }
+
+    .form-group { margin-bottom: 20px; }
+    .form-label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+    .form-input, .form-textarea {
+      width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: var(--radius);
+      font-family: inherit; font-size: 15px; color: var(--text); background: var(--bg);
+      transition: border-color 0.2s; outline: none;
+    }
+    .form-input:focus, .form-textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
+    .form-textarea { min-height: 140px; resize: vertical; }
+    .form-hint { font-size: 12px; color: var(--text-secondary); margin-top: 4px; }
+    .btn-submit {
+      display: inline-block; padding: 12px 32px; background: var(--accent); color: #fff;
+      border: none; border-radius: var(--radius); font-size: 15px; font-weight: 600;
+      cursor: pointer; transition: background 0.2s; font-family: inherit;
+    }
+    .btn-submit:hover { background: var(--accent-hover); }
+
+    .faq-item { margin-bottom: 20px; }
+    .faq-item h3 { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+    .faq-item p { font-size: 15px; color: var(--text-secondary); margin: 0; }
+
+    .footer { background: var(--surface); border-top: 1px solid var(--border); padding: 24px; margin-top: 64px; text-align: center; font-size: 13px; color: var(--text-secondary); }
+    .footer a { color: var(--text-secondary); margin: 0 8px; }
+    .footer a:hover { color: var(--accent); }
+
+    @media (max-width: 640px) {
+      .page-header h1 { font-size: 24px; }
+      .nav-links { display: none; }
+      .contact-cards { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <div class="header-inner">
+      <a href="/" class="logo">
+        <div class="logo-icon">T</div>
+        <span>{{ site_title }}</span>
+      </a>
+      <nav class="nav-links">
+        <a href="/" class="nav-link">Home</a>
+        {% for nid, niche in niches.items() %}
+          {% if niche.enabled %}
+          <a href="/{{ nid }}/" class="nav-link">{{ niche.name }}</a>
+          {% endif %}
+        {% endfor %}
+      </nav>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="page-header">
+      <h1>Contact Us</h1>
+      <p>Have a question, suggestion, or want to collaborate? We'd love to hear from you.</p>
+    </div>
+
+    <div class="content">
+      <div class="contact-cards">
+        <div class="contact-card">
+          <div class="icon">✉️</div>
+          <h3>General Inquiries</h3>
+          <p>Questions about our content or website</p>
+          <p style="margin-top: 8px;"><a href="mailto:hello@tech-life-insights.com">hello@tech-life-insights.com</a></p>
+        </div>
+        <div class="contact-card">
+          <div class="icon">🤝</div>
+          <h3>Partnerships</h3>
+          <p>Brand collaborations and sponsorships</p>
+          <p style="margin-top: 8px;"><a href="mailto:partners@tech-life-insights.com">partners@tech-life-insights.com</a></p>
+        </div>
+        <div class="contact-card">
+          <div class="icon">📝</div>
+          <h3>Editorial</h3>
+          <p>Content corrections or suggestions</p>
+          <p style="margin-top: 8px;"><a href="mailto:editorial@tech-life-insights.com">editorial@tech-life-insights.com</a></p>
+        </div>
+      </div>
+
+      <h2>Send a Message</h2>
+      <p>Fill out the form below and we'll get back to you within 1–2 business days.</p>
+
+      <form action="https://formspree.io/f/YOUR_FORM_ID" method="POST" style="margin-top: 20px;">
+        <div class="form-group">
+          <label class="form-label" for="name">Name</label>
+          <input type="text" id="name" name="name" class="form-input" placeholder="Your name" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="email">Email</label>
+          <input type="email" id="email" name="email" class="form-input" placeholder="your@email.com" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="subject">Subject</label>
+          <input type="text" id="subject" name="subject" class="form-input" placeholder="What's this about?">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="message">Message</label>
+          <textarea id="message" name="message" class="form-textarea" placeholder="Your message..." required></textarea>
+        </div>
+        <p class="form-hint" style="margin-bottom: 16px;">💡 Tip: For the contact form to work, sign up at <a href="https://formspree.io" target="_blank" rel="noopener">Formspree.io</a> (free tier available) and replace YOUR_FORM_ID in the template.</p>
+        <button type="submit" class="btn-submit">Send Message →</button>
+      </form>
+
+      <h2>Frequently Asked Questions</h2>
+      <div class="faq-item">
+        <h3>How do you choose which products to recommend?</h3>
+        <p>We research extensively, compare features and pricing, read user reviews, and test products when possible. We only recommend tools and services we believe offer genuine value.</p>
+      </div>
+      <div class="faq-item">
+        <h3>Do affiliate links affect your recommendations?</h3>
+        <p>No. Our editorial integrity comes first. We sometimes recommend products that don't have affiliate programs, and we clearly disclose all affiliate relationships.</p>
+      </div>
+      <div class="faq-item">
+        <h3>Can I contribute an article or guest post?</h3>
+        <p>We occasionally accept guest contributions from qualified writers. Please reach out via the editorial email above with your topic idea and writing samples.</p>
+      </div>
+      <div class="faq-item">
+        <h3>How often do you publish new content?</h3>
+        <p>We publish new articles daily across our various topic categories. Subscribe to stay updated with our latest guides.</p>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div>
+      <a href="/">Home</a> · <a href="/privacy.html">Privacy</a> · <a href="/about.html">About</a> · <a href="/contact.html">Contact</a>
+    </div>
+    <p style="margin-top: 8px;">&copy; 2026 {{ site_title }}. All rights reserved.</p>
+  </footer>
+
+</body>
+</html>
