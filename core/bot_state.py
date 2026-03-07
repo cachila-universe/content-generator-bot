@@ -178,16 +178,20 @@ def update_schedule_settings(settings: dict) -> dict:
     return state
 
 
-def add_manual_trigger(niche_id: str, platforms: list | None = None) -> dict:
-    """Queue a manual content generation run."""
+def add_manual_trigger(niche_id: str, platforms: list | None = None, subtopic_id: str = "") -> dict:
+    """Queue a manual content generation run, optionally targeting a specific subtopic."""
     state = load_state()
-    state.setdefault("manual_trigger_queue", []).append({
+    trigger = {
         "niche_id": niche_id,
         "platforms": platforms or ["blog"],
         "requested_at": _now_iso(),
-    })
+    }
+    if subtopic_id:
+        trigger["subtopic_id"] = subtopic_id
+    state.setdefault("manual_trigger_queue", []).append(trigger)
     save_state(state)
-    logger.info("Manual trigger queued for niche: %s", niche_id)
+    logger.info("Manual trigger queued for niche: %s%s", niche_id,
+                f" → subtopic: {subtopic_id}" if subtopic_id else "")
     return state
 
 
@@ -214,6 +218,33 @@ def record_post_run(niche_id: str) -> None:
         state["posts_today_date"] = today
     state["posts_today"] = state.get("posts_today", 0) + 1
     save_state(state)
+
+
+def get_todays_niches(all_niche_ids: list[str], max_per_day: int = 3) -> list[str]:
+    """
+    Return which niches should post today using round-robin rotation.
+    Picks niches that have gone longest without posting, up to max_per_day.
+    This ensures fair coverage across all niches over time.
+    """
+    state = load_state()
+    last_runs = state.get("last_runs", {})
+
+    # Filter to enabled niches only
+    enabled = [n for n in all_niche_ids if state.get("niches", {}).get(n, {}).get("enabled", True)]
+    if not enabled:
+        return []
+
+    # Sort by last run time (oldest first, never-posted first)
+    def sort_key(niche_id):
+        ts = last_runs.get(niche_id, "2000-01-01T00:00:00")
+        return ts
+
+    enabled.sort(key=sort_key)
+
+    # Take the top N that haven't posted recently
+    selected = enabled[:max_per_day]
+    logger.info("Today's niche rotation: %s (of %d enabled)", selected, len(enabled))
+    return selected
 
 
 def can_post_now(niche_id: str, ignore_mode: bool = False) -> tuple[bool, str]:

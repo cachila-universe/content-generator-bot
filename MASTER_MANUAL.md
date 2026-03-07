@@ -91,7 +91,63 @@ This generates one test article across all niches to verify everything works.
 
 ---
 
-## �📋 Table of Contents
+## 📅 Content Creation Schedule — What Gets Created & When
+
+> **Quick reference for how the bot creates and distributes content daily.**
+
+### Daily Content Pipeline
+
+| Step | What | When | Details |
+|------|------|------|---------|
+| 1 | **Niche Rotation** | Start of day | Bot picks **3 niches** (configurable) using round-robin — whichever niches have gone longest without posting get priority |
+| 2 | **Subtopic Selection** | Per niche | For each selected niche, the bot picks the **least-covered subtopic** (the one with fewest existing articles) to ensure balanced coverage across all subtopics |
+| 3 | **Topic Research** | Before writing | Trend intelligence → Google Trends → seed keywords. Filters out duplicate/similar topics already published |
+| 4 | **Article Generation** | Per niche schedule | LLM writes 900–1,400 word SEO article with affiliate links, FAQ section, meta tags, and schema markup |
+| 5 | **Hero Image** | During article | AI-generated (Leonardo → Stability → HuggingFace) or Pexels stock photo with relevance checking |
+| 6 | **Inline Images** | During article | 2–5 topic-relevant images injected after H2 headings (AI → Pexels) |
+| 7 | **YouTube Short** | +2h after post | 9:16 vertical video (≤58s) with TTS narration, Ken Burns effects, accent palettes |
+| 8 | **Twitter Post** | With article | Auto-tweet with article link and key takeaways |
+| 9 | **Pinterest Pin** | +3h after post | Auto-generated pin linking back to article |
+| 10 | **Site Rebuild** | After publish | Static HTML rebuilt, pushed to GitHub → Cloudflare Pages auto-deploys |
+
+### Scheduling Rules
+
+- **Max posts/day**: 3 (configurable in Dashboard → Settings)
+- **Cooldown per niche**: 20 hours minimum between posts in the same niche
+- **Schedule jitter**: ±15 minutes random delay (anti-bot detection)
+- **8 niches × 3/day**: Each niche gets new content every ~3 days
+- **56 subtopics total**: Round-robin ensures even coverage across all subtopics
+
+### Niche Schedule Times (Default)
+
+| Niche | Post | Video | Pinterest |
+|-------|------|-------|-----------|
+| AI Tools & SaaS | 09:00 | 11:00 | 12:00 |
+| Personal Finance | 09:15 | 11:15 | 12:15 |
+| Health & Biohacking | 09:30 | 11:30 | 12:30 |
+| Home Tech | 09:45 | 11:45 | 12:45 |
+| Travel | 10:00 | 12:00 | 13:00 |
+| Pet Care | 10:15 | 12:15 | 13:15 |
+| Fitness & Wellness | 10:30 | 12:30 | 13:30 |
+| Remote Work | 10:45 | 12:45 | 13:45 |
+
+> ℹ️ Times are in America/New_York. Edit via Dashboard → Settings → Niche Content Schedule, or directly in `config/niches.yaml`.
+
+### Image Generation Cascade
+
+The bot tries multiple AI image providers before falling back to stock photos:
+
+1. **Leonardo AI** — 150 free tokens/day (best quality, ~30 images)
+2. **Stability AI** — 25 free credits/day (SD 3.5 Medium)
+3. **HuggingFace** — ~30 images/day (always-free fallback)
+4. **Pexels** — Stock photos with smart keyword extraction + relevance checking
+5. **No image** — Better than a wrong/misleading image
+
+Usage resets daily at midnight UTC. Configure API keys in `config/settings.yaml` under `stock_images`.
+
+---
+
+## 📋 Table of Contents
 
 1.  [What This System Does](#1-what-this-system-does)
 2.  [How It Makes Money](#2-how-it-makes-money)

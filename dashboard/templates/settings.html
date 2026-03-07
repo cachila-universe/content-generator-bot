@@ -115,5 +115,100 @@
       </div>
     </div>
   </div>
+
+  <!-- Niche Schedule Manager -->
+  <div class="card" style="grid-column: 1 / -1;">
+    <h3 class="card-title">📅 Niche Content Schedule</h3>
+    <p class="card-desc">Configure when each niche generates content. Times are in {{ settings.get('scheduler', {}).get('timezone', 'America/New_York') }}. With {{ niches|length }} niches and {{ bot_state.schedule.max_posts_per_day }}/day limit, each niche gets content every ~{{ (niches|length / bot_state.schedule.max_posts_per_day)|round(0, 'ceil')|int }} days via round-robin rotation.</p>
+    <div class="table-wrapper" style="margin-top:16px;">
+      <table class="data-table" id="scheduleTable">
+        <thead>
+          <tr>
+            <th>Niche</th>
+            <th>📝 Post Time</th>
+            <th>🎬 Video Time</th>
+            <th>📌 Pinterest Time</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for niche_id, niche in niches.items() %}
+          <tr id="sched-{{ niche_id }}">
+            <td><strong>{{ niche.name }}</strong></td>
+            <td>
+              <input type="time" class="form-input-sm"
+                     id="post-time-{{ niche_id }}"
+                     value="{{ '%02d:%02d'|format(niche.post_schedule_hour, niche.post_schedule_minute) }}"
+                     style="width:100px;">
+            </td>
+            <td>
+              <input type="time" class="form-input-sm"
+                     id="video-time-{{ niche_id }}"
+                     value="{{ '%02d:%02d'|format(niche.video_schedule_hour, niche.video_schedule_minute) }}"
+                     style="width:100px;">
+            </td>
+            <td>
+              <input type="time" class="form-input-sm"
+                     id="pin-time-{{ niche_id }}"
+                     value="{{ '%02d:%02d'|format(niche.pinterest_schedule_hour, niche.pinterest_schedule_minute) }}"
+                     style="width:100px;">
+            </td>
+            <td>
+              <button class="btn" style="font-size:12px; padding:4px 12px;"
+                      onclick="saveNicheSchedule('{{ niche_id }}')"
+                      id="save-sched-{{ niche_id }}">
+                💾 Save
+              </button>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <p class="card-desc" style="margin-top:12px; font-size:12px;">
+      ℹ️ ±{{ bot_state.schedule.randomize_minutes }} min jitter is added to all times automatically.
+      Rotation ensures only {{ bot_state.schedule.max_posts_per_day }} niches post per day.
+      Changes saved to <code>config/niches.yaml</code> — restart the bot to apply new schedule.
+    </p>
+  </div>
 </div>
+
+<script>
+function saveNicheSchedule(nicheId) {
+  var postTime = document.getElementById('post-time-' + nicheId).value.split(':');
+  var videoTime = document.getElementById('video-time-' + nicheId).value.split(':');
+  var pinTime = document.getElementById('pin-time-' + nicheId).value.split(':');
+
+  var payload = {
+    post_schedule_hour: parseInt(postTime[0]) || 0,
+    post_schedule_minute: parseInt(postTime[1]) || 0,
+    video_schedule_hour: parseInt(videoTime[0]) || 0,
+    video_schedule_minute: parseInt(videoTime[1]) || 0,
+    pinterest_schedule_hour: parseInt(pinTime[0]) || 0,
+    pinterest_schedule_minute: parseInt(pinTime[1]) || 0,
+  };
+
+  var btn = document.getElementById('save-sched-' + nicheId);
+  if (btn) btn.textContent = '⏳ Saving...';
+
+  fetch('/api/schedule/niche/' + nicheId + '/update', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(payload),
+  })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (btn) {
+        btn.textContent = data.ok ? '✅ Saved!' : '❌ Failed';
+        setTimeout(function() { btn.textContent = '💾 Save'; }, 2000);
+      }
+    })
+    .catch(function() {
+      if (btn) {
+        btn.textContent = '❌ Error';
+        setTimeout(function() { btn.textContent = '💾 Save'; }, 2000);
+      }
+    });
+}
+</script>
 {% endblock %}

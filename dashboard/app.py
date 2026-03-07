@@ -48,6 +48,54 @@ def _load_settings() -> dict:
         return {}
 
 
+def _get_active_affiliates() -> dict:
+    """
+    Determine which affiliate programs are active based on settings.yaml.
+    An affiliate is 'active' if its ID/tag in settings.yaml is non-empty.
+    Returns dict mapping affiliate keyword patterns to active status.
+    """
+    settings = _load_settings()
+    affiliates_cfg = settings.get("affiliates", {})
+
+    # Map affiliate config keys to recognizable name patterns
+    _KEY_TO_PATTERNS = {
+        "amazon_tag": ["amazon"],
+        "bestbuy_pid": ["best buy", "bestbuy"],
+        "walmart_impact_id": ["walmart"],
+        "ebay_campid": ["ebay"],
+        "target_affiliate_id": ["target"],
+        "newegg_affiliate_id": ["newegg"],
+        "skyscanner_associate": ["skyscanner"],
+        "booking_aid": ["booking"],
+        "kayak_affiliate_id": ["kayak"],
+        "hostelworld_affiliate_id": ["hostelworld"],
+        "rentalcars_affiliate_id": ["rentalcars", "rental cars"],
+        "discovercars_affiliate_id": ["discover cars", "discovercars"],
+        "safetywing_ref": ["safetywing", "safety wing"],
+        "grammarly_affiliate_id": ["grammarly"],
+        "semrush_ref": ["semrush"],
+        "jasper_fpr": ["jasper"],
+        "surferseo_ref": ["surfer", "surferseo"],
+        "canva_affiliate_id": ["canva"],
+        "writesonic_ref": ["writesonic"],
+        "descript_ref": ["descript"],
+        "chewy_affiliate_id": ["chewy"],
+        "petco_affiliate_id": ["petco"],
+        "sofi_ref": ["sofi"],
+        "wealthfront_ref": ["wealthfront"],
+        "betterment_ref": ["betterment"],
+    }
+
+    active = {}
+    for key, patterns in _KEY_TO_PATTERNS.items():
+        value = str(affiliates_cfg.get(key, "")).strip()
+        is_active = bool(value) and value.lower() not in ("your_id", "your-id", "")
+        for pattern in patterns:
+            active[pattern] = is_active
+
+    return active
+
+
 # ── Page routes ──────────────────────────────────────────────────────────────
 
 
@@ -75,7 +123,9 @@ def posts():
     db = _get_db()
     all_posts = analytics_tracker.get_all_posts(db)
     settings = _load_settings()
-    return render_template("posts.html", posts=all_posts, settings=settings)
+    active_affiliates = _get_active_affiliates()
+    return render_template("posts.html", posts=all_posts, settings=settings,
+                           active_affiliates=active_affiliates)
 
 
 @app.route("/analytics")
@@ -106,12 +156,14 @@ def niches():
     niche_stats = {s["niche_id"]: s for s in analytics_tracker.get_niche_stats(db)}
     state = bot_state.get_full_state()
     settings = _load_settings()
+    active_affiliates = _get_active_affiliates()
     return render_template(
         "niches.html",
         niches=niches_config,
         niche_stats=niche_stats,
         bot_state=state,
         settings=settings,
+        active_affiliates=active_affiliates,
     )
 
 
@@ -120,7 +172,8 @@ def settings_page():
     from core import bot_state
     settings = _load_settings()
     state = bot_state.get_full_state()
-    return render_template("settings.html", settings=settings, bot_state=state)
+    niches = _load_niches()
+    return render_template("settings.html", settings=settings, bot_state=state, niches=niches)
 
 
 # ── Click tracking ───────────────────────────────────────────────────────────
@@ -203,6 +256,38 @@ def api_schedule_update():
     return jsonify({"ok": True, "schedule": state.get("schedule", {})})
 
 
+@app.route("/api/schedule/niche/<niche_id>/update", methods=["POST"])
+def api_niche_schedule_update(niche_id):
+    """Update schedule times for a specific niche in niches.yaml."""
+    data = request.get_json(force=True)
+    try:
+        with open(_NICHES_CONFIG_PATH) as f:
+            config = yaml.safe_load(f)
+
+        niches = config.get("niches", {})
+        if niche_id not in niches:
+            return jsonify({"ok": False, "error": f"Unknown niche: {niche_id}"}), 400
+
+        niche = niches[niche_id]
+
+        # Update schedule fields if provided
+        for field in ("post_schedule_hour", "post_schedule_minute",
+                      "video_schedule_hour", "video_schedule_minute",
+                      "pinterest_schedule_hour", "pinterest_schedule_minute"):
+            if field in data:
+                niche[field] = int(data[field])
+
+        with open(_NICHES_CONFIG_PATH, "w") as f:
+            yaml.dump(config, f, default_flow_style=False, sort_keys=False, allow_unicode=True)
+
+        logger.info("Updated schedule for niche: %s", niche_id)
+        return jsonify({"ok": True, "niche_id": niche_id})
+
+    except Exception as exc:
+        logger.error("Failed to update niche schedule: %s", exc)
+        return jsonify({"ok": False, "error": str(exc)}), 500
+
+
 @app.route("/api/trigger", methods=["POST"])
 def api_manual_trigger():
     """Queue a manual content generation run. Requires confirmation token."""
@@ -214,6 +299,7 @@ def api_manual_trigger():
 
     niche_id = data.get("niche_id", "")
     platforms = data.get("platforms", ["blog"])
+    subtopic_id = data.get("subtopic_id", "")
 
     if not niche_id:
         return jsonify({"ok": False, "error": "niche_id required"}), 400
@@ -222,10 +308,17 @@ def api_manual_trigger():
     if niche_id not in niches:
         return jsonify({"ok": False, "error": f"Unknown niche: {niche_id}"}), 400
 
-    state = bot_state.add_manual_trigger(niche_id, platforms)
+    # Validate subtopic if provided
+    if subtopic_id:
+        niche_subtopics = niches[niche_id].get("subtopics", {})
+        if subtopic_id not in niche_subtopics:
+            return jsonify({"ok": False, "error": f"Unknown subtopic: {subtopic_id}"}), 400
+
+    state = bot_state.add_manual_trigger(niche_id, platforms, subtopic_id=subtopic_id)
+    subtopic_msg = f" → {subtopic_id}" if subtopic_id else " → auto-select"
     return jsonify({
         "ok": True,
-        "message": f"Manual trigger queued for {niche_id}",
+        "message": f"Manual trigger queued for {niche_id}{subtopic_msg}",
         "queue_length": len(state.get("manual_trigger_queue", [])),
     })
 

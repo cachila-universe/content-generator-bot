@@ -70,10 +70,52 @@ def fetch_image(
     use_ai_images: bool = True,
 ) -> "Image.Image | None":
     """
-    Fetch a relevant image for video slides via Pexels API.
+    Fetch a relevant image for video slides.
+
+    Priority:
+      1. AI-generated stock images (if use_ai_images=True and keys configured)
+      2. Pre-generated AI stock images from cache
+      3. Pexels API (free tier)
 
     Returns a PIL Image or None if the fetch fails.
     """
+    # ── 1. Try pre-generated AI stock images ─────────────────────
+    if use_ai_images and niche_id:
+        try:
+            from core.stock_generator import get_usable_images_for_niche
+            ai_images = get_usable_images_for_niche(niche_id, limit=10)
+            if ai_images and photo_index < len(ai_images):
+                img_path = Path(ai_images[photo_index]["filepath"])
+                if img_path.exists():
+                    img = Image.open(img_path)
+                    logger.info("Using AI stock image for video: %s", img_path.name)
+                    return _resize_cover(img, target_w, target_h)
+        except Exception as exc:
+            logger.debug("AI stock image lookup failed: %s", exc)
+
+    # ── 2. Try on-the-fly AI generation (if settings allow) ─────
+    if use_ai_images and niche_id:
+        try:
+            import yaml
+            settings_path = Path(__file__).parent.parent / "config" / "settings.yaml"
+            with open(settings_path) as f:
+                settings = yaml.safe_load(f) or {}
+            stock_cfg = settings.get("stock_images", {})
+            if stock_cfg.get("use_in_videos", False) and stock_cfg.get("enabled", False):
+                from core.stock_generator import _generate_image_cascading, _build_prompt
+                prompt = _build_prompt(query, niche_id)
+                image_bytes, model, provider = _generate_image_cascading(
+                    prompt["positive"], prompt["negative"], settings, target_w, target_h,
+                )
+                if image_bytes:
+                    import io
+                    img = Image.open(io.BytesIO(image_bytes))
+                    logger.info("AI-generated video image via %s/%s", provider, model)
+                    return _resize_cover(img, target_w, target_h)
+        except Exception as exc:
+            logger.debug("AI on-the-fly generation for video failed: %s", exc)
+
+    # ── 3. Fall back to Pexels ───────────────────────────────────
     return _fetch_from_pexels(query, api_key, orientation, target_w, target_h, photo_index)
 
 

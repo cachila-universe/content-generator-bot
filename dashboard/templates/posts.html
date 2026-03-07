@@ -24,7 +24,7 @@
           <th>Published</th>
           <th>Words</th>
           <th>Affiliate Links</th>
-          <th>Est. Clicks</th>
+          <th>Active Affiliates</th>
           <th>Est. Income</th>
           <th>Actions</th>
         </tr>
@@ -38,7 +38,16 @@
           <td class="text-muted">{{ post.published_at[:10] if post.published_at else '—' }}</td>
           <td>{{ post.word_count }}</td>
           <td>{{ post.affiliate_links_count }}</td>
-          <td>{{ post.estimated_clicks }}</td>
+          <td>
+            {% set active_count = active_affiliates.values()|select|list|length %}
+            {% if post.affiliate_links_count > 0 and active_count > 0 %}
+              <span style="color:var(--accent-green);">{{ active_count }} active</span>
+            {% elif post.affiliate_links_count > 0 %}
+              <span style="color:var(--warning-yellow);">0 active</span>
+            {% else %}
+              <span class="text-muted">—</span>
+            {% endif %}
+          </td>
           <td class="income-cell">${{ "%.2f"|format(post.estimated_income) }}</td>
           <td style="white-space:nowrap;">
             {% if post.url %}

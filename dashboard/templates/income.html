@@ -8,9 +8,9 @@
   <div style="font-size:48px; font-weight:800; color:#059669;">
     ${{ "%.2f"|format(summary.total_income) }}
   </div>
-  <div style="color:#71717a; font-size:14px; margin-top:4px;">Total All-Time Income</div>
+  <div style="color:var(--text-muted); font-size:14px; margin-top:4px;">Total All-Time Income</div>
   {% if summary.total_income == 0 %}
-  <p style="margin-top:12px; color:#92400e; font-size:13px;">
+  <p style="margin-top:12px; color:var(--warning-yellow); font-size:13px;">
     No income recorded yet. Use the form below to add your first earnings.
   </p>
   {% endif %}
@@ -23,7 +23,7 @@
     <div class="metric-icon">{{ src.icon }}</div>
     <div class="metric-value">${{ "%.2f"|format(src.total) }}</div>
     <div class="metric-label">{{ src.name }}</div>
-    <div style="font-size:11px; color:#71717a; margin-top:4px;">{{ src.entries }} entries</div>
+    <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">{{ src.entries }} entries</div>
   </div>
   {% endfor %}
 </div>
@@ -31,7 +31,7 @@
 <!-- Add income form -->
 <div class="card" style="margin-bottom:24px;">
   <h3 class="card-title">➕ Add Income Entry</h3>
-  <p style="color:#71717a; font-size:13px; margin-bottom:16px;">
+  <p style="color:var(--text-muted); font-size:13px; margin-bottom:16px;">
     Record real income from your revenue sources. Stock photo earnings are auto-synced.
   </p>
   <form id="incomeForm" style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; max-width:600px;">
@@ -114,11 +114,11 @@
   <h3 class="card-title">📖 How to Track Each Revenue Source</h3>
   <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap:16px; margin-top:12px;">
     {% for src_id, src in summary.revenue_sources.items() %}
-    <div style="border:1px solid #e4e4e7; border-radius:8px; padding:16px;">
+    <div style="border:1px solid var(--border); border-radius:8px; padding:16px; background:var(--card-bg);">
       <div style="font-size:24px; margin-bottom:8px;">{{ src.icon }}</div>
-      <div style="font-weight:700; font-size:14px;">{{ src.name }}</div>
-      <div style="font-size:12px; color:#71717a; margin-top:4px;">{{ src.description }}</div>
-      <div style="font-size:12px; margin-top:8px; padding:8px; background:#f8f9fb; border-radius:4px;">
+      <div style="font-weight:700; font-size:14px; color:var(--text);">{{ src.name }}</div>
+      <div style="font-size:12px; color:var(--text-muted); margin-top:4px;">{{ src.description }}</div>
+      <div style="font-size:12px; margin-top:8px; padding:8px; background:var(--sidebar-bg); border-radius:4px; color:var(--text);">
         {% if src.auto_sync %}
         <span style="color:#059669;">⚡ Auto-synced</span> — {{ src.sync_note }}
         {% else %}

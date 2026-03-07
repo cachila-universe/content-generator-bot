@@ -55,6 +55,9 @@ def start_scheduler(config: dict, db_path: Path) -> None:
     site_url = settings.get("site_url", "http://localhost:8080")
     tz = settings.get("scheduler", {}).get("timezone", "America/New_York")
 
+    # Stash niche IDs so rotation logic can access all niches from settings
+    settings["_niches_config"] = niches_config
+
     avg_commission = float(settings.get("analytics", {}).get("avg_commission_value", 25.0))
     estimated_ctr = float(settings.get("analytics", {}).get("estimated_ctr", 0.02))
 
@@ -298,7 +301,7 @@ def job_generate_and_publish(
     db_path: Path,
     site_url: str,
 ) -> None:
-    """Full pipeline: check state → fetch topic → dedup → write → inject → SEO → publish."""
+    """Full pipeline: check rotation → state → fetch topic → dedup → write → inject → SEO → publish."""
     if not _should_run(f"post_{niche_id}"):
         return
 
@@ -312,6 +315,14 @@ def job_generate_and_publish(
         bot_state,
         content_guard,
     )
+
+    # Gate: check niche rotation — is this niche scheduled for today?
+    max_per_day = settings.get("scheduler", {}).get("max_posts_per_day", 3)
+    all_niche_ids = list(settings.get("_niches_config", {}).keys()) or [niche_id]
+    todays_niches = bot_state.get_todays_niches(all_niche_ids, max_per_day)
+    if niche_id not in todays_niches:
+        logger.info("Skipping %s — not in today's rotation: %s", niche_id, todays_niches)
+        return
 
     # Gate: check bot state and rate limits
     allowed, reason = bot_state.can_post_now(niche_id)

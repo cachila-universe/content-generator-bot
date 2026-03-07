@@ -92,13 +92,16 @@
 <!-- Manual Trigger Card -->
 <div class="card trigger-card">
   <h3 class="card-title">⚡ Manual Content Trigger</h3>
-  <p class="card-desc">Manually trigger content generation for a specific niche. This bypasses the schedule but still respects anti-duplicate rules.</p>
+  <p class="card-desc">Manually trigger content generation for a specific niche and subtopic. This bypasses the schedule but still respects anti-duplicate rules.</p>
   <div class="trigger-form">
-    <select id="triggerNiche" class="form-select">
+    <select id="triggerNiche" class="form-select" onchange="updateSubtopicDropdown()">
       <option value="">Select niche...</option>
       {% for niche_id, niche in niches.items() %}
-      <option value="{{ niche_id }}">{{ niche.name }}</option>
+      <option value="{{ niche_id }}" data-subtopics='{{ niche.subtopics | tojson }}'>{{ niche.name }}</option>
       {% endfor %}
+    </select>
+    <select id="triggerSubtopic" class="form-select" style="margin-top:8px;">
+      <option value="">Auto-select subtopic (least covered)</option>
     </select>
     <div class="trigger-platforms">
       <label class="checkbox-label"><input type="checkbox" id="trigBlog" checked> 📝 Blog</label>

@@ -169,6 +169,7 @@ function disarmTrigger() {
 function fireTrigger() {
   if (!_triggerArmed) return;
   const nicheSelect = document.getElementById('triggerNiche');
+  const subtopicSelect = document.getElementById('triggerSubtopic');
   const status = document.getElementById('triggerStatus');
   if (!nicheSelect || !nicheSelect.value) {
     if (status) {
@@ -186,14 +187,21 @@ function fireTrigger() {
   if (document.getElementById('trigPinterest') && document.getElementById('trigPinterest').checked) platforms.push('pinterest');
   if (platforms.length === 0) platforms.push('blog');
 
+  var payload = {
+    confirm: 'CONFIRM_TRIGGER',
+    niche_id: nicheSelect.value,
+    platforms: platforms,
+  };
+
+  // Include subtopic if selected
+  if (subtopicSelect && subtopicSelect.value) {
+    payload.subtopic_id = subtopicSelect.value;
+  }
+
   fetch('/api/trigger', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      confirm: 'CONFIRM_TRIGGER',
-      niche_id: nicheSelect.value,
-      platforms: platforms,
-    }),
+    body: JSON.stringify(payload),
   })
     .then(r => r.json())
     .then(data => {
@@ -217,6 +225,34 @@ function fireTrigger() {
       }
       disarmTrigger();
     });
+}
+
+// ── Subtopic Dropdown for Manual Trigger ────────────────────────────────────
+
+function updateSubtopicDropdown() {
+  var nicheSelect = document.getElementById('triggerNiche');
+  var subtopicSelect = document.getElementById('triggerSubtopic');
+  if (!nicheSelect || !subtopicSelect) return;
+
+  // Clear existing options
+  subtopicSelect.innerHTML = '<option value="">Auto-select subtopic (least covered)</option>';
+
+  var selectedOption = nicheSelect.options[nicheSelect.selectedIndex];
+  if (!selectedOption || !selectedOption.value) return;
+
+  try {
+    var subtopics = JSON.parse(selectedOption.getAttribute('data-subtopics') || '{}');
+    for (var stId in subtopics) {
+      if (subtopics.hasOwnProperty(stId)) {
+        var opt = document.createElement('option');
+        opt.value = stId;
+        opt.textContent = subtopics[stId].name || stId;
+        subtopicSelect.appendChild(opt);
+      }
+    }
+  } catch (e) {
+    console.debug('Failed to parse subtopics:', e);
+  }
 }
 
 // ── Mobile Sidebar ──────────────────────────────────────────────────────────

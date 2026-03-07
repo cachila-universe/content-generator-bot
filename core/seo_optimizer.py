@@ -86,22 +86,124 @@ def optimize(article: dict, niche_id: str, niche_config: dict, site_url: str, ou
 #  AI Image Generation for Articles
 # ═══════════════════════════════════════════════════════════════════════════
 
+# ── Topic-aware keyword extraction ───────────────────────────────────────
+
+_STOP_WORDS_IMG = {
+    'best', 'top', 'most', 'the', 'a', 'an', 'and', 'or', 'for', 'in', 'to',
+    'of', 'how', 'why', 'what', 'when', 'where', 'your', 'our', 'my', 'get',
+    'all', 'new', 'free', 'great', 'good', 'about', 'with', 'from', 'this',
+    'that', 'are', 'is', 'was', 'were', 'be', 'been', 'have', 'has', 'had',
+    'do', 'does', 'did', 'will', 'would', 'could', 'should', 'may', 'might',
+    'must', 'can', 'up', 'out', 'on', 'at', 'by', 'as', 'its', 'it', 'we',
+    'you', 'they', 'he', 'she', 'ultimate', 'guide', 'complete', 'right',
+    'choosing', 'choose', 'tips', 'tricks', 'review', 'reviews', 'buying',
+    'finding', 'using', 'making', 'getting', 'having', 'setting',
+    'understanding', 'navigating', 'future', 'exploring', 'mastering',
+    'ensuring', 'elevate', 'maximize', 'optimal', 'picks', 'edition',
+    'routine', 'companion', 'productivity', 'performance', 'year',
+    '2024', '2025', '2026', '2027',
+    # Generic nouns that don't help image search
+    'products', 'product', 'devices', 'device', 'tools', 'tool', 'apps',
+    'app', 'software', 'strategies', 'strategy', 'methods', 'method',
+    'ways', 'things', 'stuff', 'items', 'options', 'solutions', 'friends',
+    'furry', 'picks', 'essential', 'essentials', 'important', 'need',
+    'know', 'start', 'started', 'beginners', 'beginner', 'advanced',
+}
+
+# Map niche → concrete search terms for Pexels (never abstract)
+_NICHE_SEARCH_HINTS = {
+    'ai_tools': 'computer software technology',
+    'personal_finance': 'money investment finance',
+    'health_biohacking': 'health wellness supplements',
+    'home_tech': 'smart home technology devices',
+    'travel': 'travel destination vacation',
+    'pet_care': 'pets dog cat animal',
+    'fitness_wellness': 'fitness exercise gym workout',
+    'remote_work': 'home office laptop desk',
+}
+
+
+def _extract_image_query(title: str, niche_id: str) -> str:
+    """
+    Extract a concise, concrete search query from an article title.
+    Strips filler words and keeps the 2-4 most descriptive nouns/adjectives.
+    If too few words remain, blends in niche-specific hints.
+    """
+    clean = re.sub(r'[^a-zA-Z0-9\s]', '', title)
+    words = [w.lower() for w in clean.split() if len(w) > 2 and w.lower() not in _STOP_WORDS_IMG]
+    # Keep 2-4 most meaningful words
+    query_words = words[:4] if words else []
+
+    # If we have fewer than 2 meaningful words, supplement with niche hints
+    if len(query_words) < 2:
+        hints = _NICHE_SEARCH_HINTS.get(niche_id, niche_id.replace('_', ' ')).split()
+        for h in hints:
+            if h not in query_words:
+                query_words.append(h)
+            if len(query_words) >= 3:
+                break
+
+    if query_words:
+        return ' '.join(query_words)
+    return _NICHE_SEARCH_HINTS.get(niche_id, niche_id.replace('_', ' '))
+
+
+def _load_pexels_key() -> str:
+    """Load Pexels API key from env var OR from settings.yaml video section."""
+    key = os.getenv('PEXELS_API_KEY', '')
+    if key:
+        return key
+    try:
+        import yaml
+        settings_path = _PROJECT_ROOT / 'config' / 'settings.yaml'
+        with open(settings_path) as f:
+            settings = yaml.safe_load(f) or {}
+        key = settings.get('video', {}).get('pexels_api_key', '')
+    except Exception:
+        pass
+    return key.strip() if key else ''
+
+
+def _is_image_relevant(photo: dict, query_words: list[str], niche_id: str) -> bool:
+    """
+    Check if a Pexels photo is relevant to the search query.
+    Uses the photo's alt text to verify the image matches the topic.
+    Returns True only if a core query word (not just filler) appears in the alt.
+    """
+    alt = (photo.get('alt') or '').lower()
+    url = (photo.get('url') or '').lower()
+    combined = f"{alt} {url}"
+
+    if not combined.strip():
+        return False
+
+    # Check if any of our query words appear in the photo description
+    matches = [w for w in query_words if w in combined]
+    if len(matches) >= 2:
+        return True
+
+    # For single matches, only accept if the word is specific (4+ chars)
+    if len(matches) == 1 and len(matches[0]) >= 4:
+        return True
+
+    return False
+
+
 def _generate_hero_image(title: str, niche_id: str, slug: str, site_url: str) -> str:
     """
-    Generate a hero image for the article using AI image APIs.
-    Falls back through: AI stock images → Pexels → Picsum.
-    Returns a URL string.
+    Generate a hero image for the article.
+    Falls back through: AI stock images → Pexels (with relevance check) → NO IMAGE.
+    Returns a URL string, or empty string if no relevant image found.
+    Philosophy: no image is better than a wrong/misleading image.
     """
     # 1. Try to find existing AI stock image for this topic
     try:
         from core.stock_generator import get_usable_images_for_niche
         ai_images = get_usable_images_for_niche(niche_id, limit=5)
         if ai_images:
-            # Pick the best match (first available)
             img = ai_images[0]
             filepath = Path(img.get("filepath", ""))
             if filepath.exists():
-                # Copy to article assets
                 dest = _copy_to_article_assets(filepath, slug, "hero")
                 if dest:
                     return f"/assets/images/{dest.name}"
@@ -116,17 +218,17 @@ def _generate_hero_image(title: str, niche_id: str, slug: str, site_url: str) ->
     except Exception as exc:
         logger.debug("AI image generation failed: %s", exc)
 
-    # 3. Try Pexels
+    # 3. Try Pexels with smart query + relevance check
     try:
-        pexels_url = _fetch_pexels_image(title, niche_id)
+        pexels_url = _fetch_pexels_image_relevant(title, niche_id)
         if pexels_url:
             return pexels_url
     except Exception as exc:
         logger.debug("Pexels fetch failed: %s", exc)
 
-    # 4. Last resort: Picsum (deterministic, always works)
-    logger.info("Using Picsum fallback for hero image: %s", slug)
-    return f"https://picsum.photos/seed/{slug}/800/450"
+    # 4. NO fallback to random images — better to have no image than a wrong one
+    logger.info("No relevant hero image found for: %s — skipping", slug)
+    return ""
 
 
 def _generate_ai_image_for_article(title: str, niche_id: str, slug: str, img_type: str) -> str | None:
@@ -182,30 +284,81 @@ def _generate_ai_image_for_article(title: str, niche_id: str, slug: str, img_typ
         return None
 
 
+def _fetch_pexels_image_relevant(title: str, niche_id: str) -> str | None:
+    """
+    Fetch a relevant image from Pexels using smart keyword extraction
+    and relevance verification. Returns URL only if image matches the topic.
+    """
+    api_key = _load_pexels_key()
+    if not api_key:
+        logger.debug("No Pexels API key found (env or settings.yaml)")
+        return None
+
+    search_query = _extract_image_query(title, niche_id)
+    query_words = search_query.lower().split()
+    logger.info("Pexels search: '%s' (from: %s)", search_query, title[:60])
+
+    try:
+        resp = requests.get(
+            "https://api.pexels.com/v1/search",
+            headers={"Authorization": api_key},
+            params={"query": search_query, "per_page": 10, "orientation": "landscape"},
+            timeout=10,
+        )
+        if resp.status_code != 200:
+            logger.warning("Pexels API returned %d", resp.status_code)
+            return None
+
+        photos = resp.json().get("photos", [])
+        if not photos:
+            logger.info("Pexels: no results for '%s'", search_query)
+            return None
+
+        # Try to find a relevant photo (check up to 10 results)
+        for photo in photos:
+            if _is_image_relevant(photo, query_words, niche_id):
+                url = photo.get("src", {}).get("large2x") or photo.get("src", {}).get("large", "")
+                if url:
+                    logger.info("Pexels: relevant match found — alt='%s'", (photo.get('alt') or '')[:60])
+                    return url
+
+        # If no relevance match, use first result only if query was very specific (3+ words)
+        if len(query_words) >= 3:
+            url = photos[0].get("src", {}).get("large2x") or photos[0].get("src", {}).get("large", "")
+            if url:
+                logger.info("Pexels: using first result for specific query '%s'", search_query)
+                return url
+
+        logger.info("Pexels: no relevant match among %d results for '%s'", len(photos), search_query)
+        return None
+
+    except Exception as exc:
+        logger.debug("Pexels API error: %s", exc)
+        return None
+
+
 def _fetch_pexels_image(query: str, niche_id: str) -> str | None:
-    """Fetch a relevant image URL from Pexels API."""
-    api_key = os.getenv("PEXELS_API_KEY", "")
+    """Fetch a relevant image URL from Pexels API (used for inline images)."""
+    api_key = _load_pexels_key()
     if not api_key:
         return None
 
     # Clean query for search
     clean = re.sub(r'[^a-zA-Z0-9\s]', '', query)
-    words = [w for w in clean.split() if len(w) > 2][:4]
+    words = [w.lower() for w in clean.split() if len(w) > 2 and w.lower() not in _STOP_WORDS_IMG][:4]
     search_query = " ".join(words) if words else niche_id.replace("_", " ")
 
     try:
         resp = requests.get(
             "https://api.pexels.com/v1/search",
             headers={"Authorization": api_key},
-            params={"query": search_query, "per_page": 3, "orientation": "landscape"},
+            params={"query": search_query, "per_page": 5, "orientation": "landscape"},
             timeout=10,
         )
         if resp.status_code == 200:
-            data = resp.json()
-            photos = data.get("photos", [])
+            photos = resp.json().get("photos", [])
             if photos:
-                # Return the large2x version (high quality, landscape)
-                return photos[0].get("src", {}).get("large2x", photos[0].get("src", {}).get("large", ""))
+                return photos[0].get("src", {}).get("large2x") or photos[0].get("src", {}).get("large", "")
     except Exception as exc:
         logger.debug("Pexels API error: %s", exc)
 
@@ -325,10 +478,8 @@ def _inject_inline_images(html_content: str, base_slug: str, niche_id: str = "",
         seed = _unique_seed(keywords)
         alt_text = plain_heading[:80] if plain_heading else keywords.replace(',', ' ')
 
-        # Try AI image generation for inline image
+        # Try Pexels for inline image (no Picsum fallback — skip if no match)
         img_src = None
-
-        # Try Pexels first for inline (faster, saves AI credits for hero)
         try:
             pexels_url = _fetch_pexels_image(plain_heading, niche_id)
             if pexels_url:
@@ -336,9 +487,9 @@ def _inject_inline_images(html_content: str, base_slug: str, niche_id: str = "",
         except Exception:
             pass
 
-        # Fallback to Picsum
+        # No random fallback — if Pexels didn't match, skip the image
         if not img_src:
-            img_src = f"https://picsum.photos/seed/{seed}/800/400"
+            return match.group(0)
 
         img_html = (
             f'\n<figure style="margin:24px 0;text-align:center;">'

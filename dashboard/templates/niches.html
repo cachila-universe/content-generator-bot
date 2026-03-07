@@ -38,12 +38,28 @@
     <div class="niche-section">
       <h4 class="niche-section-title">Affiliate Programs</h4>
       <ul class="affiliate-list">
+        {% set active_count = [] %}
         {% for prog in niche.affiliate_programs %}
-        <li class="affiliate-item">
-          <span class="affiliate-name">{{ prog.name }}</span>
-          <span class="affiliate-keywords text-muted">{{ prog.keywords[:2]|join(', ') }}…</span>
-        </li>
+          {% set prog_name_lower = prog.name|lower %}
+          {% set is_active = false %}
+          {% for pattern, status in active_affiliates.items() %}
+            {% if status and pattern in prog_name_lower %}
+              {% set is_active = true %}
+            {% endif %}
+          {% endfor %}
+          {% if is_active %}
+            {% if active_count.append(1) %}{% endif %}
+            <li class="affiliate-item">
+              <span class="affiliate-name">✅ {{ prog.name }}</span>
+              <span class="affiliate-keywords text-muted">{{ prog.keywords[:2]|join(', ') }}…</span>
+            </li>
+          {% endif %}
         {% endfor %}
+        {% if not active_count %}
+        <li class="affiliate-item" style="color:var(--text-muted); font-style:italic;">
+          No active affiliates — <a href="/settings" style="color:var(--accent-blue);">configure in settings.yaml</a>
+        </li>
+        {% endif %}
       </ul>
     </div>
 
