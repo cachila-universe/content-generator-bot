@@ -35,8 +35,12 @@
     .option-btn{padding:10px 18px;border:2px solid var(--border);border-radius:8px;background:transparent;color:var(--text);font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s}
     .option-btn:hover{border-color:var(--accent);color:var(--accent)}
     .option-btn.selected{border-color:var(--accent);background:var(--accent-light);color:var(--accent)}
-    .btn{background:var(--accent);color:#fff;border:none;padding:14px 28px;border-radius:8px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;width:100%;margin-top:8px;transition:background .2s}
-    .btn:hover{background:#5b21b6}
+    .btn{background:var(--accent);color:#fff;border:none;padding:14px 28px;border-radius:8px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;width:100%;margin-top:8px;transition:all .2s}
+    .btn:hover:not(:disabled){background:#5b21b6}
+    .btn:disabled{background:#d1d5db;color:#9ca3af;cursor:not-allowed;transform:none}
+    .btn-hint{text-align:center;font-size:13px;color:var(--text-secondary);margin-top:10px;min-height:20px}
+    .config-card.done{border-color:#a7f3d0}
+    .config-card.done h2{color:#059669}
     .workout-result{display:none;margin-top:28px}
     .workout-header{background:var(--accent-light);border:1px solid #ddd6fe;border-radius:var(--radius);padding:20px 24px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center}
     .workout-header h2{font-size:18px;font-weight:800;color:var(--accent)}
@@ -100,32 +104,33 @@
   <div class="page-hero"><h1>💪 Workout Generator</h1><p>Get a custom workout plan based on your goals, equipment, and available time</p></div>
 
   <div class="container"><div class="config-section">
-    <div class="config-card"><h2>🎯 Fitness Goal</h2><div class="option-grid" id="goalOptions">
-      <button class="option-btn" data-val="strength" onclick="selectOption(this,'goal')">Build Strength</button>
-      <button class="option-btn" data-val="muscle" onclick="selectOption(this,'goal')">Build Muscle</button>
-      <button class="option-btn" data-val="cardio" onclick="selectOption(this,'goal')">Improve Cardio</button>
-      <button class="option-btn" data-val="weight_loss" onclick="selectOption(this,'goal')">Lose Weight</button>
-      <button class="option-btn" data-val="flexibility" onclick="selectOption(this,'goal')">Flexibility</button>
-      <button class="option-btn" data-val="general" onclick="selectOption(this,'goal')">General Fitness</button>
+    <div class="config-card" id="card-goal"><h2>🎯 Fitness Goal</h2><div class="option-grid" data-group="goal">
+      <button class="option-btn" data-val="strength">Build Strength</button>
+      <button class="option-btn" data-val="muscle">Build Muscle</button>
+      <button class="option-btn" data-val="cardio">Improve Cardio</button>
+      <button class="option-btn" data-val="weight_loss">Lose Weight</button>
+      <button class="option-btn" data-val="flexibility">Flexibility</button>
+      <button class="option-btn" data-val="general">General Fitness</button>
     </div></div>
-    <div class="config-card"><h2>🏋️ Equipment Available</h2><div class="option-grid" id="equipOptions">
-      <button class="option-btn" data-val="none" onclick="selectOption(this,'equip')">No Equipment</button>
-      <button class="option-btn" data-val="dumbbells" onclick="selectOption(this,'equip')">Dumbbells Only</button>
-      <button class="option-btn" data-val="home" onclick="selectOption(this,'equip')">Home Gym (Bands, DB, Bench)</button>
-      <button class="option-btn" data-val="full" onclick="selectOption(this,'equip')">Full Gym</button>
+    <div class="config-card" id="card-equip"><h2>🏋️ Equipment Available</h2><div class="option-grid" data-group="equip">
+      <button class="option-btn" data-val="none">No Equipment</button>
+      <button class="option-btn" data-val="dumbbells">Dumbbells Only</button>
+      <button class="option-btn" data-val="home">Home Gym (Bands, DB, Bench)</button>
+      <button class="option-btn" data-val="full">Full Gym</button>
     </div></div>
-    <div class="config-card"><h2>⏱️ Available Time</h2><div class="option-grid" id="timeOptions">
-      <button class="option-btn" data-val="15" onclick="selectOption(this,'time')">15 min</button>
-      <button class="option-btn" data-val="30" onclick="selectOption(this,'time')">30 min</button>
-      <button class="option-btn" data-val="45" onclick="selectOption(this,'time')">45 min</button>
-      <button class="option-btn" data-val="60" onclick="selectOption(this,'time')">60 min</button>
+    <div class="config-card" id="card-time"><h2>⏱️ Available Time</h2><div class="option-grid" data-group="time">
+      <button class="option-btn" data-val="15">15 min</button>
+      <button class="option-btn" data-val="30">30 min</button>
+      <button class="option-btn" data-val="45">45 min</button>
+      <button class="option-btn" data-val="60">60 min</button>
     </div></div>
-    <div class="config-card"><h2>📊 Fitness Level</h2><div class="option-grid" id="levelOptions">
-      <button class="option-btn" data-val="beginner" onclick="selectOption(this,'level')">Beginner</button>
-      <button class="option-btn" data-val="intermediate" onclick="selectOption(this,'level')">Intermediate</button>
-      <button class="option-btn" data-val="advanced" onclick="selectOption(this,'level')">Advanced</button>
+    <div class="config-card" id="card-level"><h2>📊 Fitness Level</h2><div class="option-grid" data-group="level">
+      <button class="option-btn" data-val="beginner">Beginner</button>
+      <button class="option-btn" data-val="intermediate">Intermediate</button>
+      <button class="option-btn" data-val="advanced">Advanced</button>
     </div></div>
-    <button class="btn" onclick="generateWorkout()">Generate My Workout</button>
+    <button class="btn" id="generateBtn" disabled>🔒 Generate My Workout</button>
+    <p class="btn-hint" id="btnHint">Select all 4 options above to unlock your workout</p>
   </div>
 
   <div class="workout-result" id="workoutResult">
@@ -141,17 +146,41 @@
 
   <script>
   var sel={goal:'',equip:'',time:'',level:''};
-  function selectOption(btn,key){
-    sel[key]=btn.dataset.val;
-    btn.parentElement.querySelectorAll('.option-btn').forEach(function(b){b.classList.remove('selected')});
+
+  // Event delegation — one listener on the whole config section
+  document.querySelector('.config-section').addEventListener('click', function(e) {
+    var btn = e.target.closest('.option-btn');
+    if (!btn) return;
+    var group = btn.closest('[data-group]').dataset.group;
+    sel[group] = btn.dataset.val;
+    btn.closest('[data-group]').querySelectorAll('.option-btn').forEach(function(b){b.classList.remove('selected');});
     btn.classList.add('selected');
+    document.getElementById('card-' + group).classList.add('done');
+    checkReady();
+  });
+
+  function checkReady() {
+    var filled = [sel.goal, sel.equip, sel.time, sel.level].filter(Boolean).length;
+    var genBtn = document.getElementById('generateBtn');
+    var hint   = document.getElementById('btnHint');
+    genBtn.disabled = filled < 4;
+    if (filled === 4) {
+      genBtn.textContent = '💪 Generate My Workout';
+      hint.textContent = '';
+    } else {
+      var left = 4 - filled;
+      genBtn.textContent = '🔒 Generate My Workout';
+      hint.textContent = left + ' selection' + (left > 1 ? 's' : '') + ' remaining';
+    }
   }
+
+  document.getElementById('generateBtn').addEventListener('click', generateWorkout);
 
   var exercises={
     bodyweight:{warmup:['Jumping Jacks','High Knees','Arm Circles','Leg Swings','Bodyweight Squats'],
       strength:['Push-ups','Diamond Push-ups','Pike Push-ups','Bodyweight Squats','Lunges','Glute Bridges','Plank','Side Plank','Superman','Tricep Dips (chair)','Bulgarian Split Squats','Calf Raises'],
       cardio:['Burpees','Mountain Climbers','Jump Squats','High Knees','Butt Kicks','Skaters','Tuck Jumps','Bear Crawls'],
-      flexibility:['Cat-Cow Stretch','Pigeon Pose','Standing Hamstring Stretch','Quad Stretch','Child's Pose','Seated Twist','Hip Flexor Stretch','Shoulder Stretch']},
+      flexibility:['Cat-Cow Stretch','Pigeon Pose','Standing Hamstring Stretch','Quad Stretch','Child’s Pose','Seated Twist','Hip Flexor Stretch','Shoulder Stretch']},
     dumbbells:{strength:['Dumbbell Bench Press','Dumbbell Rows','Dumbbell Shoulder Press','Goblet Squats','Romanian Deadlifts','Bicep Curls','Tricep Extensions','Lateral Raises','Dumbbell Lunges'],
       cardio:['Dumbbell Thrusters','Renegade Rows','Dumbbell Swings','Man Makers']},
     home:{strength:['Resistance Band Pull-aparts','Band-assisted Pull-ups','Incline Dumbbell Press','Dumbbell Flyes','Bent Over Rows','Step-ups','Band Squats','Floor Press'],
@@ -163,7 +192,7 @@
   function pick(arr,n){var a=arr.slice();var r=[];for(var i=0;i<Math.min(n,a.length);i++){var idx=Math.floor(Math.random()*a.length);r.push(a.splice(idx,1)[0]);}return r;}
 
   function generateWorkout(){
-    if(!sel.goal||!sel.equip||!sel.time||!sel.level){alert('Please select all options');return;}
+    if(!sel.goal||!sel.equip||!sel.time||!sel.level){return;}
     var mins=parseInt(sel.time);var numExercises=Math.max(3,Math.floor(mins/5));
     var pool=exercises.bodyweight;var equipKey=sel.equip;
     if(equipKey==='dumbbells')pool={warmup:pool.warmup,strength:pool.strength.concat(exercises.dumbbells.strength),cardio:pool.cardio.concat(exercises.dumbbells.cardio),flexibility:pool.flexibility};
