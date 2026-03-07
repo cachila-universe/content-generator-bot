@@ -4,19 +4,16 @@ Income Tracker — Real revenue tracking from all monetization sources.
 Revenue sources tracked:
   1. Google AdSense      — ad revenue from website traffic
   2. Amazon Associates   — affiliate commission from product links
-  3. Stock Photo Sales   — earnings from stock platform submissions
-  4. YouTube AdSense     — ad revenue from YouTube videos
-  5. Other Affiliates    — ShareASale, CJ Affiliate, etc.
+  3. YouTube AdSense     — ad revenue from YouTube videos
+  4. Other Affiliates    — ShareASale, CJ Affiliate, etc.
 
 Sync methods:
   • Manual entry    — user enters amounts via dashboard
-  • Stock photos    — auto-synced from stock_submissions table
   • Click tracking  — affiliate clicks tracked on website, actual revenue entered manually
 
 Why no full auto-sync?
   - Google AdSense API requires verified publisher (6-month minimum)
   - Amazon Associates has no real-time API for individual sites
-  - Stock platforms have no payout API
   - YouTube Revenue API requires monetised channel (1K subs + 4K watch hours)
 
 Once thresholds are met, API sync can be added incrementally.
@@ -49,13 +46,6 @@ REVENUE_SOURCES = {
         "description": "Affiliate commissions from Amazon product links",
         "auto_sync": False,
         "sync_note": "Manual entry — check Amazon Associates dashboard monthly",
-    },
-    "stock_photos": {
-        "name": "Stock Photo Sales",
-        "icon": "📸",
-        "description": "Earnings from AI image sales on stock platforms",
-        "auto_sync": True,
-        "sync_note": "Auto-synced from stock submission records",
     },
     "youtube": {
         "name": "YouTube Revenue",
@@ -159,47 +149,6 @@ def delete_income(entry_id: int) -> bool:
     deleted = cur.rowcount > 0
     conn.close()
     return deleted
-
-
-# ── Auto-sync stock photo earnings ───────────────────────────────────────
-
-def sync_stock_earnings():
-    """
-    Sync stock photo earnings from stock_submissions table.
-    Only creates entries for sales not yet recorded.
-    """
-    _ensure_tables()
-    conn = sqlite3.connect(str(_DB_PATH))
-    conn.row_factory = sqlite3.Row
-
-    # Get total already synced
-    synced = conn.execute(
-        "SELECT COALESCE(SUM(amount), 0) as total FROM income_entries "
-        "WHERE source = 'stock_photos' AND auto_synced = 1"
-    ).fetchone()["total"]
-
-    # Get actual earnings from submissions
-    try:
-        actual = conn.execute(
-            "SELECT COALESCE(SUM(total_earnings), 0) as total FROM stock_submissions"
-        ).fetchone()["total"]
-    except Exception:
-        actual = 0
-
-    diff = round(actual - synced, 2)
-    if diff > 0:
-        today = date.today().isoformat()
-        conn.execute(
-            """INSERT INTO income_entries
-               (source, amount, description, period_start, period_end, auto_synced)
-               VALUES ('stock_photos', ?, 'Auto-synced stock photo earnings', ?, ?, 1)""",
-            (diff, today, today),
-        )
-        conn.commit()
-        logger.info("Synced $%.2f in stock photo earnings", diff)
-
-    conn.close()
-    return diff
 
 
 # ── Reporting ─────────────────────────────────────────────────────────────

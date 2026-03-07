@@ -31,7 +31,7 @@ _DEFAULT_STATE = {
     "schedule": {
         "randomize_minutes": 15,   # ±N minutes jitter added to schedules
         "cooldown_hours": 20,      # minimum hours between posts in same niche
-        "max_posts_per_day": 3,    # hard cap across all niches
+        "max_posts_per_day": 8,    # 1 per niche, all 8 niches daily
     },
     "manual_trigger_queue": [],    # list of {"niche_id": ..., "platforms": [...], "requested_at": ...}
     "last_runs": {},               # niche_id -> ISO timestamp of last post

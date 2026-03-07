@@ -1301,18 +1301,6 @@ def run_full_pipeline(niches_config: dict, settings: dict, db_path: Path, site_u
 
         summary["details"][niche_id] = niche_summary
 
-    # Step 7: Sync income earnings
-    try:
-        from core import income_tracker
-        diff = income_tracker.sync_stock_earnings()
-        if diff > 0:
-            summary["details"]["income_sync"] = f"✓ Synced ${diff:.2f}"
-        else:
-            summary["details"]["income_sync"] = "✓ No new earnings"
-        summary["steps_completed"] += 1
-    except Exception as exc:
-        summary["details"]["income_sync"] = f"✗ {exc}"
-
     logger.info("🏁 Full pipeline complete: %d steps, %d errors", summary["steps_completed"], len(summary["errors"]))
     return summary
 
