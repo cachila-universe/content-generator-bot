@@ -281,6 +281,8 @@ def _extract_short_slides(article: dict) -> list:
 
     for match in h2_pattern.finditer(html):
         heading = re.sub(r"<[^>]+>", "", match.group(1)).strip()
+        # Strip markdown heading markers (e.g. "### Title" → "Title")
+        heading = re.sub(r'^#{1,6}\s*', '', heading).strip()
         body_html = match.group(2)
 
         if any(skip in heading.lower()
@@ -312,7 +314,7 @@ def _extract_short_slides(article: dict) -> list:
     slides.append({
         "type": "cta",
         "heading": "Follow for more!",
-        "body": "@techlife_insights",
+        "body": "@tech-life-insights",
         "narration": "Follow for more insights and subscribe!",
     })
 

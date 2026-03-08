@@ -18,7 +18,7 @@
   <div class="status-banner-right">
     <span class="platform-pill {% if bot_state.platforms.blog %}pill-active{% else %}pill-inactive{% endif %}">📝 Blog</span>
     <span class="platform-pill {% if bot_state.platforms.youtube_shorts %}pill-active{% else %}pill-inactive{% endif %}">🎬 Shorts</span>
-    <span class="platform-pill {% if bot_state.platforms.get('twitter', True) %}pill-active{% else %}pill-inactive{% endif %}">🐦 Twitter</span>
+    <span class="platform-pill {% if bot_state.platforms.get('twitter', False) %}pill-active{% else %}pill-inactive{% endif %}">🐦 Twitter</span>
     <span class="platform-pill {% if bot_state.platforms.pinterest %}pill-active{% else %}pill-inactive{% endif %}">📌 Pinterest</span>
   </div>
 </div>
@@ -46,7 +46,7 @@
   <div class="run-all-section {% if bot_state.bot_mode != 'manual' %}hidden{% endif %}" id="runAllSection">
     <hr>
     <h4>🚀 Run Full Pipeline</h4>
-    <p class="card-desc">Runs ALL tasks in dependency order: Trends → Articles → Videos → Twitter → Pinterest<br><small style="opacity:0.65;">⏱ Landscape videos have a 7-day cooldown per niche — skipped if already generated this week</small></p>
+    <p class="card-desc">Runs ALL tasks in dependency order: Trends → Articles → Videos<br><small style="opacity:0.65;">⏱ Landscape videos have a 7-day cooldown per niche — skipped if already generated this week</small></p>
     <button class="btn btn-trigger-arm" id="btnRunAllArm" onclick="armRunAll()">🔓 Arm Pipeline</button>
     <button class="btn btn-trigger-fire" id="btnRunAllFire" onclick="fireRunAll()" disabled>🚀 Run All Tasks</button>
     <div class="trigger-status" id="runAllStatus"></div>
@@ -106,7 +106,7 @@
     <div class="trigger-platforms">
       <label class="checkbox-label"><input type="checkbox" id="trigBlog" checked> 📝 Blog</label>
       <label class="checkbox-label"><input type="checkbox" id="trigShorts"> 🎬 YouTube Short</label>
-      <label class="checkbox-label"><input type="checkbox" id="trigTwitter" checked> 🐦 Twitter</label>
+      <label class="checkbox-label"><input type="checkbox" id="trigTwitter"> 🐦 Twitter</label>
       <label class="checkbox-label"><input type="checkbox" id="trigPinterest"> 📌 Pinterest</label>
     </div>
     <div class="trigger-safety">

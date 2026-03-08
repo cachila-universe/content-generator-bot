@@ -25,8 +25,8 @@ _DEFAULT_STATE = {
     "platforms": {
         "blog": True,
         "youtube_shorts": True,
-        "pinterest": True,
-        "twitter": True,
+        "pinterest": False,
+        "twitter": False,
     },
     "schedule": {
         "randomize_minutes": 15,   # ±N minutes jitter added to schedules

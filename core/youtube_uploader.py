@@ -208,7 +208,7 @@ def _build_description(article: dict, niche_config: dict) -> str:
         "🌐 CONNECT WITH US:",
         "",
         "🖥️ Website: https://tech-life-insights.com",
-        "📺 YouTube: https://www.youtube.com/channel/UCV0XW2sQNv2TWqtz3wFAxhA",
+        "📺 YouTube: https://www.youtube.com/@tech-life-insights",
         "📸 Instagram: https://www.instagram.com/techlife_insights/",
         "🎵 TikTok: https://www.tiktok.com/@techlife_insights",
         "🐦 Twitter: https://x.com/techlifeinsight",

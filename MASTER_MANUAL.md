@@ -2960,7 +2960,7 @@ Free (CC0 license)
 
 ## 41. YouTube Channel — Connect the Bot for Auto-Uploads
 
-Your channel: **[TechLife Insights YouTube](https://www.youtube.com/channel/UCV0XW2sQNv2TWqtz3wFAxhA)**
+Your channel: **[TechLife Insights YouTube](https://www.youtube.com/@tech-life-insights)**
 
 The bot is fully built to upload videos automatically. It only needs a one-time OAuth2 setup. Here's the complete process.
 
