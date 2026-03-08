@@ -125,8 +125,19 @@ NICHE_MOODS = {
 
 
 def _get_mood(niche_id: str, slug: str = "") -> dict:
-    """Pick a mood based on niche, with slug-based variation."""
+    """Pick a mood based on niche, with slug-based variation for diversity."""
+    # Primary mood from niche
     mood_name = NICHE_MOODS.get(niche_id, "calm")
+
+    # Use slug hash to occasionally pick a different compatible mood
+    # This prevents the same niche always getting the exact same music
+    if slug:
+        h = int(hashlib.md5(slug.encode()).hexdigest(), 16)
+        # 30% chance of picking a different mood for variety
+        if h % 10 < 3:
+            all_moods = list(MOODS.keys())
+            mood_name = all_moods[h % len(all_moods)]
+
     return MOODS[mood_name]
 
 
@@ -212,9 +223,9 @@ def generate_ambient_track(
     """
     mood = _get_mood(niche_id, slug)
 
-    # Cache key based on mood + duration + variant
+    # Cache key includes slug so each article gets its own unique track
     cache_key = hashlib.md5(
-        f"{mood['name']}_{int(duration_seconds)}_{variant}".encode()
+        f"{mood['name']}_{int(duration_seconds)}_{variant}_{slug}".encode()
     ).hexdigest()[:12]
     cache_path = _MUSIC_DIR / f"ambient_{cache_key}.wav"
 
@@ -227,10 +238,23 @@ def generate_ambient_track(
         cache_path.name, duration_seconds, mood["name"],
     )
 
-    chords = mood["chords"]
+    # Use slug hash to create per-article musical variation
+    slug_hash = int(hashlib.md5((slug or "default").encode()).hexdigest(), 16)
+
+    chords = list(mood["chords"])  # copy so we can shuffle
+    # Rotate chord progression start point based on slug
+    rotation = slug_hash % len(chords)
+    chords = chords[rotation:] + chords[:rotation]
+
     harmonics = mood["pad_harmonics"]
-    detune = mood["detune_cents"]
-    chord_duration = 1.0 / mood["tempo"]  # seconds per chord
+    # Subtle detune variation: ±3 cents per article
+    base_detune = mood["detune_cents"]
+    detune = base_detune + (slug_hash % 7) - 3  # range: -3 to +3
+
+    # Subtle tempo variation: ±10% per article
+    base_tempo = mood["tempo"]
+    tempo_factor = 0.9 + (slug_hash % 21) / 100  # 0.90 to 1.10
+    chord_duration = 1.0 / (base_tempo * tempo_factor)
 
     total_samples = int(SAMPLE_RATE * duration_seconds)
     track = np.zeros(total_samples, dtype=np.float64)

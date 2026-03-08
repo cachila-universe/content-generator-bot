@@ -32,19 +32,27 @@ SHARED_HEAD_FONTS = """  <link rel="icon" type="image/svg+xml" href="/assets/fav
 SHARED_NAV = """  <!-- Header -->
   <header class="header">
     <div class="container">
-      <div class="header-inner">
-        <a href="/" class="logo"><img src="/assets/logo-full-dark.svg" alt="TechLife Insights" style="height:44px;width:auto;"></a>
-        <nav class="nav-links" id="navLinks">
-          <a href="/" class="nav-link" style="font-weight:700;color:#fff;">Home</a>
+      <div class="header-top">
+        <a href="/" class="logo">
+          <img src="/assets/logo-full-dark.svg" alt="TechLife Insights">
+          <span class="logo-text">TechLife Insights</span>
+        </a>
+        <button class="mobile-toggle" onclick="document.getElementById('navLinks').classList.toggle('open')" aria-label="Menu">☰</button>
+      </div>
+      <nav class="nav-links" id="navLinks">
+        <div class="nav-main">
+          <a href="/" class="nav-link nav-home">Home</a>
           {% for nid, niche in niches.items() %}{% if niche.enabled %}
           <div class="nav-item">
             <a href="/{{ nid }}/" class="nav-link{% if nid == active_niche %} active{% endif %}">{{ niche.name }}</a>
             {% if niche.subtopics %}<div class="nav-dropdown">{% for sub_id, sub in niche.subtopics.items() %}<a href="/{{ nid }}/{{ sub_id }}/">{{ sub.name }}</a>{% endfor %}</div>{% endif %}
           </div>
           {% endif %}{% endfor %}
+        </div>
+        <div class="nav-tools">
           <div class="nav-item">
-            <a href="/tools/" class="nav-link">🛠️ Tools</a>
-            <div class="nav-dropdown">
+            <a href="/tools/" class="nav-link nav-tools-link">🛠️ Tools</a>
+            <div class="nav-dropdown nav-dropdown-right">
               <a href="/tools/deal-finder.html">🔍 Deal Finder</a>
               <a href="/tools/ai-tool-finder.html">🤖 AI Tool Directory</a>
               <a href="/tools/budget-calculator.html">💰 Budget Calculator</a>
@@ -55,26 +63,31 @@ SHARED_NAV = """  <!-- Header -->
               <a href="/personal_finance/markets.html">📊 Market Data</a>
             </div>
           </div>
-        </nav>
-        <button class="mobile-toggle" onclick="document.getElementById('navLinks').classList.toggle('open')" aria-label="Menu">☰</button>
-      </div>
+        </div>
+      </nav>
     </div>
   </header>"""
 
 SHARED_NAV_CSS = """
     .header { position: sticky; top: 0; z-index: 50; background: #1e3a8a; }
-    .header-inner { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; }
-    .logo { display: flex; align-items: center; }
-    .logo img { height: 44px; width: auto; }
-    .nav-links { display: flex; gap: 2px; align-items: center; flex-wrap: wrap; }
-    .nav-link { padding: 6px 11px; border-radius: 6px; font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.75); transition: all 0.15s; white-space: nowrap; text-decoration: none; }
+    .header-top { display: flex; align-items: center; justify-content: space-between; padding: 16px 0 10px; }
+    .logo { display: flex; align-items: center; gap: 14px; text-decoration: none; color: #fff; }
+    .logo img { height: 48px; width: auto; }
+    .logo-text { font-size: 24px; font-weight: 800; letter-spacing: -0.02em; color: #fff; }
+    .nav-links { display: flex; align-items: center; justify-content: space-between; padding: 0 0 10px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px; gap: 8px; }
+    .nav-main { display: flex; gap: 2px; align-items: center; flex-wrap: wrap; }
+    .nav-tools { display: flex; align-items: center; margin-left: auto; padding-left: 16px; border-left: 1px solid rgba(255,255,255,0.15); }
+    .nav-link { padding: 6px 12px; border-radius: 6px; font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.75); transition: all 0.15s; white-space: nowrap; text-decoration: none; }
     .nav-link:hover, .nav-link.active { color: #fff; background: rgba(255,255,255,0.12); }
+    .nav-home { font-size: 14px; font-weight: 700; color: #fff; padding: 6px 16px; }
+    .nav-tools-link { font-size: 14px; font-weight: 600; color: rgba(255,255,255,0.9); }
     .nav-item { position: relative; display: inline-block; }
     .nav-item:hover .nav-dropdown { display: block; }
     .nav-dropdown { display: none; position: absolute; top: 100%; left: 0; background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; box-shadow: 0 8px 30px rgba(0,0,0,0.12); min-width: 210px; padding: 6px 0; z-index: 100; }
+    .nav-dropdown-right { left: auto; right: 0; }
     .nav-dropdown a { display: block; padding: 8px 16px; font-size: 13px; color: #111827; font-weight: 500; transition: background 0.1s; text-decoration: none; }
     .nav-dropdown a:hover { background: #eff6ff; color: #2563eb; }
-    .mobile-toggle { display: none; background: none; border: none; color: #fff; font-size: 22px; cursor: pointer; padding: 6px; }"""
+    .mobile-toggle { display: none; background: none; border: none; color: #fff; font-size: 24px; cursor: pointer; padding: 6px; }"""
 
 SHARED_SUBSCRIBE_FLOAT = """  <a href="https://techlife-insights.kit.com/be266c00d5" target="_blank" rel="noopener" class="subscribe-float">📬 Subscribe</a>"""
 
@@ -84,11 +97,15 @@ SHARED_SUBSCRIBE_CSS = """
 
 SHARED_MOBILE_CSS = """
     @media (max-width: 768px) {
+      .logo-text { font-size: 18px; }
       .nav-links { display: none; }
       .nav-links.open { display: flex; flex-direction: column; position: absolute; top: 100%; left: 0; right: 0; background: #1e3a8a; padding: 12px 24px; border-top: 1px solid rgba(255,255,255,0.1); gap: 4px; z-index: 200; }
+      .nav-links.open .nav-main { flex-direction: column; width: 100%; }
+      .nav-links.open .nav-tools { border-left: none; padding-left: 0; margin-left: 0; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 8px; margin-top: 4px; width: 100%; }
       .nav-links.open .nav-item { display: block; }
       .nav-links.open .nav-dropdown { position: static; box-shadow: none; border: none; background: rgba(255,255,255,0.05); border-radius: 6px; margin: 4px 0; }
       .nav-links.open .nav-dropdown a { color: rgba(255,255,255,0.7); }
+      .nav-links.open .nav-dropdown-right { left: 0; right: auto; }
       .mobile-toggle { display: block; }
     }"""
 

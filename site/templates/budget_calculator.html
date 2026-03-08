@@ -14,18 +14,24 @@
     *{box-sizing:border-box;margin:0;padding:0}body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,sans-serif;font-size:16px;line-height:1.6}a{color:var(--accent);text-decoration:none}.container{max-width:var(--max-width);margin:0 auto;padding:0 24px}
 
     .header { position: sticky; top: 0; z-index: 50; background: #1e3a8a; }
-    .header-inner { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; }
-    .logo { display: flex; align-items: center; }
-    .logo img { height: 44px; width: auto; }
-    .nav-links { display: flex; gap: 2px; align-items: center; flex-wrap: wrap; }
-    .nav-link { padding: 6px 11px; border-radius: 6px; font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.75); transition: all 0.15s; white-space: nowrap; text-decoration: none; }
+    .header-top { display: flex; align-items: center; justify-content: space-between; padding: 16px 0 10px; }
+    .logo { display: flex; align-items: center; gap: 14px; text-decoration: none; color: #fff; }
+    .logo img { height: 48px; width: auto; }
+    .logo-text { font-size: 24px; font-weight: 800; letter-spacing: -0.02em; color: #fff; }
+    .nav-links { display: flex; align-items: center; justify-content: space-between; padding: 0 0 10px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px; gap: 8px; }
+    .nav-main { display: flex; gap: 2px; align-items: center; flex-wrap: wrap; }
+    .nav-tools { display: flex; align-items: center; margin-left: auto; padding-left: 16px; border-left: 1px solid rgba(255,255,255,0.15); }
+    .nav-link { padding: 6px 12px; border-radius: 6px; font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.75); transition: all 0.15s; white-space: nowrap; text-decoration: none; }
     .nav-link:hover, .nav-link.active { color: #fff; background: rgba(255,255,255,0.12); }
+    .nav-home { font-size: 14px; font-weight: 700; color: #fff; padding: 6px 16px; }
+    .nav-tools-link { font-size: 14px; font-weight: 600; color: rgba(255,255,255,0.9); }
     .nav-item { position: relative; display: inline-block; }
     .nav-item:hover .nav-dropdown { display: block; }
     .nav-dropdown { display: none; position: absolute; top: 100%; left: 0; background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; box-shadow: 0 8px 30px rgba(0,0,0,0.12); min-width: 210px; padding: 6px 0; z-index: 100; }
+    .nav-dropdown-right { left: auto; right: 0; }
     .nav-dropdown a { display: block; padding: 8px 16px; font-size: 13px; color: #111827; font-weight: 500; transition: background 0.1s; text-decoration: none; }
     .nav-dropdown a:hover { background: #eff6ff; color: #2563eb; }
-    .mobile-toggle { display: none; background: none; border: none; color: #fff; font-size: 22px; cursor: pointer; padding: 6px; }
+    .mobile-toggle { display: none; background: none; border: none; color: #fff; font-size: 24px; cursor: pointer; padding: 6px; }
     .page-hero{background:linear-gradient(135deg,#059669 0%,#10b981 100%);color:#fff;padding:48px 0;text-align:center}
     .page-hero h1{font-size:32px;font-weight:900;margin-bottom:8px}.page-hero p{font-size:16px;opacity:.85;max-width:500px;margin:0 auto}
     .calc-section{padding:32px 0}
@@ -38,29 +44,21 @@
     .form-group input:focus{border-color:var(--accent)}
     .btn{background:var(--accent);color:#fff;border:none;padding:12px 24px;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;transition:background .2s;width:100%}
     .btn:hover{background:#1d4ed8}
-    .tabs{display:flex;gap:4px;border-bottom:2px solid var(--border);margin-bottom:28px;flex-wrap:wrap}
-    .tab-btn{padding:12px 20px;border:none;background:none;font-size:14px;font-weight:700;font-family:inherit;color:var(--text-secondary);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .15s;white-space:nowrap}
-    .tab-btn:hover{color:var(--text)}
-    .tab-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
-    .tab-panel{display:none}.tab-panel.active{display:block}
     .results-panel{display:none;margin-top:24px}
     .result-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px}
     .result-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;text-align:center}
     .result-box.positive{background:var(--green-bg);border-color:#a7f3d0}
     .result-box.negative{background:var(--red-bg);border-color:#fecaca}
     .result-box .label{font-size:12px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px}
-    .result-box .value{font-size:26px;font-weight:800}
-    .result-box .sub-value{font-size:12px;color:var(--text-secondary);margin-top:2px}
+    .result-box .value{font-size:28px;font-weight:800}
     .result-box.positive .value{color:var(--green)}
     .result-box.negative .value{color:var(--red)}
-    .bar-chart{margin:20px 0}.bar-row{display:flex;align-items:center;gap:12px;margin-bottom:10px}.bar-label{width:100px;font-size:13px;font-weight:600;text-align:right;flex-shrink:0}.bar-track{flex:1;background:var(--surface);border-radius:4px;height:24px;overflow:hidden}.bar-fill{height:100%;border-radius:4px;transition:width .5s ease}.bar-value{width:80px;font-size:13px;font-weight:600;text-align:right;flex-shrink:0}
+    .bar-chart{margin:20px 0}.bar-row{display:flex;align-items:center;gap:12px;margin-bottom:10px}.bar-label{width:100px;font-size:13px;font-weight:600;text-align:right;flex-shrink:0}.bar-track{flex:1;background:var(--surface);border-radius:4px;height:24px;overflow:hidden}.bar-fill{height:100%;border-radius:4px;transition:width .5s}.bar-value{width:80px;font-size:13px;font-weight:600;text-align:right;flex-shrink:0}
     .rule-section{margin-top:28px;padding:24px;background:var(--accent-light);border-radius:var(--radius)}
     .rule-section h3{font-size:16px;font-weight:700;color:var(--accent);margin-bottom:12px}
-    .rule-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #bfdbfe;font-size:14px;flex-wrap:wrap;gap:4px}
+    .rule-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #bfdbfe;font-size:14px}
     .rule-row:last-child{border-bottom:none}
     .rule-row .ideal{color:var(--accent);font-weight:600}
-    .insight-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-top:20px;font-size:14px;line-height:1.8}
-    .insight-box strong{color:var(--accent)}
     .disclaimer{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 20px;margin-top:24px;font-size:12px;color:var(--text-secondary);line-height:1.7}
     .footer{background:#0f172a;color:rgba(255,255,255,.7);padding:32px 0;font-size:13px;text-align:center;margin-top:48px}.footer a{color:rgba(255,255,255,.6)}.footer a:hover{color:#fff}
 
@@ -68,11 +66,15 @@
     .subscribe-float:hover { background: #1d4ed8; transform: translateY(-2px); box-shadow: 0 6px 24px rgba(37,99,235,0.55); color: #fff !important; }
     @media(max-width:768px){.form-row,.result-summary{grid-template-columns:1fr}
     
+      .logo-text { font-size: 18px; }
       .nav-links { display: none; }
       .nav-links.open { display: flex; flex-direction: column; position: absolute; top: 100%; left: 0; right: 0; background: #1e3a8a; padding: 12px 24px; border-top: 1px solid rgba(255,255,255,0.1); gap: 4px; z-index: 200; }
+      .nav-links.open .nav-main { flex-direction: column; width: 100%; }
+      .nav-links.open .nav-tools { border-left: none; padding-left: 0; margin-left: 0; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 8px; margin-top: 4px; width: 100%; }
       .nav-links.open .nav-item { display: block; }
       .nav-links.open .nav-dropdown { position: static; box-shadow: none; border: none; background: rgba(255,255,255,0.05); border-radius: 6px; margin: 4px 0; }
       .nav-links.open .nav-dropdown a { color: rgba(255,255,255,0.7); }
+      .nav-links.open .nav-dropdown-right { left: 0; right: auto; }
       .mobile-toggle { display: block; }
     }
   </style>
@@ -81,19 +83,27 @@
   <!-- Header -->
   <header class="header">
     <div class="container">
-      <div class="header-inner">
-        <a href="/" class="logo"><img src="/assets/logo-full-dark.svg" alt="TechLife Insights" style="height:44px;width:auto;"></a>
-        <nav class="nav-links" id="navLinks">
-          <a href="/" class="nav-link" style="font-weight:700;color:#fff;">Home</a>
+      <div class="header-top">
+        <a href="/" class="logo">
+          <img src="/assets/logo-full-dark.svg" alt="TechLife Insights">
+          <span class="logo-text">TechLife Insights</span>
+        </a>
+        <button class="mobile-toggle" onclick="document.getElementById('navLinks').classList.toggle('open')" aria-label="Menu">☰</button>
+      </div>
+      <nav class="nav-links" id="navLinks">
+        <div class="nav-main">
+          <a href="/" class="nav-link nav-home">Home</a>
           {% for nid, niche in niches.items() %}{% if niche.enabled %}
           <div class="nav-item">
             <a href="/{{ nid }}/" class="nav-link{% if false %} active{% endif %}">{{ niche.name }}</a>
             {% if niche.subtopics %}<div class="nav-dropdown">{% for sub_id, sub in niche.subtopics.items() %}<a href="/{{ nid }}/{{ sub_id }}/">{{ sub.name }}</a>{% endfor %}</div>{% endif %}
           </div>
           {% endif %}{% endfor %}
+        </div>
+        <div class="nav-tools">
           <div class="nav-item">
-            <a href="/tools/" class="nav-link">🛠️ Tools</a>
-            <div class="nav-dropdown">
+            <a href="/tools/" class="nav-link nav-tools-link">🛠️ Tools</a>
+            <div class="nav-dropdown nav-dropdown-right">
               <a href="/tools/deal-finder.html">🔍 Deal Finder</a>
               <a href="/tools/ai-tool-finder.html">🤖 AI Tool Directory</a>
               <a href="/tools/budget-calculator.html">💰 Budget Calculator</a>
@@ -104,350 +114,109 @@
               <a href="/personal_finance/markets.html">📊 Market Data</a>
             </div>
           </div>
-        </nav>
-        <button class="mobile-toggle" onclick="document.getElementById('navLinks').classList.toggle('open')" aria-label="Menu">☰</button>
-      </div>
+        </div>
+      </nav>
     </div>
   </header>
 
-  <div class="page-hero"><h1>💰 Budget Calculator</h1><p>Monthly budget planner, debt payoff calculator, savings goals &amp; emergency fund tracker</p></div>
+  <div class="page-hero"><h1>💰 Budget Calculator</h1><p>Plan your monthly budget using the 50/30/20 rule and track your savings goals</p></div>
 
   <div class="container"><div class="calc-section">
-    <div class="tabs" id="mainTabs">
-      <button class="tab-btn active" data-tab="budget">💵 Monthly Budget</button>
-      <button class="tab-btn" data-tab="debt">💳 Debt Payoff</button>
-      <button class="tab-btn" data-tab="savings">🎯 Savings Goal</button>
-      <button class="tab-btn" data-tab="emergency">🛡️ Emergency Fund</button>
-    </div>
-
-    <!-- TAB 1: Monthly Budget -->
-    <div class="tab-panel active" id="tab-budget">
-      <div class="calc-card">
-        <h2>💵 Monthly Income</h2>
-        <div class="form-row">
-          <div class="form-group"><label>Take-Home Pay (after tax)</label><input type="number" id="income" placeholder="e.g. 5000"></div>
-          <div class="form-group"><label>Other Income</label><input type="number" id="otherIncome" placeholder="e.g. 500"></div>
-        </div>
-      </div>
-      <div class="calc-card">
-        <h2>🏠 Needs (Essential Expenses)</h2>
-        <div class="form-row">
-          <div class="form-group"><label>Rent / Mortgage</label><input type="number" class="expense needs" placeholder="0"></div>
-          <div class="form-group"><label>Utilities</label><input type="number" class="expense needs" placeholder="0"></div>
-        </div>
-        <div class="form-row">
-          <div class="form-group"><label>Groceries</label><input type="number" class="expense needs" placeholder="0"></div>
-          <div class="form-group"><label>Transportation</label><input type="number" class="expense needs" placeholder="0"></div>
-        </div>
-        <div class="form-row">
-          <div class="form-group"><label>Insurance</label><input type="number" class="expense needs" placeholder="0"></div>
-          <div class="form-group"><label>Minimum Debt Payments</label><input type="number" class="expense needs" placeholder="0"></div>
-        </div>
-      </div>
-      <div class="calc-card">
-        <h2>🎉 Wants (Lifestyle Expenses)</h2>
-        <div class="form-row">
-          <div class="form-group"><label>Dining Out</label><input type="number" class="expense wants" placeholder="0"></div>
-          <div class="form-group"><label>Entertainment</label><input type="number" class="expense wants" placeholder="0"></div>
-        </div>
-        <div class="form-row">
-          <div class="form-group"><label>Shopping</label><input type="number" class="expense wants" placeholder="0"></div>
-          <div class="form-group"><label>Subscriptions</label><input type="number" class="expense wants" placeholder="0"></div>
-        </div>
-        <div class="form-row">
-          <div class="form-group"><label>Hobbies</label><input type="number" class="expense wants" placeholder="0"></div>
-          <div class="form-group"><label>Travel / Vacation</label><input type="number" class="expense wants" placeholder="0"></div>
-        </div>
-      </div>
-      <button class="btn" onclick="calcBudget()">📊 Calculate My Budget</button>
-      <div class="results-panel" id="results-budget">
-        <div class="result-summary">
-          <div class="result-box"><div class="label">Total Income</div><div class="value" id="rIncome">$0</div></div>
-          <div class="result-box"><div class="label">Total Expenses</div><div class="value" id="rExpenses">$0</div></div>
-          <div class="result-box" id="rSurplusBox"><div class="label">Surplus / Deficit</div><div class="value" id="rSurplus">$0</div></div>
-        </div>
-        <div class="bar-chart" id="barChart"></div>
-        <div class="rule-section"><h3>📏 50/30/20 Rule Analysis</h3><div id="ruleAnalysis"></div></div>
-        <div class="insight-box" id="budgetInsights"></div>
+    <div class="calc-card">
+      <h2>💵 Monthly Income</h2>
+      <div class="form-row">
+        <div class="form-group"><label>Take-Home Pay (after tax)</label><input type="number" id="income" placeholder="e.g. 5000" value=""></div>
+        <div class="form-group"><label>Other Income</label><input type="number" id="otherIncome" placeholder="e.g. 500" value=""></div>
       </div>
     </div>
 
-    <!-- TAB 2: Debt Payoff -->
-    <div class="tab-panel" id="tab-debt">
-      <div class="calc-card">
-        <h2>💳 Debt Details</h2>
-        <div class="form-row">
-          <div class="form-group"><label>Total Debt Balance ($)</label><input type="number" id="debtBalance" placeholder="e.g. 15000"></div>
-          <div class="form-group"><label>Annual Interest Rate (%)</label><input type="number" id="debtRate" placeholder="e.g. 19.99" step="0.01"></div>
-        </div>
-        <div class="form-row">
-          <div class="form-group"><label>Monthly Payment ($)</label><input type="number" id="debtPayment" placeholder="e.g. 400"></div>
-          <div class="form-group"><label>Extra Monthly Payment ($)</label><input type="number" id="debtExtra" placeholder="e.g. 200 (optional)"></div>
-        </div>
+    <div class="calc-card">
+      <h2>🏠 Needs (Essential Expenses)</h2>
+      <div class="form-row">
+        <div class="form-group"><label>Rent / Mortgage</label><input type="number" class="expense needs" placeholder="0"></div>
+        <div class="form-group"><label>Utilities</label><input type="number" class="expense needs" placeholder="0"></div>
       </div>
-      <button class="btn" onclick="calcDebt()">📊 Calculate Payoff Timeline</button>
-      <div class="results-panel" id="results-debt">
-        <div class="result-summary" id="debtSummary"></div>
-        <div class="rule-section" id="debtDetail"></div>
+      <div class="form-row">
+        <div class="form-group"><label>Groceries</label><input type="number" class="expense needs" placeholder="0"></div>
+        <div class="form-group"><label>Transportation</label><input type="number" class="expense needs" placeholder="0"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Insurance</label><input type="number" class="expense needs" placeholder="0"></div>
+        <div class="form-group"><label>Minimum Debt Payments</label><input type="number" class="expense needs" placeholder="0"></div>
       </div>
     </div>
 
-    <!-- TAB 3: Savings Goal -->
-    <div class="tab-panel" id="tab-savings">
-      <div class="calc-card">
-        <h2>🎯 Savings Goal</h2>
-        <div class="form-row">
-          <div class="form-group"><label>Goal Amount ($)</label><input type="number" id="savingsTarget" placeholder="e.g. 20000"></div>
-          <div class="form-group"><label>Goal Name</label><input type="text" id="savingsName" placeholder="e.g. House Down Payment"></div>
-        </div>
-        <div class="form-row">
-          <div class="form-group"><label>Current Savings ($)</label><input type="number" id="savingsCurrent" placeholder="e.g. 5000"></div>
-          <div class="form-group"><label>Monthly Contribution ($)</label><input type="number" id="savingsMonthly" placeholder="e.g. 500"></div>
-        </div>
-        <div class="form-row">
-          <div class="form-group"><label>Expected Annual Return (%)</label><input type="number" id="savingsReturn" placeholder="e.g. 5" step="0.1" value="5"></div>
-          <div class="form-group"></div>
-        </div>
+    <div class="calc-card">
+      <h2>🎉 Wants (Lifestyle Expenses)</h2>
+      <div class="form-row">
+        <div class="form-group"><label>Dining Out</label><input type="number" class="expense wants" placeholder="0"></div>
+        <div class="form-group"><label>Entertainment</label><input type="number" class="expense wants" placeholder="0"></div>
       </div>
-      <button class="btn" onclick="calcSavings()">📊 Calculate Savings Timeline</button>
-      <div class="results-panel" id="results-savings">
-        <div class="result-summary" id="savingsSummary"></div>
-        <div class="rule-section" id="savingsDetail"></div>
+      <div class="form-row">
+        <div class="form-group"><label>Shopping</label><input type="number" class="expense wants" placeholder="0"></div>
+        <div class="form-group"><label>Subscriptions</label><input type="number" class="expense wants" placeholder="0"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Hobbies</label><input type="number" class="expense wants" placeholder="0"></div>
+        <div class="form-group"><label>Travel / Vacation</label><input type="number" class="expense wants" placeholder="0"></div>
       </div>
     </div>
 
-    <!-- TAB 4: Emergency Fund -->
-    <div class="tab-panel" id="tab-emergency">
-      <div class="calc-card">
-        <h2>🛡️ Emergency Fund</h2>
-        <div class="form-row">
-          <div class="form-group"><label>Monthly Essential Expenses ($)</label><input type="number" id="emMonthly" placeholder="e.g. 3500"></div>
-          <div class="form-group"><label>Months of Coverage Needed</label><input type="number" id="emMonths" placeholder="3, 6, or 12" value="6"></div>
-        </div>
-        <div class="form-row">
-          <div class="form-group"><label>Current Emergency Fund ($)</label><input type="number" id="emCurrent" placeholder="e.g. 2000"></div>
-          <div class="form-group"><label>Monthly Contribution ($)</label><input type="number" id="emContrib" placeholder="e.g. 300"></div>
-        </div>
-      </div>
-      <button class="btn" onclick="calcEmergency()">📊 Calculate Emergency Fund</button>
-      <div class="results-panel" id="results-emergency">
-        <div class="result-summary" id="emergencySummary"></div>
-        <div class="rule-section" id="emergencyDetail"></div>
+    <div class="calc-card">
+      <h2>🎯 Savings Goal</h2>
+      <div class="form-row">
+        <div class="form-group"><label>Monthly Savings Target</label><input type="number" id="savingsGoal" placeholder="e.g. 1000"></div>
+        <div class="form-group"><label>Goal Name (optional)</label><input type="text" id="goalName" placeholder="e.g. Emergency Fund"></div>
       </div>
     </div>
 
-    <!-- Contextual product recommendations (affiliate-ready) -->
-    <div class="calc-card" id="financeRecs" style="display:none;margin-top:24px;border:1px solid #bfdbfe;background:#eff6ff">
-      <h2 style="color:#2563eb">💡 Recommended Financial Tools</h2>
-      <p style="font-size:13px;color:var(--text-secondary);margin-bottom:16px">Based on your results, these tools could help you reach your goals faster:</p>
-      <div id="recsContent"></div>
+    <button class="btn" onclick="calculate()">Calculate My Budget</button>
+
+    <div class="results-panel" id="results">
+      <div class="result-summary">
+        <div class="result-box"><div class="label">Total Income</div><div class="value" id="rIncome">$0</div></div>
+        <div class="result-box"><div class="label">Total Expenses</div><div class="value" id="rExpenses">$0</div></div>
+        <div class="result-box" id="rSurplusBox"><div class="label">Surplus / Deficit</div><div class="value" id="rSurplus">$0</div></div>
+      </div>
+      <div class="bar-chart" id="barChart"></div>
+      <div class="rule-section">
+        <h3>📏 50/30/20 Rule Analysis</h3>
+        <div id="ruleAnalysis"></div>
+      </div>
     </div>
 
-    <div class="disclaimer"><strong>Disclaimer:</strong> This calculator is for informational and educational purposes only and does not constitute financial advice. Results are estimates. Consult a qualified financial advisor for personalized financial planning.</div>
+    <div class="disclaimer"><strong>Disclaimer:</strong> This calculator is for informational and educational purposes only. It does not constitute financial advice. Results are estimates based on the information you provide. Consult a qualified financial advisor for personalized financial planning.</div>
   </div></div>
 
   <footer class="footer"><div class="container">&copy; 2026 {{ site_title }}. · <a href="/privacy.html">Privacy</a> · <a href="/about.html">About</a> · <a href="/tools/">All Tools</a></div></footer>
   <a href="https://techlife-insights.kit.com/be266c00d5" target="_blank" rel="noopener" class="subscribe-float">📬 Subscribe</a>
 
   <script>
-  /* ── Affiliate IDs (injected from settings.yaml at build time) ── */
-  var BAFF = {
-    sofi:        '{{ affiliates.sofi_ref        | default("") }}',
-    wealthfront: '{{ affiliates.wealthfront_ref  | default("") }}',
-    betterment:  '{{ affiliates.betterment_ref   | default("") }}'
-  };
-  function baffUrl(base, key, param) {
-    var id = BAFF[key]; if (!id) return base;
-    return base + (base.indexOf('?') === -1 ? '?' : '&') + param + '=' + encodeURIComponent(id);
-  }
-  /* Product recommendations shown after calculations */
-  var finProducts = [
-    {id:'sofi',       name:'SoFi Checking & Savings',   desc:'4.00% APY, no fees, FDIC insured.',          url:baffUrl('https://www.sofi.com/banking','sofi','ref'),          icon:'🏦', for:['savings','emergency','budget']},
-    {id:'wealthfront',name:'Wealthfront',                desc:'Automated investing & 5.00% APY cash account.', url:baffUrl('https://www.wealthfront.com','wealthfront','inv'),   icon:'📈', for:['savings','budget']},
-    {id:'betterment', name:'Betterment',                  desc:'Robo-advisor for hands-off investing.',       url:baffUrl('https://www.betterment.com','betterment','ref'),      icon:'🤖', for:['savings','budget']}
-  ];
-  function showRecs(tab) {
-    var recs = finProducts.filter(function(p){return p.for.indexOf(tab) !== -1;});
-    if (!recs.length) { document.getElementById('financeRecs').style.display='none'; return; }
-    var html = '';
-    recs.forEach(function(p){
-      html += '<div style="display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid #bfdbfe">';
-      html += '<span style="font-size:28px">'+p.icon+'</span>';
-      html += '<div style="flex:1"><strong style="font-size:14px">'+p.name+'</strong><br><span style="font-size:13px;color:var(--text-secondary)">'+p.desc+'</span></div>';
-      html += '<a href="'+p.url+'" target="_blank" rel="noopener" style="background:#2563eb;color:#fff;padding:8px 16px;border-radius:6px;font-size:13px;font-weight:700;text-decoration:none;white-space:nowrap">Learn More \u2192</a>';
-      html += '</div>';
-    });
-    document.getElementById('recsContent').innerHTML = html;
-    document.getElementById('financeRecs').style.display = 'block';
-  }
-
-  // ── Tab switching ──────────────────────────────────────────────────────────
-  document.getElementById('mainTabs').addEventListener('click', function(e) {
-    var btn = e.target.closest('.tab-btn');
-    if (!btn) return;
-    document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('active');});
-    document.querySelectorAll('.tab-panel').forEach(function(p){p.classList.remove('active');});
-    btn.classList.add('active');
-    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
-  });
-
-  function fmt(n){return '$'+Math.abs(n).toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:0});}
-  function fmtYM(months){var y=Math.floor(months/12),m=months%12;return (y?y+' yr '+(m?m+' mo':''):(m+' mo'));}
-  function getVal(id){return parseFloat(document.getElementById(id).value)||0;}
-  function sumClass(cls){var t=0;document.querySelectorAll('.expense.'+cls).forEach(function(el){t+=parseFloat(el.value)||0;});return t;}
-  function showPanel(id){var p=document.getElementById(id);p.style.display='block';p.scrollIntoView({behavior:'smooth'});}
-
-  // ── Tab 1: Monthly Budget ──────────────────────────────────────────────────
-  function calcBudget(){
-    var income = getVal('income') + getVal('otherIncome');
-    if (!income) { alert('Please enter your monthly income.'); return; }
-    var needs = sumClass('needs'), wants = sumClass('wants');
-    var totalExp = needs + wants, surplus = income - totalExp;
-    document.getElementById('rIncome').textContent = fmt(income);
-    document.getElementById('rExpenses').textContent = fmt(totalExp);
-    document.getElementById('rSurplus').textContent = (surplus >= 0 ? '' : '-') + fmt(surplus);
-    var box = document.getElementById('rSurplusBox');
-    box.className = 'result-box ' + (surplus >= 0 ? 'positive' : 'negative');
-    var items = [
-      {label:'Needs', val:needs, color:'#3b82f6'},
-      {label:'Wants', val:wants, color:'#f59e0b'},
-      {label:'Savings', val:Math.max(surplus,0), color:'#10b981'}
-    ];
-    if (surplus < 0) items.push({label:'Deficit', val:Math.abs(surplus), color:'#ef4444'});
-    var maxVal = Math.max(income, totalExp), chartHtml = '';
-    items.forEach(function(it){
-      var pct = maxVal > 0 ? (it.val / maxVal * 100) : 0;
-      chartHtml += '<div class="bar-row"><div class="bar-label">'+it.label+'</div><div class="bar-track"><div class="bar-fill" style="width:'+pct+'%;background:'+it.color+'"></div></div><div class="bar-value">'+fmt(it.val)+'</div></div>';
-    });
-    document.getElementById('barChart').innerHTML = chartHtml;
-    var in50 = income * 0.5, in30 = income * 0.3, in20 = income * 0.2;
-    var needsPct = income ? Math.round(needs/income*100) : 0;
-    var wantsPct = income ? Math.round(wants/income*100) : 0;
-    var savePct  = income ? Math.round(Math.max(surplus,0)/income*100) : 0;
-    var ruleHtml = '<div class="rule-row"><span>🏠 Needs (50% ideal)</span><span>You: '+fmt(needs)+' ('+needsPct+'%) / <span class="ideal">Ideal: '+fmt(in50)+'</span></span></div>';
-    ruleHtml += '<div class="rule-row"><span>🎉 Wants (30% ideal)</span><span>You: '+fmt(wants)+' ('+wantsPct+'%) / <span class="ideal">Ideal: '+fmt(in30)+'</span></span></div>';
-    ruleHtml += '<div class="rule-row"><span>💰 Savings (20% ideal)</span><span>You: '+fmt(Math.max(surplus,0))+' ('+savePct+'%) / <span class="ideal">Ideal: '+fmt(in20)+'</span></span></div>';
-    document.getElementById('ruleAnalysis').innerHTML = ruleHtml;
-    var tips = [];
-    if (needsPct > 55) tips.push('<strong>⚠️ Needs are high ('+needsPct+'%)</strong> — Consider downsizing rent or reducing fixed costs.');
-    if (wantsPct > 35) tips.push('<strong>⚠️ Wants are high ('+wantsPct+'%)</strong> — Review subscriptions and discretionary spending.');
-    if (surplus < 0) tips.push('<strong>🔴 Spending exceeds income by '+fmt(Math.abs(surplus))+'</strong> — Urgent: identify expenses to cut.');
-    if (savePct >= 20) tips.push('<strong>🌟 Great job saving '+savePct+'%!</strong> — You\'re on track with the 50/30/20 rule.');
-    if (surplus > 0 && savePct < 10) tips.push('<strong>💡 Saving only '+savePct+'%</strong> — Try to redirect more surplus to savings or investments.');
-    document.getElementById('budgetInsights').innerHTML = tips.length ? tips.join('<br>') : '<strong>✅ Your budget looks balanced!</strong> Keep tracking monthly.';
-    showPanel('results-budget');
-    showRecs('budget');
-  }
-
-  // ── Tab 2: Debt Payoff ─────────────────────────────────────────────────────
-  function calcDebt(){
-    var balance = getVal('debtBalance'), rate = getVal('debtRate'), payment = getVal('debtPayment'), extra = getVal('debtExtra');
-    if (!balance || !rate || !payment) { alert('Please enter balance, rate, and monthly payment.'); return; }
-    var monthlyRate = rate / 100 / 12;
-    var minPayment = balance * monthlyRate / (1 - Math.pow(1 + monthlyRate, -360));
-    if (payment <= balance * monthlyRate) { alert('Monthly payment must be more than the monthly interest (' + fmt(balance * monthlyRate) + ').'); return; }
-
-    function calcPayoff(bal, pmt) {
-      var months = 0, totalPaid = 0, totalInterest = 0;
-      while (bal > 0 && months < 600) {
-        var interest = bal * monthlyRate;
-        var principal = Math.min(pmt - interest, bal);
-        totalInterest += interest; totalPaid += Math.min(pmt, bal + interest);
-        bal -= principal; months++;
-      }
-      return {months: months, totalPaid: totalPaid, totalInterest: totalInterest};
-    }
-    var base = calcPayoff(balance, payment);
-    var fast = extra > 0 ? calcPayoff(balance, payment + extra) : null;
-
-    var sumHtml = '<div class="result-box"><div class="label">Payoff Time</div><div class="value">' + fmtYM(base.months) + '</div><div class="sub-value">at current payment</div></div>';
-    sumHtml += '<div class="result-box negative"><div class="label">Total Interest</div><div class="value">' + fmt(base.totalInterest) + '</div><div class="sub-value">total cost of debt</div></div>';
-    sumHtml += '<div class="result-box"><div class="label">Total Paid</div><div class="value">' + fmt(base.totalPaid) + '</div><div class="sub-value">principal + interest</div></div>';
-    document.getElementById('debtSummary').innerHTML = sumHtml;
-
-    var detailHtml = '<h3>📋 Payoff Plan</h3>';
-    detailHtml += '<div class="rule-row"><span>Current monthly payment</span><span>' + fmt(payment) + '/mo</span></div>';
-    detailHtml += '<div class="rule-row"><span>Time to debt-free</span><span><strong>' + fmtYM(base.months) + '</strong></span></div>';
-    detailHtml += '<div class="rule-row"><span>Total interest paid</span><span class="ideal">' + fmt(base.totalInterest) + '</span></div>';
-    if (fast) {
-      var savedMonths = base.months - fast.months;
-      var savedInterest = base.totalInterest - fast.totalInterest;
-      detailHtml += '<div class="rule-row" style="margin-top:12px;border-top:2px solid #bfdbfe;padding-top:12px"><span>With +' + fmt(extra) + '/mo extra payment</span><span></span></div>';
-      detailHtml += '<div class="rule-row"><span>New payoff time</span><span><strong>' + fmtYM(fast.months) + '</strong> ('+savedMonths+' months sooner)</span></div>';
-      detailHtml += '<div class="rule-row"><span>Interest saved</span><span style="color:var(--green);font-weight:700">' + fmt(savedInterest) + ' saved</span></div>';
-    }
-    detailHtml += '<div class="rule-row" style="margin-top:8px"><span>💡 Tip</span><span>Even $50/mo extra can save thousands in interest.</span></div>';
-    document.getElementById('debtDetail').innerHTML = detailHtml;
-    showPanel('results-debt');
-    showRecs('debt');
-  }
-
-  // ── Tab 3: Savings Goal ────────────────────────────────────────────────────
-  function calcSavings(){
-    var target = getVal('savingsTarget'), current = getVal('savingsCurrent');
-    var monthly = getVal('savingsMonthly'), returnRate = getVal('savingsReturn');
-    var name = document.getElementById('savingsName').value || 'Your Goal';
-    if (!target || !monthly) { alert('Please enter a target amount and monthly contribution.'); return; }
-    var monthlyRate = returnRate / 100 / 12, remaining = target - current;
-    var months = 0, balance = current, totalContributed = current;
-    while (balance < target && months < 600) {
-      balance = balance * (1 + monthlyRate) + monthly;
-      totalContributed += monthly; months++;
-    }
-    var investmentGrowth = balance - totalContributed;
-    var pct = Math.min(Math.round(current / target * 100), 100);
-
-    var sumHtml = '<div class="result-box positive"><div class="label">Time to Reach Goal</div><div class="value">' + fmtYM(months) + '</div><div class="sub-value">' + name + '</div></div>';
-    sumHtml += '<div class="result-box"><div class="label">Total Contributions</div><div class="value">' + fmt(totalContributed) + '</div><div class="sub-value">money you put in</div></div>';
-    sumHtml += '<div class="result-box"><div class="label">Investment Growth</div><div class="value" style="color:var(--green)">' + fmt(Math.max(investmentGrowth,0)) + '</div><div class="sub-value">at ' + returnRate + '% return</div></div>';
-    document.getElementById('savingsSummary').innerHTML = sumHtml;
-
-    var detailHtml = '<h3>📈 Savings Projection</h3>';
-    detailHtml += '<div class="rule-row"><span>Goal: ' + name + '</span><span>' + fmt(target) + '</span></div>';
-    detailHtml += '<div class="rule-row"><span>Starting balance</span><span>' + fmt(current) + ' (' + pct + '% there)</span></div>';
-    detailHtml += '<div class="rule-row"><span>Monthly contribution</span><span>' + fmt(monthly) + '/mo</span></div>';
-    detailHtml += '<div class="rule-row"><span>Expected return</span><span>' + returnRate + '% / year</span></div>';
-    detailHtml += '<div class="rule-row"><span><strong>Reach goal in</strong></span><span><strong>' + fmtYM(months) + '</strong></span></div>';
-    if (returnRate > 0) detailHtml += '<div class="rule-row"><span>💡 Compound interest earns you</span><span style="color:var(--green);font-weight:700">' + fmt(Math.max(investmentGrowth,0)) + ' extra</span></div>';
-    var faster = monthly * 1.5;
-    var mFast = 0, bFast = current;
-    while (bFast < target && mFast < 600) { bFast = bFast * (1 + monthlyRate) + faster; mFast++; }
-    detailHtml += '<div class="rule-row"><span>At +50% contribution (' + fmt(faster) + '/mo)</span><span>Done in ' + fmtYM(mFast) + ' (' + (months-mFast) + ' mo sooner)</span></div>';
-    document.getElementById('savingsDetail').innerHTML = detailHtml;
-    showPanel('results-savings');
-    showRecs('savings');
-  }
-
-  // ── Tab 4: Emergency Fund ──────────────────────────────────────────────────
-  function calcEmergency(){
-    var monthly = getVal('emMonthly'), months = getVal('emMonths') || 6;
-    var current = getVal('emCurrent'), contrib = getVal('emContrib');
-    if (!monthly) { alert('Please enter your monthly essential expenses.'); return; }
-    var target = monthly * months, gap = Math.max(target - current, 0);
-    var moNeeded = contrib > 0 ? Math.ceil(gap / contrib) : null;
-    var pct = Math.min(Math.round(current / target * 100), 100);
-
-    var sumHtml = '<div class="result-box"><div class="label">Target Fund Size</div><div class="value">' + fmt(target) + '</div><div class="sub-value">' + months + ' months of expenses</div></div>';
-    var statusClass = pct >= 100 ? 'positive' : (pct >= 50 ? '' : 'negative');
-    sumHtml += '<div class="result-box ' + statusClass + '"><div class="label">Current Progress</div><div class="value">' + pct + '%</div><div class="sub-value">' + fmt(current) + ' saved</div></div>';
-    sumHtml += '<div class="result-box"><div class="label">Still Needed</div><div class="value">' + fmt(gap) + '</div><div class="sub-value">' + (moNeeded ? fmtYM(moNeeded) + ' to go' : 'no contribution set') + '</div></div>';
-    document.getElementById('emergencySummary').innerHTML = sumHtml;
-
-    var progBar = '<div style="background:#e5e7eb;border-radius:8px;height:20px;margin:12px 0;overflow:hidden"><div style="width:'+pct+'%;background:'+(pct>=100?'#059669':pct>=50?'#f59e0b':'#2563eb')+';height:100%;border-radius:8px;transition:width .5s"></div></div>';
-    var detailHtml = '<h3>🛡️ Emergency Fund Status</h3>' + progBar;
-    detailHtml += '<div class="rule-row"><span>Monthly essential expenses</span><span>' + fmt(monthly) + '</span></div>';
-    detailHtml += '<div class="rule-row"><span>Coverage target</span><span>' + months + ' months = ' + fmt(target) + '</span></div>';
-    detailHtml += '<div class="rule-row"><span>Current fund</span><span>' + fmt(current) + ' (' + pct + '% funded)</span></div>';
-    if (gap > 0) {
-      detailHtml += '<div class="rule-row"><span>Remaining to save</span><span><strong>' + fmt(gap) + '</strong></span></div>';
-      if (moNeeded) detailHtml += '<div class="rule-row"><span>At ' + fmt(contrib) + '/mo contribution</span><span>Fully funded in <strong>' + fmtYM(moNeeded) + '</strong></span></div>';
-    } else {
-      detailHtml += '<div class="rule-row"><span>Status</span><span style="color:var(--green);font-weight:700">✅ Fully funded! Consider investing the surplus.</span></div>';
-    }
-    detailHtml += '<div class="rule-row"><span>💡 Where to keep it</span><span>High-interest savings account or money market fund</span></div>';
-    document.getElementById('emergencyDetail').innerHTML = detailHtml;
-    showPanel('results-emergency');
-    showRecs('emergency');
+  function getVal(id){return parseFloat(document.getElementById(id).value)||0}
+  function sumClass(cls){var total=0;document.querySelectorAll('.expense.'+cls).forEach(function(el){total+=parseFloat(el.value)||0});return total}
+  function fmt(n){return '$'+n.toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:0})}
+  function calculate(){
+    var income=getVal('income')+getVal('otherIncome');
+    var needs=sumClass('needs');var wants=sumClass('wants');
+    var totalExpenses=needs+wants;var surplus=income-totalExpenses;
+    document.getElementById('rIncome').textContent=fmt(income);
+    document.getElementById('rExpenses').textContent=fmt(totalExpenses);
+    document.getElementById('rSurplus').textContent=fmt(surplus);
+    var box=document.getElementById('rSurplusBox');
+    box.className='result-box '+(surplus>=0?'positive':'negative');
+    var colors=['#3b82f6','#f59e0b','#10b981','#ef4444'];
+    var items=[{label:'Needs',val:needs,color:colors[0]},{label:'Wants',val:wants,color:colors[1]},{label:'Savings',val:Math.max(surplus,0),color:colors[2]}];
+    if(surplus<0)items.push({label:'Deficit',val:Math.abs(surplus),color:colors[3]});
+    var chartHtml='';var maxVal=Math.max(income,totalExpenses);
+    items.forEach(function(it){var pct=maxVal>0?(it.val/maxVal*100):0;chartHtml+='<div class="bar-row"><div class="bar-label">'+it.label+'</div><div class="bar-track"><div class="bar-fill" style="width:'+pct+'%;background:'+it.color+'"></div></div><div class="bar-value">'+fmt(it.val)+'</div></div>'});
+    document.getElementById('barChart').innerHTML=chartHtml;
+    var idealNeeds=income*.5;var idealWants=income*.3;var idealSavings=income*.2;
+    var ruleHtml='<div class="rule-row"><span>Needs (50%)</span><span>You: '+fmt(needs)+' / <span class="ideal">Ideal: '+fmt(idealNeeds)+'</span></span></div>';
+    ruleHtml+='<div class="rule-row"><span>Wants (30%)</span><span>You: '+fmt(wants)+' / <span class="ideal">Ideal: '+fmt(idealWants)+'</span></span></div>';
+    ruleHtml+='<div class="rule-row"><span>Savings (20%)</span><span>You: '+fmt(Math.max(surplus,0))+' / <span class="ideal">Ideal: '+fmt(idealSavings)+'</span></span></div>';
+    document.getElementById('ruleAnalysis').innerHTML=ruleHtml;
+    document.getElementById('results').style.display='block';
+    document.getElementById('results').scrollIntoView({behavior:'smooth'});
   }
   </script>
 </body></html>

@@ -14,18 +14,24 @@
     *{box-sizing:border-box;margin:0;padding:0}body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,sans-serif;font-size:16px;line-height:1.6}a{color:var(--accent);text-decoration:none}.container{max-width:var(--max-width);margin:0 auto;padding:0 24px}
 
     .header { position: sticky; top: 0; z-index: 50; background: #1e3a8a; }
-    .header-inner { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; }
-    .logo { display: flex; align-items: center; }
-    .logo img { height: 44px; width: auto; }
-    .nav-links { display: flex; gap: 2px; align-items: center; flex-wrap: wrap; }
-    .nav-link { padding: 6px 11px; border-radius: 6px; font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.75); transition: all 0.15s; white-space: nowrap; text-decoration: none; }
+    .header-top { display: flex; align-items: center; justify-content: space-between; padding: 16px 0 10px; }
+    .logo { display: flex; align-items: center; gap: 14px; text-decoration: none; color: #fff; }
+    .logo img { height: 48px; width: auto; }
+    .logo-text { font-size: 24px; font-weight: 800; letter-spacing: -0.02em; color: #fff; }
+    .nav-links { display: flex; align-items: center; justify-content: space-between; padding: 0 0 10px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px; gap: 8px; }
+    .nav-main { display: flex; gap: 2px; align-items: center; flex-wrap: wrap; }
+    .nav-tools { display: flex; align-items: center; margin-left: auto; padding-left: 16px; border-left: 1px solid rgba(255,255,255,0.15); }
+    .nav-link { padding: 6px 12px; border-radius: 6px; font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.75); transition: all 0.15s; white-space: nowrap; text-decoration: none; }
     .nav-link:hover, .nav-link.active { color: #fff; background: rgba(255,255,255,0.12); }
+    .nav-home { font-size: 14px; font-weight: 700; color: #fff; padding: 6px 16px; }
+    .nav-tools-link { font-size: 14px; font-weight: 600; color: rgba(255,255,255,0.9); }
     .nav-item { position: relative; display: inline-block; }
     .nav-item:hover .nav-dropdown { display: block; }
     .nav-dropdown { display: none; position: absolute; top: 100%; left: 0; background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; box-shadow: 0 8px 30px rgba(0,0,0,0.12); min-width: 210px; padding: 6px 0; z-index: 100; }
+    .nav-dropdown-right { left: auto; right: 0; }
     .nav-dropdown a { display: block; padding: 8px 16px; font-size: 13px; color: #111827; font-weight: 500; transition: background 0.1s; text-decoration: none; }
     .nav-dropdown a:hover { background: #eff6ff; color: #2563eb; }
-    .mobile-toggle { display: none; background: none; border: none; color: #fff; font-size: 22px; cursor: pointer; padding: 6px; }
+    .mobile-toggle { display: none; background: none; border: none; color: #fff; font-size: 24px; cursor: pointer; padding: 6px; }
     .page-hero{background:linear-gradient(135deg,#5b21b6 0%,#7c3aed 100%);color:#fff;padding:48px 0;text-align:center}
     .page-hero h1{font-size:32px;font-weight:900;margin-bottom:8px}.page-hero p{font-size:16px;opacity:.85;max-width:500px;margin:0 auto}
     .config-section{padding:32px 0}
@@ -35,43 +41,18 @@
     .option-btn{padding:10px 18px;border:2px solid var(--border);border-radius:8px;background:transparent;color:var(--text);font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s}
     .option-btn:hover{border-color:var(--accent);color:var(--accent)}
     .option-btn.selected{border-color:var(--accent);background:var(--accent-light);color:var(--accent)}
-    .btn{background:var(--accent);color:#fff;border:none;padding:14px 28px;border-radius:8px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;width:100%;margin-top:8px;transition:all .2s}
-    .btn:hover:not(:disabled){background:#5b21b6}
-    .btn:disabled{background:#d1d5db;color:#9ca3af;cursor:not-allowed;transform:none}
-    .btn-hint{text-align:center;font-size:13px;color:var(--text-secondary);margin-top:10px;min-height:20px}
-    .config-card.done{border-color:#a7f3d0}
-    .config-card.done h2{color:#059669}
+    .btn{background:var(--accent);color:#fff;border:none;padding:14px 28px;border-radius:8px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;width:100%;margin-top:8px;transition:background .2s}
+    .btn:hover{background:#5b21b6}
     .workout-result{display:none;margin-top:28px}
-    .workout-header{background:linear-gradient(135deg,#5b21b6,#7c3aed);border-radius:var(--radius);padding:22px 28px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center}
-    .workout-header h2{font-size:20px;font-weight:900;color:#fff}
-    .workout-header .stats{font-size:13px;color:rgba(255,255,255,.75)}
-    .print-btn{background:transparent;border:1px solid rgba(255,255,255,.4);color:#fff;padding:8px 16px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit}
-    .print-btn:hover{background:rgba(255,255,255,.15);border-color:#fff}
-    .workout-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px}
-    .summary-box{background:var(--accent-light);border:1px solid #ddd6fe;border-radius:8px;padding:16px;text-align:center}
-    .summary-box .s-val{font-size:26px;font-weight:900;color:var(--accent)}
-    .summary-box .s-lab{font-size:11px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.05em;margin-top:2px}
-    .phase-section{margin-bottom:22px}
-    .phase-header{display:flex;align-items:center;gap:8px;padding:9px 14px;border-radius:8px;margin-bottom:10px;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.06em}
-    .phase-header.warmup{background:#fff7ed;color:#c2410c;border-left:4px solid #fb923c}
-    .phase-header.main{background:var(--accent-light);color:#5b21b6;border-left:4px solid var(--accent)}
-    .phase-header.cooldown{background:#ecfdf5;color:#065f46;border-left:4px solid #10b981}
-    .exercise-card{border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:8px;display:flex;align-items:flex-start;gap:14px;background:#fff;transition:box-shadow .15s}
-    .exercise-card:hover{box-shadow:0 2px 12px rgba(0,0,0,.07)}
-    .exercise-card.warmup{border-left:3px solid #fb923c}
-    .exercise-card.main{border-left:3px solid var(--accent)}
-    .exercise-card.cooldown{border-left:3px solid #10b981}
-    .exercise-num{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0}
-    .exercise-num.warmup{background:#fff7ed;color:#c2410c}
-    .exercise-num.main{background:var(--accent-light);color:var(--accent)}
-    .exercise-num.cooldown{background:#ecfdf5;color:#059669}
-    .exercise-info{flex:1}
-    .exercise-info h3{font-size:15px;font-weight:700;margin-bottom:6px}
-    .exercise-pills{display:flex;flex-wrap:wrap;gap:6px}
-    .pill{display:inline-flex;align-items:center;font-size:12px;font-weight:600;padding:3px 10px;border-radius:20px}
-    .pill.sets{background:#ede9fe;color:#6d28d9;border:1px solid #c4b5fd}
-    .pill.reps{background:#dbeafe;color:#1d4ed8;border:1px solid #93c5fd}
-    .pill.rest{background:#d1fae5;color:#065f46;border:1px solid #6ee7b7}
+    .workout-header{background:var(--accent-light);border:1px solid #ddd6fe;border-radius:var(--radius);padding:20px 24px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center}
+    .workout-header h2{font-size:18px;font-weight:800;color:var(--accent)}
+    .workout-header .stats{font-size:13px;color:var(--text-secondary)}
+    .exercise-card{border:1px solid var(--border);border-radius:var(--radius);padding:16px 20px;margin-bottom:10px;display:flex;align-items:center;gap:16px}
+    .exercise-num{width:36px;height:36px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0}
+    .exercise-info h3{font-size:15px;font-weight:700;margin-bottom:2px}.exercise-info p{font-size:13px;color:var(--text-secondary)}
+    .exercise-detail{display:flex;gap:12px;margin-top:4px}.exercise-detail span{font-size:12px;background:var(--surface);padding:2px 8px;border-radius:4px;font-weight:600}
+    .print-btn{background:transparent;border:1px solid var(--border);color:var(--text);padding:8px 16px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit}
+    .print-btn:hover{border-color:var(--accent);color:var(--accent)}
     .disclaimer{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 20px;margin-top:24px;font-size:12px;color:var(--text-secondary);line-height:1.7}
     .footer{background:#0f172a;color:rgba(255,255,255,.7);padding:32px 0;font-size:13px;text-align:center;margin-top:48px}.footer a{color:rgba(255,255,255,.6)}.footer a:hover{color:#fff}
 
@@ -79,11 +60,15 @@
     .subscribe-float:hover { background: #1d4ed8; transform: translateY(-2px); box-shadow: 0 6px 24px rgba(37,99,235,0.55); color: #fff !important; }
     @media(max-width:768px){.workout-header{flex-direction:column;gap:8px}
     
+      .logo-text { font-size: 18px; }
       .nav-links { display: none; }
       .nav-links.open { display: flex; flex-direction: column; position: absolute; top: 100%; left: 0; right: 0; background: #1e3a8a; padding: 12px 24px; border-top: 1px solid rgba(255,255,255,0.1); gap: 4px; z-index: 200; }
+      .nav-links.open .nav-main { flex-direction: column; width: 100%; }
+      .nav-links.open .nav-tools { border-left: none; padding-left: 0; margin-left: 0; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 8px; margin-top: 4px; width: 100%; }
       .nav-links.open .nav-item { display: block; }
       .nav-links.open .nav-dropdown { position: static; box-shadow: none; border: none; background: rgba(255,255,255,0.05); border-radius: 6px; margin: 4px 0; }
       .nav-links.open .nav-dropdown a { color: rgba(255,255,255,0.7); }
+      .nav-links.open .nav-dropdown-right { left: 0; right: auto; }
       .mobile-toggle { display: block; }
     }
     @media print{.header,.page-hero,.config-section,.subscribe-float,.footer,.print-btn,.disclaimer{display:none!important}.workout-result{display:block!important}}
@@ -93,10 +78,16 @@
   <!-- Header -->
   <header class="header">
     <div class="container">
-      <div class="header-inner">
-        <a href="/" class="logo"><img src="/assets/logo-full-dark.svg" alt="TechLife Insights" style="height:44px;width:auto;"></a>
-        <nav class="nav-links" id="navLinks">
-          <a href="/" class="nav-link" style="font-weight:700;color:#fff;">Home</a>
+      <div class="header-top">
+        <a href="/" class="logo">
+          <img src="/assets/logo-full-dark.svg" alt="TechLife Insights">
+          <span class="logo-text">TechLife Insights</span>
+        </a>
+        <button class="mobile-toggle" onclick="document.getElementById('navLinks').classList.toggle('open')" aria-label="Menu">☰</button>
+      </div>
+      <nav class="nav-links" id="navLinks">
+        <div class="nav-main">
+          <a href="/" class="nav-link nav-home">Home</a>
           
           <div class="nav-item">
             <a href="/ai_tools/" class="nav-link">AI Tools &amp; SaaS</a>
@@ -138,9 +129,11 @@
             <div class="nav-dropdown"><a href="/remote_work/office_setup/">Office Setup</a><a href="/remote_work/productivity_apps/">Productivity Apps</a><a href="/remote_work/remote_jobs/">Remote Jobs</a><a href="/remote_work/equipment/">Equipment &amp; Gear</a><a href="/remote_work/tips/">Tips &amp; Guides</a><a href="/remote_work/coworking/">Coworking &amp; Spaces</a></div>
           </div>
           
+        </div>
+        <div class="nav-tools">
           <div class="nav-item">
-            <a href="/tools/" class="nav-link">🛠️ Tools</a>
-            <div class="nav-dropdown">
+            <a href="/tools/" class="nav-link nav-tools-link">🛠️ Tools</a>
+            <div class="nav-dropdown nav-dropdown-right">
               <a href="/tools/deal-finder.html">🔍 Deal Finder</a>
               <a href="/tools/ai-tool-finder.html">🤖 AI Tool Directory</a>
               <a href="/tools/budget-calculator.html">💰 Budget Calculator</a>
@@ -151,56 +144,45 @@
               <a href="/personal_finance/markets.html">📊 Market Data</a>
             </div>
           </div>
-        </nav>
-        <button class="mobile-toggle" onclick="document.getElementById('navLinks').classList.toggle('open')" aria-label="Menu">☰</button>
-      </div>
+        </div>
+      </nav>
     </div>
   </header>
 
   <div class="page-hero"><h1>💪 Workout Generator</h1><p>Get a custom workout plan based on your goals, equipment, and available time</p></div>
 
   <div class="container"><div class="config-section">
-    <div class="config-card" id="card-goal"><h2>🎯 Fitness Goal</h2><div class="option-grid" data-group="goal">
-      <button class="option-btn" data-val="strength">Build Strength</button>
-      <button class="option-btn" data-val="muscle">Build Muscle</button>
-      <button class="option-btn" data-val="cardio">Improve Cardio</button>
-      <button class="option-btn" data-val="weight_loss">Lose Weight</button>
-      <button class="option-btn" data-val="flexibility">Flexibility</button>
-      <button class="option-btn" data-val="general">General Fitness</button>
+    <div class="config-card"><h2>🎯 Fitness Goal</h2><div class="option-grid" id="goalOptions">
+      <button class="option-btn" data-val="strength" onclick="selectOption(this,'goal')">Build Strength</button>
+      <button class="option-btn" data-val="muscle" onclick="selectOption(this,'goal')">Build Muscle</button>
+      <button class="option-btn" data-val="cardio" onclick="selectOption(this,'goal')">Improve Cardio</button>
+      <button class="option-btn" data-val="weight_loss" onclick="selectOption(this,'goal')">Lose Weight</button>
+      <button class="option-btn" data-val="flexibility" onclick="selectOption(this,'goal')">Flexibility</button>
+      <button class="option-btn" data-val="general" onclick="selectOption(this,'goal')">General Fitness</button>
     </div></div>
-    <div class="config-card" id="card-equip"><h2>🏋️ Equipment Available</h2><div class="option-grid" data-group="equip">
-      <button class="option-btn" data-val="none">No Equipment</button>
-      <button class="option-btn" data-val="dumbbells">Dumbbells Only</button>
-      <button class="option-btn" data-val="home">Home Gym (Bands, DB, Bench)</button>
-      <button class="option-btn" data-val="full">Full Gym</button>
+    <div class="config-card"><h2>🏋️ Equipment Available</h2><div class="option-grid" id="equipOptions">
+      <button class="option-btn" data-val="none" onclick="selectOption(this,'equip')">No Equipment</button>
+      <button class="option-btn" data-val="dumbbells" onclick="selectOption(this,'equip')">Dumbbells Only</button>
+      <button class="option-btn" data-val="home" onclick="selectOption(this,'equip')">Home Gym (Bands, DB, Bench)</button>
+      <button class="option-btn" data-val="full" onclick="selectOption(this,'equip')">Full Gym</button>
     </div></div>
-    <div class="config-card" id="card-time"><h2>⏱️ Available Time</h2><div class="option-grid" data-group="time">
-      <button class="option-btn" data-val="15">15 min</button>
-      <button class="option-btn" data-val="30">30 min</button>
-      <button class="option-btn" data-val="45">45 min</button>
-      <button class="option-btn" data-val="60">60 min</button>
+    <div class="config-card"><h2>⏱️ Available Time</h2><div class="option-grid" id="timeOptions">
+      <button class="option-btn" data-val="15" onclick="selectOption(this,'time')">15 min</button>
+      <button class="option-btn" data-val="30" onclick="selectOption(this,'time')">30 min</button>
+      <button class="option-btn" data-val="45" onclick="selectOption(this,'time')">45 min</button>
+      <button class="option-btn" data-val="60" onclick="selectOption(this,'time')">60 min</button>
     </div></div>
-    <div class="config-card" id="card-level"><h2>📊 Fitness Level</h2><div class="option-grid" data-group="level">
-      <button class="option-btn" data-val="beginner">Beginner</button>
-      <button class="option-btn" data-val="intermediate">Intermediate</button>
-      <button class="option-btn" data-val="advanced">Advanced</button>
+    <div class="config-card"><h2>📊 Fitness Level</h2><div class="option-grid" id="levelOptions">
+      <button class="option-btn" data-val="beginner" onclick="selectOption(this,'level')">Beginner</button>
+      <button class="option-btn" data-val="intermediate" onclick="selectOption(this,'level')">Intermediate</button>
+      <button class="option-btn" data-val="advanced" onclick="selectOption(this,'level')">Advanced</button>
     </div></div>
-    <button class="btn" id="generateBtn" disabled>🔒 Generate My Workout</button>
-    <p class="btn-hint" id="btnHint">Select all 4 options above to unlock your workout</p>
+    <button class="btn" onclick="generateWorkout()">Generate My Workout</button>
   </div>
 
   <div class="workout-result" id="workoutResult">
     <div class="workout-header"><h2 id="workoutTitle">Your Workout</h2><div><span class="stats" id="workoutStats"></span> <button class="print-btn" onclick="window.print()">🖨️ Print</button></div></div>
     <div id="exerciseList"></div>
-  </div>
-
-  <!-- Equipment & Gear Recommendations (affiliate-ready) -->
-  <div class="workout-result" id="gearRecs" style="display:none">
-    <div style="background:#fff;border:1px solid #ddd6fe;border-radius:10px;padding:24px;margin-top:20px">
-      <h3 style="font-size:16px;font-weight:800;color:#5b21b6;margin-bottom:14px">🛒 Gear Up for Your Workout</h3>
-      <div id="gearContent"></div>
-      <p style="font-size:11px;color:var(--text-secondary);margin-top:12px">Prices & availability may vary. Some links may be affiliate links.</p>
-    </div>
   </div>
 
   <div class="disclaimer"><strong>Disclaimer:</strong> This workout generator provides general exercise suggestions for informational purposes only. It is not a substitute for professional medical or fitness advice. Consult a doctor before starting any exercise program. Listen to your body and stop if you feel pain.</div>
@@ -210,82 +192,18 @@
   <a href="https://techlife-insights.kit.com/be266c00d5" target="_blank" rel="noopener" class="subscribe-float">📬 Subscribe</a>
 
   <script>
-  /* ── Affiliate config (injected from settings.yaml) ── */
-  var WAFF_TAG = 'techlife0ac-20';
-  function amzSearch(q){ return 'https://www.amazon.com/s?k='+encodeURIComponent(q)+'&tag='+WAFF_TAG; }
-  var gearMap = {
-    dumbbells: [
-      {name:'Adjustable Dumbbells', icon:'🏋️', q:'adjustable dumbbells set'},
-      {name:'Exercise Mat', icon:'🧘', q:'thick exercise mat'},
-      {name:'Workout Gloves', icon:'🧤', q:'workout gloves weight lifting'}
-    ],
-    home: [
-      {name:'Resistance Bands Set', icon:'💪', q:'resistance bands set workout'},
-      {name:'Adjustable Weight Bench', icon:'🪑', q:'adjustable weight bench'},
-      {name:'Pull-Up Bar', icon:'🔩', q:'doorway pull up bar'},
-      {name:'Foam Roller', icon:'🧊', q:'foam roller muscle recovery'}
-    ],
-    full: [
-      {name:'Lifting Belt', icon:'🔒', q:'weightlifting belt leather'},
-      {name:'Wrist Wraps', icon:'✋', q:'wrist wraps weightlifting'},
-      {name:'Gym Bag', icon:'👜', q:'gym bag with shoe compartment'}
-    ],
-    none: [
-      {name:'Exercise Mat', icon:'🧘', q:'thick exercise mat home workout'},
-      {name:'Jump Rope', icon:'⚡', q:'speed jump rope fitness'},
-      {name:'Resistance Bands', icon:'💪', q:'resistance bands set'}
-    ]
-  };
-  function showGear(equip) {
-    var items = gearMap[equip] || gearMap.none;
-    var html = '';
-    items.forEach(function(g){
-      html += '<div style="display:flex;align-items:center;gap:14px;padding:10px 0;border-bottom:1px solid #e5e7eb">';
-      html += '<span style="font-size:24px">'+g.icon+'</span>';
-      html += '<span style="flex:1;font-size:14px;font-weight:600">'+g.name+'</span>';
-      html += '<a href="'+amzSearch(g.q)+'" target="_blank" rel="noopener" style="background:#f59e0b;color:#111;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:700;text-decoration:none">Shop on Amazon \u2192</a>';
-      html += '</div>';
-    });
-    document.getElementById('gearContent').innerHTML = html;
-    document.getElementById('gearRecs').style.display = 'block';
-  }
-
   var sel={goal:'',equip:'',time:'',level:''};
-
-  // Event delegation — one listener on the whole config section
-  document.querySelector('.config-section').addEventListener('click', function(e) {
-    var btn = e.target.closest('.option-btn');
-    if (!btn) return;
-    var group = btn.closest('[data-group]').dataset.group;
-    sel[group] = btn.dataset.val;
-    btn.closest('[data-group]').querySelectorAll('.option-btn').forEach(function(b){b.classList.remove('selected');});
+  function selectOption(btn,key){
+    sel[key]=btn.dataset.val;
+    btn.parentElement.querySelectorAll('.option-btn').forEach(function(b){b.classList.remove('selected')});
     btn.classList.add('selected');
-    document.getElementById('card-' + group).classList.add('done');
-    checkReady();
-  });
-
-  function checkReady() {
-    var filled = [sel.goal, sel.equip, sel.time, sel.level].filter(Boolean).length;
-    var genBtn = document.getElementById('generateBtn');
-    var hint   = document.getElementById('btnHint');
-    genBtn.disabled = filled < 4;
-    if (filled === 4) {
-      genBtn.textContent = '💪 Generate My Workout';
-      hint.textContent = '';
-    } else {
-      var left = 4 - filled;
-      genBtn.textContent = '🔒 Generate My Workout';
-      hint.textContent = left + ' selection' + (left > 1 ? 's' : '') + ' remaining';
-    }
   }
-
-  document.getElementById('generateBtn').addEventListener('click', generateWorkout);
 
   var exercises={
     bodyweight:{warmup:['Jumping Jacks','High Knees','Arm Circles','Leg Swings','Bodyweight Squats'],
       strength:['Push-ups','Diamond Push-ups','Pike Push-ups','Bodyweight Squats','Lunges','Glute Bridges','Plank','Side Plank','Superman','Tricep Dips (chair)','Bulgarian Split Squats','Calf Raises'],
       cardio:['Burpees','Mountain Climbers','Jump Squats','High Knees','Butt Kicks','Skaters','Tuck Jumps','Bear Crawls'],
-      flexibility:['Cat-Cow Stretch','Pigeon Pose','Standing Hamstring Stretch','Quad Stretch','Child’s Pose','Seated Twist','Hip Flexor Stretch','Shoulder Stretch']},
+      flexibility:['Cat-Cow Stretch','Pigeon Pose','Standing Hamstring Stretch','Quad Stretch','Child's Pose','Seated Twist','Hip Flexor Stretch','Shoulder Stretch']},
     dumbbells:{strength:['Dumbbell Bench Press','Dumbbell Rows','Dumbbell Shoulder Press','Goblet Squats','Romanian Deadlifts','Bicep Curls','Tricep Extensions','Lateral Raises','Dumbbell Lunges'],
       cardio:['Dumbbell Thrusters','Renegade Rows','Dumbbell Swings','Man Makers']},
     home:{strength:['Resistance Band Pull-aparts','Band-assisted Pull-ups','Incline Dumbbell Press','Dumbbell Flyes','Bent Over Rows','Step-ups','Band Squats','Floor Press'],
@@ -297,7 +215,7 @@
   function pick(arr,n){var a=arr.slice();var r=[];for(var i=0;i<Math.min(n,a.length);i++){var idx=Math.floor(Math.random()*a.length);r.push(a.splice(idx,1)[0]);}return r;}
 
   function generateWorkout(){
-    if(!sel.goal||!sel.equip||!sel.time||!sel.level){return;}
+    if(!sel.goal||!sel.equip||!sel.time||!sel.level){alert('Please select all options');return;}
     var mins=parseInt(sel.time);var numExercises=Math.max(3,Math.floor(mins/5));
     var pool=exercises.bodyweight;var equipKey=sel.equip;
     if(equipKey==='dumbbells')pool={warmup:pool.warmup,strength:pool.strength.concat(exercises.dumbbells.strength),cardio:pool.cardio.concat(exercises.dumbbells.cardio),flexibility:pool.flexibility};
@@ -323,43 +241,12 @@
     document.getElementById('workoutTitle').textContent=goalNames[sel.goal]+' Workout';
     document.getElementById('workoutStats').textContent=mins+' min · '+workout.length+' exercises · '+sel.level;
 
-    // Summary strip
-    var summaryHtml='<div class="workout-summary">'
-      +'<div class="summary-box"><div class="s-val">'+workout.length+'</div><div class="s-lab">Exercises</div></div>'
-      +'<div class="summary-box"><div class="s-val">'+mins+'</div><div class="s-lab">Minutes</div></div>'
-      +'<div class="summary-box"><div class="s-val">'+sets+'</div><div class="s-lab">Sets Each</div></div>'
-      +'</div>';
-
-    // Group by phase and render with colored headers
-    var phases=[
-      {key:'Warm-up', cls:'warmup', icon:'🔥', label:'Warm-Up'},
-      {key:'Main',    cls:'main',   icon:'💪', label:'Main Set'},
-      {key:'Cool-down',cls:'cooldown',icon:'🧘',label:'Cool-Down'}
-    ];
-    var grouped={};
-    workout.forEach(function(ex){if(!grouped[ex.phase])grouped[ex.phase]=[];grouped[ex.phase].push(ex);});
-    var listHtml=''; var counter=1;
-    phases.forEach(function(ph){
-      var exs=grouped[ph.key]; if(!exs||!exs.length) return;
-      listHtml+='<div class="phase-section"><div class="phase-header '+ph.cls+'">'+ph.icon+' '+ph.label+' &mdash; '+exs.length+' exercise'+(exs.length>1?'s':'')+'</div>';
-      exs.forEach(function(ex){
-        listHtml+='<div class="exercise-card '+ph.cls+'">'
-          +'<div class="exercise-num '+ph.cls+'">'+counter+'</div>'
-          +'<div class="exercise-info"><h3>'+ex.name+'</h3>'
-          +'<div class="exercise-pills">'
-          +'<span class="pill sets">'+ex.sets+' set'+(ex.sets>1?'s':'')+'</span>'
-          +'<span class="pill reps">'+ex.reps+'</span>'
-          +'<span class="pill rest">Rest: '+ex.rest+'</span>'
-          +'</div></div></div>';
-        counter++;
-      });
-      listHtml+='</div>';
+    var html='';workout.forEach(function(ex,i){
+      html+='<div class="exercise-card"><div class="exercise-num">'+(i+1)+'</div><div class="exercise-info"><h3>'+ex.name+'</h3><p>'+ex.phase+'</p><div class="exercise-detail"><span>'+ex.sets+' set'+(ex.sets>1?'s':'')+'</span><span>'+ex.reps+'</span><span>Rest: '+ex.rest+'</span></div></div></div>';
     });
-
-    document.getElementById('exerciseList').innerHTML=summaryHtml+listHtml;
+    document.getElementById('exerciseList').innerHTML=html;
     document.getElementById('workoutResult').style.display='block';
     document.getElementById('workoutResult').scrollIntoView({behavior:'smooth'});
-    showGear(sel.equip);
   }
   </script>
 </body></html>

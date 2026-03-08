@@ -14,18 +14,24 @@
     *{box-sizing:border-box;margin:0;padding:0}body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,sans-serif;font-size:16px;line-height:1.6}a{color:var(--accent);text-decoration:none}.container{max-width:var(--max-width);margin:0 auto;padding:0 24px}
 
     .header { position: sticky; top: 0; z-index: 50; background: #1e3a8a; }
-    .header-inner { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; }
-    .logo { display: flex; align-items: center; }
-    .logo img { height: 44px; width: auto; }
-    .nav-links { display: flex; gap: 2px; align-items: center; flex-wrap: wrap; }
-    .nav-link { padding: 6px 11px; border-radius: 6px; font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.75); transition: all 0.15s; white-space: nowrap; text-decoration: none; }
+    .header-top { display: flex; align-items: center; justify-content: space-between; padding: 16px 0 10px; }
+    .logo { display: flex; align-items: center; gap: 14px; text-decoration: none; color: #fff; }
+    .logo img { height: 48px; width: auto; }
+    .logo-text { font-size: 24px; font-weight: 800; letter-spacing: -0.02em; color: #fff; }
+    .nav-links { display: flex; align-items: center; justify-content: space-between; padding: 0 0 10px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px; gap: 8px; }
+    .nav-main { display: flex; gap: 2px; align-items: center; flex-wrap: wrap; }
+    .nav-tools { display: flex; align-items: center; margin-left: auto; padding-left: 16px; border-left: 1px solid rgba(255,255,255,0.15); }
+    .nav-link { padding: 6px 12px; border-radius: 6px; font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.75); transition: all 0.15s; white-space: nowrap; text-decoration: none; }
     .nav-link:hover, .nav-link.active { color: #fff; background: rgba(255,255,255,0.12); }
+    .nav-home { font-size: 14px; font-weight: 700; color: #fff; padding: 6px 16px; }
+    .nav-tools-link { font-size: 14px; font-weight: 600; color: rgba(255,255,255,0.9); }
     .nav-item { position: relative; display: inline-block; }
     .nav-item:hover .nav-dropdown { display: block; }
     .nav-dropdown { display: none; position: absolute; top: 100%; left: 0; background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; box-shadow: 0 8px 30px rgba(0,0,0,0.12); min-width: 210px; padding: 6px 0; z-index: 100; }
+    .nav-dropdown-right { left: auto; right: 0; }
     .nav-dropdown a { display: block; padding: 8px 16px; font-size: 13px; color: #111827; font-weight: 500; transition: background 0.1s; text-decoration: none; }
     .nav-dropdown a:hover { background: #eff6ff; color: #2563eb; }
-    .mobile-toggle { display: none; background: none; border: none; color: #fff; font-size: 22px; cursor: pointer; padding: 6px; }
+    .mobile-toggle { display: none; background: none; border: none; color: #fff; font-size: 24px; cursor: pointer; padding: 6px; }
     .page-hero{background:linear-gradient(135deg,#c2410c 0%,#ea580c 100%);color:#fff;padding:48px 0;text-align:center}
     .page-hero h1{font-size:32px;font-weight:900;margin-bottom:8px}.page-hero p{font-size:16px;opacity:.85;max-width:500px;margin:0 auto}
     .input-section{padding:32px 0}
@@ -37,10 +43,8 @@
     .pet-btn span{display:block;font-size:28px;margin-bottom:4px}
     textarea{width:100%;padding:14px;border:1px solid var(--border);border-radius:8px;font-size:14px;font-family:inherit;resize:vertical;min-height:100px;outline:none}
     textarea:focus{border-color:var(--accent)}
-    .btn{background:var(--accent);color:#fff;border:none;padding:14px 28px;border-radius:8px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;width:100%;margin-top:12px;transition:all .2s}
-    .btn:hover:not(:disabled){background:#c2410c}
-    .btn:disabled{background:#d1d5db;color:#9ca3af;cursor:not-allowed}
-    .btn-hint{text-align:center;font-size:13px;color:var(--text-secondary);margin-top:8px;min-height:18px}
+    .btn{background:var(--accent);color:#fff;border:none;padding:14px 28px;border-radius:8px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;width:100%;margin-top:12px;transition:background .2s}
+    .btn:hover{background:#c2410c}
     .results{display:none;margin-top:24px}
     .score-card{text-align:center;padding:32px;border-radius:var(--radius);margin-bottom:20px}
     .score-card.good{background:#ecfdf5;border:2px solid #a7f3d0}.score-card.ok{background:#fffbeb;border:2px solid #fde68a}.score-card.bad{background:#fef2f2;border:2px solid #fecaca}
@@ -58,11 +62,15 @@
     .subscribe-float { position: fixed; bottom: 24px; right: 24px; z-index: 1000; background: #2563eb; color: #fff !important; padding: 14px 22px; border-radius: 50px; font-size: 14px; font-weight: 700; text-decoration: none !important; box-shadow: 0 4px 20px rgba(37,99,235,0.45); display: flex; align-items: center; gap: 8px; transition: all 0.2s; font-family: 'Inter', sans-serif; }
     .subscribe-float:hover { background: #1d4ed8; transform: translateY(-2px); box-shadow: 0 6px 24px rgba(37,99,235,0.55); color: #fff !important; }
     @media (max-width: 768px) {
+      .logo-text { font-size: 18px; }
       .nav-links { display: none; }
       .nav-links.open { display: flex; flex-direction: column; position: absolute; top: 100%; left: 0; right: 0; background: #1e3a8a; padding: 12px 24px; border-top: 1px solid rgba(255,255,255,0.1); gap: 4px; z-index: 200; }
+      .nav-links.open .nav-main { flex-direction: column; width: 100%; }
+      .nav-links.open .nav-tools { border-left: none; padding-left: 0; margin-left: 0; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 8px; margin-top: 4px; width: 100%; }
       .nav-links.open .nav-item { display: block; }
       .nav-links.open .nav-dropdown { position: static; box-shadow: none; border: none; background: rgba(255,255,255,0.05); border-radius: 6px; margin: 4px 0; }
       .nav-links.open .nav-dropdown a { color: rgba(255,255,255,0.7); }
+      .nav-links.open .nav-dropdown-right { left: 0; right: auto; }
       .mobile-toggle { display: block; }
     }
   </style>
@@ -71,10 +79,16 @@
   <!-- Header -->
   <header class="header">
     <div class="container">
-      <div class="header-inner">
-        <a href="/" class="logo"><img src="/assets/logo-full-dark.svg" alt="TechLife Insights" style="height:44px;width:auto;"></a>
-        <nav class="nav-links" id="navLinks">
-          <a href="/" class="nav-link" style="font-weight:700;color:#fff;">Home</a>
+      <div class="header-top">
+        <a href="/" class="logo">
+          <img src="/assets/logo-full-dark.svg" alt="TechLife Insights">
+          <span class="logo-text">TechLife Insights</span>
+        </a>
+        <button class="mobile-toggle" onclick="document.getElementById('navLinks').classList.toggle('open')" aria-label="Menu">☰</button>
+      </div>
+      <nav class="nav-links" id="navLinks">
+        <div class="nav-main">
+          <a href="/" class="nav-link nav-home">Home</a>
           
           <div class="nav-item">
             <a href="/ai_tools/" class="nav-link">AI Tools &amp; SaaS</a>
@@ -116,9 +130,11 @@
             <div class="nav-dropdown"><a href="/remote_work/office_setup/">Office Setup</a><a href="/remote_work/productivity_apps/">Productivity Apps</a><a href="/remote_work/remote_jobs/">Remote Jobs</a><a href="/remote_work/equipment/">Equipment &amp; Gear</a><a href="/remote_work/tips/">Tips &amp; Guides</a><a href="/remote_work/coworking/">Coworking &amp; Spaces</a></div>
           </div>
           
+        </div>
+        <div class="nav-tools">
           <div class="nav-item">
-            <a href="/tools/" class="nav-link">🛠️ Tools</a>
-            <div class="nav-dropdown">
+            <a href="/tools/" class="nav-link nav-tools-link">🛠️ Tools</a>
+            <div class="nav-dropdown nav-dropdown-right">
               <a href="/tools/deal-finder.html">🔍 Deal Finder</a>
               <a href="/tools/ai-tool-finder.html">🤖 AI Tool Directory</a>
               <a href="/tools/budget-calculator.html">💰 Budget Calculator</a>
@@ -129,9 +145,8 @@
               <a href="/personal_finance/markets.html">📊 Market Data</a>
             </div>
           </div>
-        </nav>
-        <button class="mobile-toggle" onclick="document.getElementById('navLinks').classList.toggle('open')" aria-label="Menu">☰</button>
-      </div>
+        </div>
+      </nav>
     </div>
   </header>
 
@@ -140,14 +155,13 @@
   <div class="container"><div class="input-section">
     <div class="input-card">
       <h2>Select Pet Type</h2>
-      <div class="pet-type" id="petType">
-        <button class="pet-btn selected" data-pet="dog"><span>🐕</span>Dog</button>
-        <button class="pet-btn" data-pet="cat"><span>🐱</span>Cat</button>
+      <div class="pet-type">
+        <button class="pet-btn selected" onclick="selectPet(this,'dog')"><span>🐕</span>Dog</button>
+        <button class="pet-btn" onclick="selectPet(this,'cat')"><span>🐱</span>Cat</button>
       </div>
       <h2>Paste Ingredient List</h2>
-      <textarea id="ingredients" placeholder="Paste the ingredient list from your pet food packaging here...&#10;&#10;Example: Chicken, Brown Rice, Chicken Meal, Barley, Oatmeal, Chicken Fat, Dried Beet Pulp, Natural Flavor..." oninput="checkAnalyzeReady()"></textarea>
-      <button class="btn" id="analyzeBtn" disabled>🔒 Analyze Ingredients</button>
-      <p class="btn-hint" id="analyzeHint">Paste the ingredient list above to analyze</p>
+      <textarea id="ingredients" placeholder="Paste the ingredient list from your pet food packaging here...&#10;&#10;Example: Chicken, Brown Rice, Chicken Meal, Barley, Oatmeal, Chicken Fat, Dried Beet Pulp, Natural Flavor..."></textarea>
+      <button class="btn" onclick="analyzeFood()">Analyze Ingredients</button>
     </div>
 
     <div class="results" id="results">
@@ -157,15 +171,6 @@
       <div class="tips-card" id="tipsCard"></div>
     </div>
 
-    <!-- Pet food brand recommendations (affiliate-ready) -->
-    <div class="results" id="brandRecs" style="display:none;margin-top:0">
-      <div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:24px">
-        <h3 style="font-size:16px;font-weight:800;color:#c2410c;margin-bottom:14px">🛒 Top-Rated Pet Food Brands</h3>
-        <div id="brandContent"></div>
-        <p style="font-size:11px;color:var(--text-secondary);margin-top:12px">Some links may be affiliate links — we may earn a commission at no extra cost to you.</p>
-      </div>
-    </div>
-
     <div class="disclaimer"><strong>Disclaimer:</strong> This tool provides general informational assessments based on common pet nutrition guidelines. It is NOT a substitute for professional veterinary advice. Individual pets may have specific dietary needs, allergies, or health conditions. Always consult your veterinarian before making changes to your pet's diet.</div>
   </div></div>
 
@@ -173,69 +178,8 @@
   <a href="https://techlife-insights.kit.com/be266c00d5" target="_blank" rel="noopener" class="subscribe-float">📬 Subscribe</a>
 
   <script>
-  /* ── Affiliate config (injected from settings.yaml) ── */
-  var PAFF = {
-    amazon_tag: 'techlife0ac-20',
-    chewy:      ''
-  };
-  function chewyUrl(q) {
-    var base = 'https://www.chewy.com/s?query=' + encodeURIComponent(q);
-    return PAFF.chewy ? base + '&ref=' + PAFF.chewy : base;
-  }
-  function amzPetUrl(q) {
-    return 'https://www.amazon.com/s?k=' + encodeURIComponent(q) + '&tag=' + PAFF.amazon_tag;
-  }
-  var petBrands = {
-    dog: [
-      {name:'Blue Buffalo Life Protection', q:'Blue Buffalo Life Protection dog food', icon:'🐕'},
-      {name:'Taste of the Wild', q:'Taste of the Wild dog food grain free', icon:'🐺'},
-      {name:'Orijen Original', q:'Orijen original dog food', icon:'🥩'},
-      {name:'Wellness CORE', q:'Wellness CORE grain free dog food', icon:'💚'}
-    ],
-    cat: [
-      {name:'Blue Buffalo Wilderness', q:'Blue Buffalo Wilderness cat food', icon:'🐱'},
-      {name:'Taste of the Wild Canyon River', q:'Taste of the Wild Canyon River cat food', icon:'🐟'},
-      {name:'Orijen Cat & Kitten', q:'Orijen cat and kitten food', icon:'🥩'},
-      {name:'Wellness CORE Indoor', q:'Wellness CORE indoor cat food', icon:'💚'}
-    ]
-  };
-  function showBrandRecs(pet) {
-    var brands = petBrands[pet] || petBrands.dog;
-    var html = '';
-    brands.forEach(function(b){
-      html += '<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #fed7aa;flex-wrap:wrap">';
-      html += '<span style="font-size:24px">'+b.icon+'</span>';
-      html += '<span style="flex:1;font-size:14px;font-weight:600;min-width:160px">'+b.name+'</span>';
-      html += '<a href="'+chewyUrl(b.q)+'" target="_blank" rel="noopener" style="background:#ea580c;color:#fff;padding:7px 12px;border-radius:6px;font-size:12px;font-weight:700;text-decoration:none">Chewy \u2192</a> ';
-      html += '<a href="'+amzPetUrl(b.q)+'" target="_blank" rel="noopener" style="background:#f59e0b;color:#111;padding:7px 12px;border-radius:6px;font-size:12px;font-weight:700;text-decoration:none">Amazon \u2192</a>';
-      html += '</div>';
-    });
-    document.getElementById('brandContent').innerHTML = html;
-    document.getElementById('brandRecs').style.display = 'block';
-  }
-
   var petType='dog';
-
-  // Event delegation for pet type buttons
-  document.getElementById('petType').addEventListener('click', function(e) {
-    var btn = e.target.closest('.pet-btn');
-    if (!btn) return;
-    petType = btn.dataset.pet;
-    document.querySelectorAll('.pet-btn').forEach(function(b){b.classList.remove('selected');});
-    btn.classList.add('selected');
-    checkAnalyzeReady();
-  });
-
-  document.getElementById('analyzeBtn').addEventListener('click', analyzeFood);
-
-  function checkAnalyzeReady() {
-    var hasIngredients = document.getElementById('ingredients').value.trim().length > 0;
-    var btn  = document.getElementById('analyzeBtn');
-    var hint = document.getElementById('analyzeHint');
-    btn.disabled = !hasIngredients;
-    btn.textContent = hasIngredients ? '🔍 Analyze Ingredients' : '🔒 Analyze Ingredients';
-    hint.textContent = hasIngredients ? '' : 'Paste the ingredient list above to analyze';
-  }
+  function selectPet(btn,type){petType=type;document.querySelectorAll('.pet-btn').forEach(function(b){b.classList.remove('selected')});btn.classList.add('selected')}
 
   var goodIngredients={dog:['chicken','beef','salmon','turkey','lamb','duck','venison','bison','brown rice','sweet potato','peas','blueberries','cranberries','spinach','carrots','pumpkin','flaxseed','fish oil','coconut oil','turmeric','probiotics','glucosamine','chondroitin','egg','sardine','herring','oatmeal','barley','quinoa','kale','broccoli','apple'],cat:['chicken','tuna','salmon','turkey','duck','rabbit','sardine','herring','egg','liver','heart','fish oil','pumpkin','cranberries','blueberries','taurine','probiotics','flaxseed']};
   var okIngredients=['chicken meal','fish meal','brewers rice','rice','corn','wheat','soybean','beet pulp','chicken fat','natural flavor','cellulose','tomato pomace','potassium chloride','salt','calcium carbonate','yeast','dried egg','pork meal','corn gluten meal'];
@@ -243,8 +187,9 @@
 
   function analyzeFood(){
     var raw=document.getElementById('ingredients').value.trim();
-    if(!raw){return;}
-    var ings=raw.split(/[,;\n]/).map(function(s){return s.trim()}).filter(function(s){return s.length>0});
+    if(!raw){alert('Please paste ingredient list');return;}
+    var ings=raw.split(/,|;|
+/).map(function(s){return s.trim()}).filter(function(s){return s.length>0});
     var results=[];var totalScore=0;
     ings.forEach(function(ing){
       var lower=ing.toLowerCase();var rating='ok';var note='Common ingredient';
@@ -273,7 +218,6 @@
     document.getElementById('tipsCard').innerHTML=tips;
     document.getElementById('results').style.display='block';
     document.getElementById('results').scrollIntoView({behavior:'smooth'});
-    showBrandRecs(petType);
   }
   </script>
 </body></html>
