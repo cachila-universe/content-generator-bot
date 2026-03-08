@@ -83,7 +83,7 @@ class TwitterPoster:
             tweet_text = f"📝 {title[:max_title]}…\n\n{url}\n\n{hashtags}"
 
         try:
-            response = self.client.create_tweet(text=tweet_text)
+            response = self.client.create_tweet(text=tweet_text, user_auth=True)
             tweet_id = response.data["id"]
             logger.info("Tweet posted: %s", tweet_id)
             return tweet_id
@@ -117,6 +117,7 @@ class TwitterPoster:
             response = self.client.create_tweet(
                 text=caption,
                 media_ids=[media.media_id],
+                user_auth=True,
             )
             tweet_id = response.data["id"]
             logger.info("Video tweet posted: %s", tweet_id)
