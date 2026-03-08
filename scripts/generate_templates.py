@@ -32,49 +32,45 @@ SHARED_HEAD_FONTS = """  <link rel="icon" type="image/svg+xml" href="/assets/fav
 SHARED_NAV = """  <!-- Header -->
   <header class="header">
     <div class="container">
-      <div class="header-top">
-        <a href="/" class="logo">
-          <img src="/assets/logo-full-dark.svg" alt="TechLife Insights">
-          <span class="logo-text">TechLife Insights</span>
-        </a>
-        <button class="mobile-toggle" onclick="document.getElementById('navLinks').classList.toggle('open')" aria-label="Menu">☰</button>
-      </div>
-      <nav class="nav-links" id="navLinks">
-        <div class="nav-main">
-          <a href="/" class="nav-link nav-home">Home</a>
-          {% for nid, niche in niches.items() %}{% if niche.enabled %}
-          <div class="nav-item">
-            <a href="/{{ nid }}/" class="nav-link{% if nid == active_niche %} active{% endif %}">{{ niche.name }}</a>
-            {% if niche.subtopics %}<div class="nav-dropdown">{% for sub_id, sub in niche.subtopics.items() %}<a href="/{{ nid }}/{{ sub_id }}/">{{ sub.name }}</a>{% endfor %}</div>{% endif %}
+      <div class="header-inner">
+        <a href="/" class="logo"><img src="/assets/logo-full-dark.svg" alt="TechLife Insights"></a>
+        <nav class="nav-links" id="navLinks">
+          <div class="nav-main">
+            <a href="/" class="nav-link nav-home">Home</a>
+            {% for nid, niche in niches.items() %}{% if niche.enabled %}
+            <div class="nav-item">
+              <a href="/{{ nid }}/" class="nav-link{% if nid == active_niche %} active{% endif %}">{{ niche.name }}</a>
+              {% if niche.subtopics %}<div class="nav-dropdown">{% for sub_id, sub in niche.subtopics.items() %}<a href="/{{ nid }}/{{ sub_id }}/">{{ sub.name }}</a>{% endfor %}</div>{% endif %}
+            </div>
+            {% endif %}{% endfor %}
           </div>
-          {% endif %}{% endfor %}
-        </div>
-        <div class="nav-tools">
-          <div class="nav-item">
-            <a href="/tools/" class="nav-link nav-tools-link">🛠️ Tools</a>
-            <div class="nav-dropdown nav-dropdown-right">
-              <a href="/tools/deal-finder.html">🔍 Deal Finder</a>
-              <a href="/tools/ai-tool-finder.html">🤖 AI Tool Directory</a>
-              <a href="/tools/budget-calculator.html">💰 Budget Calculator</a>
-              <a href="/tools/workout-generator.html">💪 Workout Generator</a>
-              <a href="/tools/pet-food-checker.html">🐾 Pet Food Analyzer</a>
-              <a href="/tools/smart-home.html">🏠 Smart Home Hub</a>
-              <a href="/travel/search.html">✈️ Travel Search</a>
-              <a href="/personal_finance/markets.html">📊 Market Data</a>
+          <div class="nav-tools">
+            <div class="nav-item">
+              <a href="/tools/" class="nav-link nav-tools-link">🛠️ Tools</a>
+              <div class="nav-dropdown nav-dropdown-right">
+                <a href="/tools/deal-finder.html">🔍 Deal Finder</a>
+                <a href="/tools/ai-tool-finder.html">🤖 AI Tool Directory</a>
+                <a href="/tools/budget-calculator.html">💰 Budget Calculator</a>
+                <a href="/tools/workout-generator.html">💪 Workout Generator</a>
+                <a href="/tools/pet-food-checker.html">🐾 Pet Food Analyzer</a>
+                <a href="/tools/smart-home.html">🏠 Smart Home Hub</a>
+                <a href="/travel/search.html">✈️ Travel Search</a>
+                <a href="/personal_finance/markets.html">📊 Market Data</a>
+              </div>
             </div>
           </div>
-        </div>
-      </nav>
+        </nav>
+        <button class="mobile-toggle" onclick="document.getElementById('navLinks').classList.toggle('open')" aria-label="Menu">☰</button>
+      </div>
     </div>
   </header>"""
 
 SHARED_NAV_CSS = """
     .header { position: sticky; top: 0; z-index: 50; background: #1e3a8a; }
-    .header-top { display: flex; align-items: center; justify-content: space-between; padding: 16px 0 10px; }
-    .logo { display: flex; align-items: center; gap: 14px; text-decoration: none; color: #fff; }
+    .header-inner { display: flex; align-items: center; padding: 10px 0; gap: 16px; }
+    .logo { display: flex; align-items: center; flex-shrink: 0; }
     .logo img { height: 48px; width: auto; }
-    .logo-text { font-size: 24px; font-weight: 800; letter-spacing: -0.02em; color: #fff; }
-    .nav-links { display: flex; align-items: center; justify-content: space-between; padding: 0 0 10px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px; gap: 8px; }
+    .nav-links { display: flex; align-items: center; flex: 1; gap: 4px; }
     .nav-main { display: flex; gap: 2px; align-items: center; flex-wrap: wrap; }
     .nav-tools { display: flex; align-items: center; margin-left: auto; padding-left: 16px; border-left: 1px solid rgba(255,255,255,0.15); }
     .nav-link { padding: 6px 12px; border-radius: 6px; font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.75); transition: all 0.15s; white-space: nowrap; text-decoration: none; }
@@ -87,7 +83,7 @@ SHARED_NAV_CSS = """
     .nav-dropdown-right { left: auto; right: 0; }
     .nav-dropdown a { display: block; padding: 8px 16px; font-size: 13px; color: #111827; font-weight: 500; transition: background 0.1s; text-decoration: none; }
     .nav-dropdown a:hover { background: #eff6ff; color: #2563eb; }
-    .mobile-toggle { display: none; background: none; border: none; color: #fff; font-size: 24px; cursor: pointer; padding: 6px; }"""
+    .mobile-toggle { display: none; background: none; border: none; color: #fff; font-size: 24px; cursor: pointer; padding: 6px; flex-shrink: 0; }"""
 
 SHARED_SUBSCRIBE_FLOAT = """  <a href="https://techlife-insights.kit.com/be266c00d5" target="_blank" rel="noopener" class="subscribe-float">📬 Subscribe</a>"""
 
@@ -97,7 +93,6 @@ SHARED_SUBSCRIBE_CSS = """
 
 SHARED_MOBILE_CSS = """
     @media (max-width: 768px) {
-      .logo-text { font-size: 18px; }
       .nav-links { display: none; }
       .nav-links.open { display: flex; flex-direction: column; position: absolute; top: 100%; left: 0; right: 0; background: #1e3a8a; padding: 12px 24px; border-top: 1px solid rgba(255,255,255,0.1); gap: 4px; z-index: 200; }
       .nav-links.open .nav-main { flex-direction: column; width: 100%; }

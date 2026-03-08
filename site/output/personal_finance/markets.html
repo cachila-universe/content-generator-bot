@@ -16,11 +16,10 @@
     .disclaimer{background:#fffbeb;border:1px solid #fde68a;border-radius:var(--radius);padding:14px 18px;font-size:12px;color:#92400e;line-height:1.7;margin:24px 0}
     .header{position:sticky;top:0;z-index:50;background:#1e3a8a}
     .header .container{max-width:1200px;margin:0 auto;padding:0 24px}
-    .header-top{display:flex;align-items:center;justify-content:space-between;padding:16px 0 10px}
-    .logo{display:flex;align-items:center;gap:14px;text-decoration:none;color:#fff}
+    .header-inner{display:flex;align-items:center;padding:10px 0;gap:16px}
+    .logo{display:flex;align-items:center;flex-shrink:0}
     .logo img{height:48px;width:auto}
-    .logo-text{font-size:24px;font-weight:800;letter-spacing:-.02em;color:#fff}
-    .nav-links{display:flex;align-items:center;justify-content:space-between;padding:0 0 10px;border-top:1px solid rgba(255,255,255,.1);padding-top:10px;gap:8px}
+    .nav-links{display:flex;align-items:center;flex:1;gap:4px}
     .nav-main{display:flex;gap:2px;align-items:center;flex-wrap:wrap}
     .nav-tools{display:flex;align-items:center;margin-left:auto;padding-left:16px;border-left:1px solid rgba(255,255,255,.15)}
     .nav-link{padding:6px 11px;border-radius:6px;font-size:13px;font-weight:500;color:rgba(255,255,255,.75);transition:all .15s;white-space:nowrap;text-decoration:none}
@@ -33,7 +32,7 @@
     .nav-dropdown-right{left:auto;right:0}
     .nav-dropdown a{display:block;padding:8px 16px;font-size:13px;color:#111827;font-weight:500;transition:background .1s;text-decoration:none}
     .nav-dropdown a:hover{background:#eff6ff;color:#2563eb}
-    .mobile-toggle{display:none;background:none;border:none;color:#fff;font-size:24px;cursor:pointer;padding:6px}
+    .mobile-toggle{display:none;background:none;border:none;color:#fff;font-size:24px;cursor:pointer;padding:6px;flex-shrink:0}
     .subscribe-float{position:fixed;bottom:24px;right:24px;z-index:1000;background:#2563eb;color:#fff!important;padding:14px 22px;border-radius:50px;font-size:14px;font-weight:700;text-decoration:none!important;box-shadow:0 4px 20px rgba(37,99,235,.45);display:flex;align-items:center;gap:8px;transition:all .2s;font-family:'Inter',sans-serif}
     .subscribe-float:hover{background:#1d4ed8;transform:translateY(-2px);box-shadow:0 6px 24px rgba(37,99,235,.55)}
 
@@ -60,7 +59,6 @@
     @media(max-width:768px){.quick-search{flex-direction:column}.crypto-grid{grid-template-columns:1fr 1fr}}
 
     @media(max-width:768px){
-      .logo-text{font-size:18px}
       .nav-links{display:none}.nav-links.open{display:flex;flex-direction:column;position:absolute;top:100%;left:0;right:0;background:#1e3a8a;padding:12px 24px;border-top:1px solid rgba(255,255,255,.1);gap:4px;z-index:200}
       .nav-links.open .nav-main{flex-direction:column;width:100%}
       .nav-links.open .nav-tools{border-left:none;padding-left:0;margin-left:0;border-top:1px solid rgba(255,255,255,.1);padding-top:8px;margin-top:4px;width:100%}
@@ -73,74 +71,71 @@
 <body>
   <header class="header">
     <div class="container">
-      <div class="header-top">
-        <a href="/" class="logo">
-          <img src="/assets/logo-full-dark.svg" alt="TechLife Insights">
-          <span class="logo-text">TechLife Insights</span>
-        </a>
-        <button class="mobile-toggle" onclick="document.getElementById('navLinks').classList.toggle('open')" aria-label="Menu">☰</button>
-      </div>
-      <nav class="nav-links" id="navLinks">
-        <div class="nav-main">
-          <a href="/" class="nav-link nav-home">Home</a>
-          
-          <div class="nav-item">
-            <a href="/ai_tools/" class="nav-link">AI Tools &amp; SaaS</a>
-            <div class="nav-dropdown"><a href="/ai_tools/ai_apps/">AI Apps &amp; Software</a><a href="/ai_tools/ai_news/">AI News</a><a href="/ai_tools/ai_automation/">AI Automation</a><a href="/ai_tools/ai_for_business/">AI for Business</a><a href="/ai_tools/ai_creative/">AI Creative Tools</a><a href="/ai_tools/ai_coding/">AI for Developers</a></div>
+      <div class="header-inner">
+        <a href="/" class="logo"><img src="/assets/logo-full-dark.svg" alt="TechLife Insights"></a>
+        <nav class="nav-links" id="navLinks">
+          <div class="nav-main">
+            <a href="/" class="nav-link nav-home">Home</a>
+            
+            <div class="nav-item">
+              <a href="/ai_tools/" class="nav-link">AI Tools &amp; SaaS</a>
+              <div class="nav-dropdown"><a href="/ai_tools/ai_apps/">AI Apps &amp; Software</a><a href="/ai_tools/ai_news/">AI News</a><a href="/ai_tools/ai_automation/">AI Automation</a><a href="/ai_tools/ai_for_business/">AI for Business</a><a href="/ai_tools/ai_creative/">AI Creative Tools</a><a href="/ai_tools/ai_coding/">AI for Developers</a></div>
+            </div>
+            
+            <div class="nav-item">
+              <a href="/personal_finance/" class="nav-link">Personal Finance &amp; Investing</a>
+              <div class="nav-dropdown"><a href="/personal_finance/investing/">Investing</a><a href="/personal_finance/stocks/">Stocks</a><a href="/personal_finance/crypto/">Crypto</a><a href="/personal_finance/budgeting/">Budgeting &amp; Saving</a><a href="/personal_finance/market_news/">Market News</a><a href="/personal_finance/retirement/">Retirement</a><a href="/personal_finance/credit/">Credit &amp; Loans</a><a href="/personal_finance/real_estate/">Real Estate</a></div>
+            </div>
+            
+            <div class="nav-item">
+              <a href="/health_biohacking/" class="nav-link">Health &amp; Biohacking</a>
+              <div class="nav-dropdown"><a href="/health_biohacking/supplements/">Supplements &amp; Vitamins</a><a href="/health_biohacking/biohacking/">Biohacking</a><a href="/health_biohacking/nutrition/">Nutrition &amp; Diet</a><a href="/health_biohacking/sleep/">Sleep Optimization</a><a href="/health_biohacking/mental_health/">Mental Health</a><a href="/health_biohacking/longevity/">Longevity &amp; Anti-Aging</a></div>
+            </div>
+            
+            <div class="nav-item">
+              <a href="/home_tech/" class="nav-link">Home Tech &amp; Smart Devices</a>
+              <div class="nav-dropdown"><a href="/home_tech/smart_home/">Smart Home</a><a href="/home_tech/security/">Home Security</a><a href="/home_tech/appliances/">Smart Appliances</a><a href="/home_tech/entertainment/">Home Entertainment</a><a href="/home_tech/networking/">Wi-Fi &amp; Networking</a><a href="/home_tech/energy/">Energy &amp; Solar</a><a href="/home_tech/product_reviews/">Product Reviews</a></div>
+            </div>
+            
+            <div class="nav-item">
+              <a href="/travel/" class="nav-link">Travel</a>
+              <div class="nav-dropdown"><a href="/travel/tips/">Travel Tips &amp; Advice</a><a href="/travel/destinations/">Destinations</a><a href="/travel/flights/">Flights &amp; Airports</a><a href="/travel/hotels/">Hotels &amp; Accommodation</a><a href="/travel/car_rental/">Car Rental &amp; Transport</a><a href="/travel/travel_gear/">Travel Gear &amp; Products</a><a href="/travel/digital_nomad/">Digital Nomad</a><a href="/travel/travel_insurance/">Travel Insurance</a><a href="/travel/food_culture/">Food &amp; Culture</a></div>
+            </div>
+            
+            <div class="nav-item">
+              <a href="/pet_care/" class="nav-link">Pet Care &amp; Products</a>
+              <div class="nav-dropdown"><a href="/pet_care/dogs/">Dogs</a><a href="/pet_care/cats/">Cats</a><a href="/pet_care/pet_food/">Pet Food &amp; Nutrition</a><a href="/pet_care/pet_products/">Pet Products &amp; Gear</a><a href="/pet_care/pet_health/">Pet Health</a><a href="/pet_care/fish_aquarium/">Fish &amp; Aquarium</a><a href="/pet_care/exotic_pets/">Exotic &amp; Small Pets</a></div>
+            </div>
+            
+            <div class="nav-item">
+              <a href="/fitness_wellness/" class="nav-link">Fitness &amp; Wellness</a>
+              <div class="nav-dropdown"><a href="/fitness_wellness/workouts/">Workouts &amp; Training</a><a href="/fitness_wellness/equipment/">Gym Equipment &amp; Gear</a><a href="/fitness_wellness/nutrition/">Sports Nutrition</a><a href="/fitness_wellness/running/">Running &amp; Cardio</a><a href="/fitness_wellness/yoga_flexibility/">Yoga &amp; Flexibility</a><a href="/fitness_wellness/wearables/">Fitness Wearables</a><a href="/fitness_wellness/product_reviews/">Product Reviews</a></div>
+            </div>
+            
+            <div class="nav-item">
+              <a href="/remote_work/" class="nav-link">Remote Work &amp; Productivity</a>
+              <div class="nav-dropdown"><a href="/remote_work/office_setup/">Office Setup</a><a href="/remote_work/productivity_apps/">Productivity Apps</a><a href="/remote_work/remote_jobs/">Remote Jobs</a><a href="/remote_work/equipment/">Equipment &amp; Gear</a><a href="/remote_work/tips/">Tips &amp; Guides</a><a href="/remote_work/coworking/">Coworking &amp; Spaces</a></div>
+            </div>
+            
           </div>
-          
-          <div class="nav-item">
-            <a href="/personal_finance/" class="nav-link">Personal Finance &amp; Investing</a>
-            <div class="nav-dropdown"><a href="/personal_finance/investing/">Investing</a><a href="/personal_finance/stocks/">Stocks</a><a href="/personal_finance/crypto/">Crypto</a><a href="/personal_finance/budgeting/">Budgeting &amp; Saving</a><a href="/personal_finance/market_news/">Market News</a><a href="/personal_finance/retirement/">Retirement</a><a href="/personal_finance/credit/">Credit &amp; Loans</a><a href="/personal_finance/real_estate/">Real Estate</a></div>
-          </div>
-          
-          <div class="nav-item">
-            <a href="/health_biohacking/" class="nav-link">Health &amp; Biohacking</a>
-            <div class="nav-dropdown"><a href="/health_biohacking/supplements/">Supplements &amp; Vitamins</a><a href="/health_biohacking/biohacking/">Biohacking</a><a href="/health_biohacking/nutrition/">Nutrition &amp; Diet</a><a href="/health_biohacking/sleep/">Sleep Optimization</a><a href="/health_biohacking/mental_health/">Mental Health</a><a href="/health_biohacking/longevity/">Longevity &amp; Anti-Aging</a></div>
-          </div>
-          
-          <div class="nav-item">
-            <a href="/home_tech/" class="nav-link">Home Tech &amp; Smart Devices</a>
-            <div class="nav-dropdown"><a href="/home_tech/smart_home/">Smart Home</a><a href="/home_tech/security/">Home Security</a><a href="/home_tech/appliances/">Smart Appliances</a><a href="/home_tech/entertainment/">Home Entertainment</a><a href="/home_tech/networking/">Wi-Fi &amp; Networking</a><a href="/home_tech/energy/">Energy &amp; Solar</a><a href="/home_tech/product_reviews/">Product Reviews</a></div>
-          </div>
-          
-          <div class="nav-item">
-            <a href="/travel/" class="nav-link">Travel</a>
-            <div class="nav-dropdown"><a href="/travel/tips/">Travel Tips &amp; Advice</a><a href="/travel/destinations/">Destinations</a><a href="/travel/flights/">Flights &amp; Airports</a><a href="/travel/hotels/">Hotels &amp; Accommodation</a><a href="/travel/car_rental/">Car Rental &amp; Transport</a><a href="/travel/travel_gear/">Travel Gear &amp; Products</a><a href="/travel/digital_nomad/">Digital Nomad</a><a href="/travel/travel_insurance/">Travel Insurance</a><a href="/travel/food_culture/">Food &amp; Culture</a></div>
-          </div>
-          
-          <div class="nav-item">
-            <a href="/pet_care/" class="nav-link">Pet Care &amp; Products</a>
-            <div class="nav-dropdown"><a href="/pet_care/dogs/">Dogs</a><a href="/pet_care/cats/">Cats</a><a href="/pet_care/pet_food/">Pet Food &amp; Nutrition</a><a href="/pet_care/pet_products/">Pet Products &amp; Gear</a><a href="/pet_care/pet_health/">Pet Health</a><a href="/pet_care/fish_aquarium/">Fish &amp; Aquarium</a><a href="/pet_care/exotic_pets/">Exotic &amp; Small Pets</a></div>
-          </div>
-          
-          <div class="nav-item">
-            <a href="/fitness_wellness/" class="nav-link">Fitness &amp; Wellness</a>
-            <div class="nav-dropdown"><a href="/fitness_wellness/workouts/">Workouts &amp; Training</a><a href="/fitness_wellness/equipment/">Gym Equipment &amp; Gear</a><a href="/fitness_wellness/nutrition/">Sports Nutrition</a><a href="/fitness_wellness/running/">Running &amp; Cardio</a><a href="/fitness_wellness/yoga_flexibility/">Yoga &amp; Flexibility</a><a href="/fitness_wellness/wearables/">Fitness Wearables</a><a href="/fitness_wellness/product_reviews/">Product Reviews</a></div>
-          </div>
-          
-          <div class="nav-item">
-            <a href="/remote_work/" class="nav-link">Remote Work &amp; Productivity</a>
-            <div class="nav-dropdown"><a href="/remote_work/office_setup/">Office Setup</a><a href="/remote_work/productivity_apps/">Productivity Apps</a><a href="/remote_work/remote_jobs/">Remote Jobs</a><a href="/remote_work/equipment/">Equipment &amp; Gear</a><a href="/remote_work/tips/">Tips &amp; Guides</a><a href="/remote_work/coworking/">Coworking &amp; Spaces</a></div>
-          </div>
-          
-        </div>
-        <div class="nav-tools">
-          <div class="nav-item">
-            <a href="/tools/" class="nav-link nav-tools-link">🛠️ Tools</a>
-            <div class="nav-dropdown nav-dropdown-right">
-              <a href="/tools/deal-finder.html">🔍 Deal Finder</a>
-              <a href="/tools/ai-tool-finder.html">🤖 AI Tool Directory</a>
-              <a href="/tools/budget-calculator.html">💰 Budget Calculator</a>
-              <a href="/tools/workout-generator.html">💪 Workout Generator</a>
-              <a href="/tools/pet-food-checker.html">🐾 Pet Food Analyzer</a>
-              <a href="/tools/smart-home.html">🏠 Smart Home Hub</a>
-              <a href="/travel/search.html">✈️ Travel Search</a>
-              <a href="/personal_finance/markets.html">📊 Market Data</a>
+          <div class="nav-tools">
+            <div class="nav-item">
+              <a href="/tools/" class="nav-link nav-tools-link">🛠️ Tools</a>
+              <div class="nav-dropdown nav-dropdown-right">
+                <a href="/tools/deal-finder.html">🔍 Deal Finder</a>
+                <a href="/tools/ai-tool-finder.html">🤖 AI Tool Directory</a>
+                <a href="/tools/budget-calculator.html">💰 Budget Calculator</a>
+                <a href="/tools/workout-generator.html">💪 Workout Generator</a>
+                <a href="/tools/pet-food-checker.html">🐾 Pet Food Analyzer</a>
+                <a href="/tools/smart-home.html">🏠 Smart Home Hub</a>
+                <a href="/travel/search.html">✈️ Travel Search</a>
+                <a href="/personal_finance/markets.html">📊 Market Data</a>
+              </div>
             </div>
           </div>
-        </div>
-      </nav>
+        </nav>
+        <button class="mobile-toggle" onclick="document.getElementById('navLinks').classList.toggle('open')" aria-label="Menu">☰</button>
+      </div>
     </div>
   </header>
   <!-- TradingView Ticker Tape -->
