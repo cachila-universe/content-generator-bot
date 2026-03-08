@@ -197,6 +197,13 @@ def generate_video(article: dict, output_path: Path) -> "Path | None":
 
         output_path.parent.mkdir(parents=True, exist_ok=True)
         final = concatenate_videoclips(clips, method="compose")
+
+        # Layer ambient background music under narration
+        from core.music_generator import mix_music_into_video
+        final = mix_music_into_video(
+            final, niche_id=niche_id, slug=slug, variant=1, music_volume=0.08,
+        )
+
         final.write_videofile(
             str(output_path), fps=FPS, codec="libx264", audio_codec="aac",
         )
@@ -305,6 +312,13 @@ def generate_roundup(
 
         output_path.parent.mkdir(parents=True, exist_ok=True)
         final = concatenate_videoclips(clips, method="compose")
+
+        # Layer ambient background music under narration
+        from core.music_generator import mix_music_into_video
+        final = mix_music_into_video(
+            final, niche_id=niche_id, slug=seed, variant=2, music_volume=0.06,
+        )
+
         final.write_videofile(
             str(output_path), fps=FPS, codec="libx264", audio_codec="aac",
         )
